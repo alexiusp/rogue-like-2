@@ -1,0 +1,9 @@
+.screen-header h1,
+.screen-header h2,
+.screen-header h3,
+.screen-header h4,
+.screen-header h5,
+.screen-header h6,
+.screen-header p {
+  margin: 0;
+}
