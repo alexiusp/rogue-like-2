@@ -20,6 +20,10 @@ export interface IGuildValue {
 }
 export type TGuildValues = Array<IGuildValue>;
 
+export const ZeroGuilds: TGuildValues = [
+  { guild: EGuild.Adventurer, value: 1 },
+];
+
 export const GuildXpRequirements = {
   [EGuild.Adventurer]: [1000, 2000, 5000],
 };

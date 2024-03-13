@@ -1,17 +1,6 @@
-import { EGuild, TGuildValues } from "../common/guilds";
-import { TStatsValues } from "../common/stats";
+import { ZeroGuilds } from "../common/guilds";
+import { ZeroStats } from "../common/stats";
 import { TBaseItem } from "./models";
-
-const ZeroStats: TStatsValues = {
-  strength: 0,
-  intelligence: 0,
-  wisdom: 0,
-  endurance: 0,
-  charisma: 0,
-  dexterity: 0,
-};
-
-const ZeroGuilds: TGuildValues = [{ guild: EGuild.Adventurer, value: 1 }];
 
 const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   "Bronze Dagger": {

@@ -1,0 +1,20 @@
+.dungeon .cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid;
+}
+.dungeon .cell.open {
+  background-image: url(/src/assets/tiles/ground.jpg);
+  background-size: cover;
+  background-position: center;
+}
+.dungeon .cell img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  object-fit: cover;
+  width: 100%;
+}

@@ -1,6 +1,6 @@
 import { EAlignment } from "../common/alignment";
-import { rollDiceCheck } from "../common/dices";
 import { TGuildValues } from "../common/guilds";
+import { rollDiceCheck } from "../common/random";
 import { TStatsValues } from "../common/stats";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 

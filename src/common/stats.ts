@@ -25,6 +25,15 @@ export type TStatsValues = {
   >]: number;
 };
 
+export const ZeroStats: TStatsValues = {
+  strength: 0,
+  intelligence: 0,
+  wisdom: 0,
+  endurance: 0,
+  charisma: 0,
+  dexterity: 0,
+};
+
 function getStatBonus(statValue: number) {
   if (statValue <= 1) {
     return -5;

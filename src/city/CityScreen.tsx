@@ -9,6 +9,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
 import bg from "../assets/view-castle-with-nature-landscape.jpg";
 import { characterLoaded } from "../character/state";
+import { dungeonLoaded, startDungeonLevel } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";
 import CityStatusBar from "./CityStatusBar";
@@ -24,8 +25,13 @@ export default function CityScreen() {
     characterLoaded();
     bankStateLoaded();
     storeStateLoaded();
+    dungeonLoaded();
     setDataLoaded(true);
   }, [dataLoaded, setDataLoaded]);
+  const openDungeon = () => {
+    navigate("dungeon");
+    startDungeonLevel(1);
+  };
   return (
     <Screen
       header={
@@ -94,7 +100,7 @@ export default function CityScreen() {
         </Grid>
         <Grid xs={6}>
           <Button
-            onClick={() => navigate("dungeon")}
+            onClick={openDungeon}
             size="large"
             variant="outlined"
             fullWidth={true}

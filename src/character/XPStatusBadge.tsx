@@ -5,7 +5,7 @@ import { $characterXpToNextLevel } from "./state";
 
 export default function XPStatusBadge() {
   const xp = useUnit($characterXpToNextLevel);
-  const label = `${xp}`;
+  const label = xp > 0 ? `${xp}` : "You are pinned!";
   return (
     <Tooltip
       title="XP to next level in the current Guild"

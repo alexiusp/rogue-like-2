@@ -46,7 +46,7 @@ export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
   // TODO: implement bonuses from races, no race bonuses for elf or human
   const raceBonus = getRaceHealthModifier(race);
   const strBonus = Math.round((stats.strength - 14) / 2);
-  const conBonus = Math.round(stats.endurance - 10);
+  const endBonus = Math.round(stats.endurance - 10);
   let genderBonus = 0;
   if (gender === EGender.Male) {
     genderBonus += 1;
@@ -54,7 +54,7 @@ export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
   if (gender === EGender.Female) {
     genderBonus -= 1;
   }
-  return 10 + raceBonus + strBonus + conBonus + genderBonus;
+  return 10 + raceBonus + strBonus + endBonus + genderBonus;
 }
 
 export interface ICharacterState extends ICharacter {

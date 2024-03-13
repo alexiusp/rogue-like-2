@@ -24,15 +24,16 @@ export default function ItemDetailsDialog({
   if (!item) {
     return null;
   }
+  const idLevel = item.idLevel;
   const itemName = item.item;
   const { name, kind } = GlobalItemsCatalogue[itemName];
+  const itemNameToDisplay = idLevel === 2 ? name : kind;
   return (
     <Dialog onClose={onClose} open={true}>
-      <DialogTitle>{item.item}</DialogTitle>
+      <DialogTitle>{itemNameToDisplay}</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
-          <Typography>{name}</Typography>
-          <Typography>Type: {kind}</Typography>
+          <Typography>{itemNameToDisplay}</Typography>
           <Typography>
             TODO: implement more detailed view for the item
           </Typography>
