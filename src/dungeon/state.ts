@@ -1,5 +1,6 @@
 import { combine, createEvent, createStore, sample } from "effector";
 import { loadData, saveData } from "../common/db";
+import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
   ETerrain,
@@ -148,3 +149,21 @@ export const $dungeonLevelMap = combine(
     };
   },
 );
+
+// redirect to encounter if moved to tile with it
+sample({
+  clock: moveCharacter,
+  source: $dungeonLevelMap,
+  target: forward,
+  filter: (levelMap, coordinates) => {
+    const tileIndex = levelMap.map.findIndex(
+      (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
+    );
+    if (tileIndex < 0) {
+      throw new Error("Invalid coordinates! Map tile not found!");
+    }
+    const mapTile = levelMap.map[tileIndex];
+    return !!mapTile.encounter;
+  },
+  fn: () => "encounter",
+});
