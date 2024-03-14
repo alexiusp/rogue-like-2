@@ -242,3 +242,13 @@ export function generateDungeonLevel(level: number): Array<IMapTile> {
   console.log(`generated ${level} level of the dungeon:`, tiles);
   return tiles;
 }
+
+export function isAdjacent(pos1: IMapCoordinates, pos2: IMapCoordinates) {
+  if (pos1.x === pos2.x) {
+    return pos1.y === pos2.y - 1 || pos1.y === pos2.y + 1;
+  }
+  if (pos1.y === pos2.y) {
+    return pos1.x === pos2.x - 1 || pos1.x === pos2.x + 1;
+  }
+  return false;
+}

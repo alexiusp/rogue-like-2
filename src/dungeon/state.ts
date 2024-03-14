@@ -84,6 +84,8 @@ $dungeonState.on(startDungeonLevel, (state, level) => {
   state[level] = levelMap;
   return state;
 });
+
+// position character on the map when starting a level
 sample({
   clock: startDungeonLevel,
   source: $dungeonState,
@@ -104,6 +106,30 @@ sample({
     };
   },
   target: moveCharacter,
+});
+
+// open map tile when moving character
+sample({
+  clock: moveCharacter,
+  source: { state: $dungeonState, level: $currentLevel },
+  target: $dungeonState,
+  fn: ({ state, level }, coordinates) => {
+    const levelMap = state[level];
+    const tileIndex = levelMap.findIndex(
+      (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
+    );
+    if (tileIndex < 0) {
+      throw new Error("Invalid coordinates! Map tile not found!");
+    }
+    const mapTile = levelMap[tileIndex];
+    mapTile.open = true;
+    console.log("opening tile", mapTile);
+    levelMap.splice(tileIndex, 1, mapTile);
+    return {
+      ...state,
+      [level]: levelMap,
+    };
+  },
 });
 
 export const $dungeonLevelMap = combine(
