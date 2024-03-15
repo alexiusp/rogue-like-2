@@ -62,8 +62,18 @@ export function rollDices(diceToRoll: TDiceString) {
   return result;
 }
 
+/**
+ * roll given dice(s) and compare with threshold value
+ * the lower the value is the easier it to pass the check
+ * roll result must be greater than given value
+ * Example: value = 17 and we roll 1D20 and get 18
+ * function result - true
+ * @param value threshold value
+ * @param dice dice roll we need to roll
+ * @returns true if dice rolled value is greater then given value
+ */
 export function rollDiceCheck(value: number, dice: TDiceString) {
   const roll = rollDices(dice);
   console.log("rollDiceCheck", value, roll);
-  return value > roll;
+  return roll > value;
 }

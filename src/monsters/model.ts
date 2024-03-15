@@ -108,9 +108,10 @@ export function getMonsterDV(monster: IGameMonster) {
 }
 
 export function getMonsterPV(monster: IGameMonster) {
-  const baseValue = 10;
+  const baseValue = 0;
   const monsterName = monster.monster;
   const monsterDetails = GlobalMonsterCatalogue[monsterName];
   const statsModifier = getStatsProtectionModifier(monsterDetails.stats);
-  return Math.round(baseValue * monsterDetails.level * statsModifier);
+  console.log(`baseValue:${baseValue} level:1 statsModifier:${statsModifier}`);
+  return Math.round(baseValue + monsterDetails.level * statsModifier);
 }

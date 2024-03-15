@@ -1,7 +1,7 @@
 import { EAlignment } from "../common/alignment";
 import { TGuildValues } from "../common/guilds";
 import { rollDiceCheck } from "../common/random";
-import { TStatsValues } from "../common/stats";
+import { TStatsValues, getStatBonus } from "../common/stats";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
 type TItemKind = "dagger" | "potion" | "sword" | "shield"; // TODO: add more types
@@ -177,7 +177,8 @@ export function calculateItemPriceToSell(
   if (item.kind === "usable") {
     usesModifier = item.usesLeft / (baseItem as IUsableBaseItem).uses;
   }
-  const charismaModifier = rollDiceCheck(charisma, "1D20") ? 1.2 : 1;
+  const charismaBonus = getStatBonus(charisma);
+  const charismaModifier = rollDiceCheck(20 - charismaBonus, "1D20") ? 1.2 : 1;
   console.log(
     "calculateItemPriceToSell",
     baseItem.name,

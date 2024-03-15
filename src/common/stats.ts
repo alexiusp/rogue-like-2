@@ -34,7 +34,7 @@ export const ZeroStats: TStatsValues = {
   dexterity: 0,
 };
 
-function getStatBonus(statValue: number) {
+export function getStatBonus(statValue: number) {
   if (statValue <= 1) {
     return -5;
   }

@@ -12,3 +12,12 @@
   height: 100%;
   justify-content: center;
 }
+.battle-screen .encounter .monsters .monster-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.battle-screen .encounter .monsters .monster-area .hit-image {
+  width: 128px;
+  height: 128px;
+}
