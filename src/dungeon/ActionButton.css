@@ -1,0 +1,7 @@
+button.action-button {
+  border: 1px solid;
+}
+button.action-button img {
+  width: 64px;
+  height: 64px;
+}

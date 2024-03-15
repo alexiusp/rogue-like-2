@@ -31,7 +31,7 @@ export class RandomBag<T> {
   }
 }
 
-type TDiceSides = 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 20;
+type TDiceSides = 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 20 | 100;
 type TDiceAmount = number;
 type TDiceBonus = number;
 

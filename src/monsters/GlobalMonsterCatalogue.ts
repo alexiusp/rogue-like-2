@@ -4,7 +4,7 @@ import { IBaseMonster } from "./model";
 const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
   "Giant Rat": {
     name: "Giant Rat",
-    picture: "",
+    picture: "giant-rat.png",
     type: "animal",
     alignment: EAlignment.Neutral,
     level: 1,

@@ -1,0 +1,14 @@
+.battle-screen {
+  height: 100%;
+}
+.battle-screen .encounter {
+  flex-direction: column;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+}
+.battle-screen .encounter .monsters {
+  flex-direction: row;
+  height: 100%;
+  justify-content: center;
+}

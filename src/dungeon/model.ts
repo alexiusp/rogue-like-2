@@ -1,4 +1,4 @@
-import { RandomBag } from "../common/random";
+import { RandomBag, rollDiceCheck } from "../common/random";
 import { TGameItem } from "../items/models";
 import { IGameMonster, generateNewMonsterByName } from "../monsters/model";
 import DungeonSpec from "./dungeonSpecs";
@@ -272,4 +272,11 @@ export function getMapTileByCoordinates(
 ) {
   const tileIndex = getTileIndexByCoordinates(coordinates, levelMap);
   return levelMap[tileIndex];
+}
+
+export type TBattleMode = "defend" | "fight" | "flee" | "items" | "spells";
+
+export function rollAttack(attackValue: number, defenseValue: number) {
+  const rollValue = 50 - attackValue + defenseValue;
+  return rollDiceCheck(rollValue, "1D100");
 }

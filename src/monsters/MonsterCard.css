@@ -1,0 +1,18 @@
+.monster {
+  min-width: 128px;
+}
+.monster.angry {
+  border-color: brown;
+}
+.monster.neutral {
+  border-color: grey;
+}
+.monster.peaceful {
+  border-color: greenyellow;
+}
+.monster .picture {
+  min-height: 128px;
+}
+.monster .monster-name {
+  text-align: center;
+}

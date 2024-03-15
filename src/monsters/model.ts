@@ -1,5 +1,10 @@
 import { EAlignment } from "../common/alignment";
-import { TStatsValues } from "../common/stats";
+import { getRandomInt } from "../common/random";
+import {
+  TStatsValues,
+  getStatsDefenseModifier,
+  getStatsProtectionModifier,
+} from "../common/stats";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
@@ -36,7 +41,7 @@ export interface IBaseMonster {
   money: Array<number | null>;
 }
 
-enum EAggroMode {
+export enum EAggroMode {
   // mode when moster attacks character
   Angry,
   // monster is neutral
@@ -62,11 +67,13 @@ export interface IGameMonster {
 }
 
 function generateMonsterHp(baseHp: number, level: number, stats: TStatsValues) {
-  const baseValue = 10 + baseHp;
+  const baseValue = getRandomInt(20, 10) + baseHp;
   const strBonus = (stats.strength - 14) / 2;
   const endBonus = stats.endurance - 10;
-  console.info("monster hp generated:", baseValue, level, strBonus, endBonus);
-  return Math.round(baseValue * (1 + level / 10) + strBonus + endBonus);
+  const finalHp = Math.round(
+    baseValue * (1 + level / 10) + strBonus + endBonus,
+  );
+  return finalHp;
 }
 
 // generates a specific monster for given dungeon level
@@ -90,4 +97,20 @@ export function generateNewMonsterByName(
     mp: 0,
     mpMax: 0,
   };
+}
+
+export function getMonsterDV(monster: IGameMonster) {
+  const baseValue = 10;
+  const monsterName = monster.monster;
+  const monsterDetails = GlobalMonsterCatalogue[monsterName];
+  const statsModifier = getStatsDefenseModifier(monsterDetails.stats);
+  return Math.round(baseValue * monsterDetails.level * statsModifier);
+}
+
+export function getMonsterPV(monster: IGameMonster) {
+  const baseValue = 10;
+  const monsterName = monster.monster;
+  const monsterDetails = GlobalMonsterCatalogue[monsterName];
+  const statsModifier = getStatsProtectionModifier(monsterDetails.stats);
+  return Math.round(baseValue * monsterDetails.level * statsModifier);
 }

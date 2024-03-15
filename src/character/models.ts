@@ -54,7 +54,7 @@ export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
   if (gender === EGender.Female) {
     genderBonus -= 1;
   }
-  return 10 + raceBonus + strBonus + endBonus + genderBonus;
+  return getRandomInt(20, 10) + raceBonus + strBonus + endBonus + genderBonus;
 }
 
 export interface ICharacterState extends ICharacter {

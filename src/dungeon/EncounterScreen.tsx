@@ -1,12 +1,40 @@
-import { Typography } from "@mui/material";
-import bg from "../assets/dungeon.jpg";
-import Screen from "../layout/Screen";
+import { Box } from "@mui/material";
+import { useUnit } from "effector-react";
+import { ReactNode } from "react";
+import BattleScreen from "./BattleScreen";
+import { EEncounterType } from "./model";
+import { $currentMapTile } from "./state";
 
 export default function EncounterScreen() {
+  const { effects, terrain, encounter } = useUnit($currentMapTile);
+  let subScreen: ReactNode;
+  switch (encounter?.type) {
+    case EEncounterType.Monster:
+      subScreen = (
+        <BattleScreen
+          chest={encounter.chest}
+          effects={effects}
+          monsters={[encounter.monster]}
+          terrain={terrain}
+        />
+      );
+      break;
+
+    default:
+      subScreen = null;
+      break;
+  }
   return (
-    <Screen>
-      <img src={bg} style={{ objectFit: "cover", width: "100%" }} />
-      <Typography>encounter</Typography>
-    </Screen>
+    <Box
+      sx={{
+        height: "100vh",
+        justifyContent: "center",
+        mb: 0,
+        mt: 0,
+        my: 0,
+      }}
+    >
+      {subScreen}
+    </Box>
   );
 }
