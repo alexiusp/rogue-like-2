@@ -252,3 +252,24 @@ export function isAdjacent(pos1: IMapCoordinates, pos2: IMapCoordinates) {
   }
   return false;
 }
+
+export function getTileIndexByCoordinates(
+  coordinates: IMapCoordinates,
+  levelMap: IMapTile[],
+) {
+  const tileIndex = levelMap.findIndex(
+    (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
+  );
+  if (tileIndex < 0) {
+    throw new Error("Invalid coordinates! Map tile not found!");
+  }
+  return tileIndex;
+}
+
+export function getMapTileByCoordinates(
+  coordinates: IMapCoordinates,
+  levelMap: IMapTile[],
+) {
+  const tileIndex = getTileIndexByCoordinates(coordinates, levelMap);
+  return levelMap[tileIndex];
+}

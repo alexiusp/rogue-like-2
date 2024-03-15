@@ -7,6 +7,8 @@ import {
   IMapCoordinates,
   IMapTile,
   generateDungeonLevel,
+  getMapTileByCoordinates,
+  getTileIndexByCoordinates,
 } from "./model";
 
 type TDungeonState = {
@@ -68,28 +70,36 @@ $characterPosition.watch((currentPos) => {
   console.info("character position:", currentPos);
 });
 
+export const $dungeonLevelMap = combine(
+  $currentLevel,
+  $dungeonState,
+  $characterPosition,
+  (level, state, position) => {
+    const levelSpec = DungeonSpec[level];
+    const levelMap = state[level];
+    console.log("$dungeonLevelMap update");
+    return {
+      width: levelSpec.width,
+      height: levelSpec.height,
+      map: levelMap,
+      character: position,
+    };
+  },
+);
+
+export const $currentMapTile = $dungeonLevelMap.map((state) => {
+  console.log("$currentMapTile update");
+  return getMapTileByCoordinates(state.character, state.map);
+});
+
 export const startDungeonLevel = createEvent<number>();
 $currentLevel.on(startDungeonLevel, (_, level) => level);
-$dungeonState.on(startDungeonLevel, (state, level) => {
-  const levelMap = state[level];
-  const ladderIndex = levelMap.findIndex(
-    (tile) => tile.terrain === ETerrain.StairsUp,
-  );
-  console.log("ladder", ladderIndex, levelMap);
-  if (ladderIndex < 0) {
-    throw new Error("Invalid map! Ladder not found!");
-  }
-  const updatedTile = levelMap[ladderIndex];
-  updatedTile.open = true;
-  levelMap.splice(ladderIndex, 1, updatedTile);
-  state[level] = levelMap;
-  return state;
-});
 
 // position character on the map when starting a level
 sample({
   clock: startDungeonLevel,
   source: $dungeonState,
+  target: moveCharacter,
   fn: (dungeonState, level) => {
     console.log("dungeon start sampler", level);
     const levelMap = dungeonState[level];
@@ -106,7 +116,6 @@ sample({
       y: ladderTile.y,
     };
   },
-  target: moveCharacter,
 });
 
 // open map tile when moving character
@@ -116,12 +125,7 @@ sample({
   target: $dungeonState,
   fn: ({ state, level }, coordinates) => {
     const levelMap = state[level];
-    const tileIndex = levelMap.findIndex(
-      (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
-    );
-    if (tileIndex < 0) {
-      throw new Error("Invalid coordinates! Map tile not found!");
-    }
+    const tileIndex = getTileIndexByCoordinates(coordinates, levelMap);
     const mapTile = levelMap[tileIndex];
     mapTile.open = true;
     console.log("opening tile", mapTile);
@@ -133,36 +137,12 @@ sample({
   },
 });
 
-export const $dungeonLevelMap = combine(
-  $currentLevel,
-  $dungeonState,
-  $characterPosition,
-  (level, state, position) => {
-    const levelSpec = DungeonSpec[level];
-    const levelMap = state[level];
-
-    return {
-      width: levelSpec.width,
-      height: levelSpec.height,
-      map: levelMap,
-      character: position,
-    };
-  },
-);
-
-// redirect to encounter if moved to tile with it
+// redirect to encounter screen if moved to tile with it
 sample({
   clock: moveCharacter,
-  source: $dungeonLevelMap,
+  source: $currentMapTile,
   target: forward,
-  filter: (levelMap, coordinates) => {
-    const tileIndex = levelMap.map.findIndex(
-      (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
-    );
-    if (tileIndex < 0) {
-      throw new Error("Invalid coordinates! Map tile not found!");
-    }
-    const mapTile = levelMap.map[tileIndex];
+  filter: (mapTile) => {
     return !!mapTile.encounter;
   },
   fn: () => "encounter",
