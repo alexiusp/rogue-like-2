@@ -164,6 +164,13 @@ $character.on(characterLoaded, (state) => {
 $character.watch(console.log);
 
 export const $characterHealth = $character.map((character) => character.hp);
+export const characterHpChanged = createEvent<number>();
+$character.on(characterHpChanged, (character, hp) => {
+  return {
+    ...character,
+    hp,
+  };
+});
 
 export const $characterMaxHealth = $character.map(
   (character) => character.hpMax,

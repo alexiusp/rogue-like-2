@@ -2,6 +2,8 @@ import { EAlignment } from "../common/alignment";
 import { getRandomInt } from "../common/random";
 import {
   TStatsValues,
+  getStatsAttackModifier,
+  getStatsDamageModifier,
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
@@ -100,11 +102,14 @@ export function generateNewMonsterByName(
 }
 
 export function getMonsterDV(monster: IGameMonster) {
-  const baseValue = 10;
+  const baseValue = 1;
   const monsterName = monster.monster;
   const monsterDetails = GlobalMonsterCatalogue[monsterName];
   const statsModifier = getStatsDefenseModifier(monsterDetails.stats);
-  return Math.round(baseValue * monsterDetails.level * statsModifier);
+  console.log(
+    `getMonsterDV. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
+  );
+  return Math.round(baseValue + monsterDetails.level * statsModifier);
 }
 
 export function getMonsterPV(monster: IGameMonster) {
@@ -112,6 +117,30 @@ export function getMonsterPV(monster: IGameMonster) {
   const monsterName = monster.monster;
   const monsterDetails = GlobalMonsterCatalogue[monsterName];
   const statsModifier = getStatsProtectionModifier(monsterDetails.stats);
-  console.log(`baseValue:${baseValue} level:1 statsModifier:${statsModifier}`);
+  console.log(
+    `getMonsterPV. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
+  );
+  return Math.round(baseValue + monsterDetails.level * statsModifier);
+}
+
+export function getMonsterAttack(monster: IGameMonster) {
+  const baseValue = 5;
+  const monsterName = monster.monster;
+  const monsterDetails = GlobalMonsterCatalogue[monsterName];
+  const statsModifier = getStatsAttackModifier(monsterDetails.stats);
+  console.log(
+    `getMonsterAttack. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
+  );
+  return Math.round(baseValue + monsterDetails.level * statsModifier);
+}
+
+export function getMonsterDamage(monster: IGameMonster) {
+  const baseValue = 1;
+  const monsterName = monster.monster;
+  const monsterDetails = GlobalMonsterCatalogue[monsterName];
+  const statsModifier = getStatsDamageModifier(monsterDetails.stats);
+  console.log(
+    `getMonsterAttack. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
+  );
   return Math.round(baseValue + monsterDetails.level * statsModifier);
 }

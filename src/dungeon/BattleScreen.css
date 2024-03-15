@@ -2,6 +2,7 @@
   height: 100%;
 }
 .battle-screen .encounter {
+  position: relative;
   flex-direction: column;
   height: 100%;
   background-position: center;
@@ -18,6 +19,9 @@
 }
 
 .battle-screen .encounter .monsters .monster-area .hit-image {
-  width: 128px;
-  height: 128px;
+  position: absolute;
+  top: calc(50% - 100px);
+  left: calc(50% - 100px);
+  width: 200px;
+  height: 200px;
 }
