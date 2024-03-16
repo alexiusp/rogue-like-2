@@ -1,18 +1,39 @@
-import { combine, createEvent, createStore, sample } from "effector";
+import {
+  combine,
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+} from "effector";
+import {
+  ICharacterState,
+  getCharacterAttack,
+  getCharacterDamage,
+} from "../character/models";
+import { $character } from "../character/state";
 import { loadData, saveData } from "../common/db";
+import {
+  EAggroMode,
+  IGameMonster,
+  getMonsterDV,
+  getMonsterPV,
+} from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
   ETerrain,
   IMapCoordinates,
-  IMapTile,
+  IMonsterMapTile,
+  TMapTile,
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
+  rollAttack,
+  rollDamage,
 } from "./model";
 
 type TDungeonState = {
-  [level: number]: Array<IMapTile>;
+  [level: number]: Array<TMapTile>;
 };
 
 const startState: TDungeonState = (() => {
@@ -147,3 +168,100 @@ sample({
   },
   fn: () => "encounter",
 });
+
+type TBattleRound =
+  | "character"
+  | "character-to-monster"
+  | "monster"
+  | "monster-to-character";
+
+export const $battleRound = createStore<TBattleRound>("character");
+
+type THitResult = "hit" | "miss";
+export const $hitResult = createStore<THitResult | null>(null);
+
+type TMonsterAttackedParams = {
+  mapTile: IMonsterMapTile;
+  index: number;
+  character: ICharacterState;
+};
+export const characterAttacksMonsterFx = createEffect<
+  TMonsterAttackedParams,
+  Array<IGameMonster>,
+  Array<IGameMonster>
+>(
+  ({ mapTile, index, character }) =>
+    new Promise((resolve, reject) => {
+      const monsters = mapTile.encounter.monsters;
+      // all monsters must aggro
+      for (const m of monsters) {
+        // TODO: check if monster is charmed
+        m.aggro = EAggroMode.Angry;
+      }
+      // select attacked monster
+      const monster = monsters[index];
+      const attack = getCharacterAttack(character);
+      const defense = getMonsterDV(monster);
+      console.log("attack", attack, "defense", defense);
+      const attackRoll = rollAttack(attack, defense);
+      console.log("attack result:", attackRoll);
+      if (!attackRoll) {
+        reject(monsters);
+        return;
+      }
+      const damage = getCharacterDamage(character);
+      console.log("damage", damage);
+      const protection = getMonsterPV(monster);
+      console.log("protection", protection);
+      const damageDone = rollDamage(damage, protection);
+      console.log("damageDone", damageDone);
+      monster.hp = Math.max(monster.hp - damageDone, 0);
+      monsters[index] = monster;
+      resolve(monsters);
+    }),
+);
+
+const monsterAttacked = createEvent<number>();
+sample({
+  clock: monsterAttacked,
+  source: { tile: $currentMapTile, character: $character },
+  target: characterAttacksMonsterFx,
+  fn: ({ tile, character }, index) => {
+    const mapTile = tile as IMonsterMapTile;
+    const params: TMonsterAttackedParams = { mapTile, character, index };
+    return params;
+  },
+});
+
+$battleRound.on(
+  characterAttacksMonsterFx.finally,
+  () => "character-to-monster",
+);
+$hitResult.on(characterAttacksMonsterFx.done, () => "hit");
+$hitResult.on(characterAttacksMonsterFx.fail, () => "miss");
+
+sample({
+  clock: characterAttacksMonsterFx.finally,
+  source: { state: $dungeonState, level: $currentLevel },
+  target: $dungeonState,
+  fn: (source, clock) => {
+    const params = clock.params;
+    const result = clock.status === "done" ? clock.result : clock.error;
+    const { state, level } = source;
+
+    return {
+      ...state,
+    };
+  },
+});
+
+function delay() {
+  return new Promise((resolve) => setTimeout(resolve, 500));
+}
+
+const characterToMonsterTransition = createEffect(delay);
+const monsterToCharacterTransition = createEffect(delay);
+$battleRound.on(characterToMonsterTransition.done, () => "monster");
+$battleRound.on(monsterToCharacterTransition.done, () => "character");
+
+export const monstersAttackCharacter = createEffect(() => {});

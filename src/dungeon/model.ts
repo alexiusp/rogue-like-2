@@ -28,8 +28,7 @@ export enum ETerrainEffect {
 }
 
 export enum EEncounterType {
-  Monster, // single monster, optionally a chest
-  Pack, // pack of monsters of the same type, optionally a chest
+  Monster, // one or several monsters, optionally a chest
   Lair, // one boss, optionally pack of lesser monsters, optionally a chest
   Event, // TODO: to be implemented
   Chest, // chest
@@ -81,40 +80,28 @@ interface IBaseEncounter {
   type: EEncounterType;
 }
 
-interface IMonsterEncounter extends IBaseEncounter {
+export interface IMonsterEncounter extends IBaseEncounter {
   type: EEncounterType.Monster;
-  // monster
-  monster: IGameMonster;
-  chest?: IChest;
-}
-
-interface IMonsterPackEncounter extends IBaseEncounter {
-  type: EEncounterType.Pack;
   // monster
   monsters: Array<IGameMonster>;
   chest?: IChest;
 }
 
-interface ILairEncounter extends IBaseEncounter {
+export interface ILairEncounter extends IBaseEncounter {
   type: EEncounterType.Lair;
   boss: IGameMonster;
   monsters: Array<IGameMonster>;
   chest?: IChest;
 }
 
-interface IChestEncounter extends IBaseEncounter {
+export interface IChestEncounter extends IBaseEncounter {
   type: EEncounterType.Chest;
   chest: IChest;
 }
 
-type TGameTileEncounter =
-  | IMonsterEncounter
-  | IMonsterPackEncounter
-  | ILairEncounter
-  | IChestEncounter;
+type TGameTileEncounter = IMonsterEncounter | ILairEncounter | IChestEncounter;
 
-// map tile data generated for use in runtime
-export interface IMapTile {
+interface IBaseMapTile {
   x: number;
   y: number;
   // is map tile already opened by character
@@ -126,6 +113,29 @@ export interface IMapTile {
   // encounter to trigger/render
   encounter?: TGameTileEncounter;
 }
+
+export interface IEmptyMapTile extends IBaseMapTile {
+  encounter: undefined;
+}
+
+export interface IMonsterMapTile extends IBaseMapTile {
+  encounter: IMonsterEncounter;
+}
+
+export interface ILairMapTile extends IBaseMapTile {
+  encounter: ILairEncounter;
+}
+
+export interface IChestMapTile extends IBaseMapTile {
+  encounter: IChestEncounter;
+}
+
+// map tile data generated for use in runtime
+export type TMapTile =
+  | IEmptyMapTile
+  | IMonsterMapTile
+  | ILairMapTile
+  | IChestMapTile;
 
 function generateEncounter(
   type: EEncounterType,
@@ -143,12 +153,13 @@ function generateEncounter(
     case EEncounterType.Monster: {
       const possibleMonsters = getMonstersForLevel(level);
       const monsterBag = new RandomBag(possibleMonsters);
+      // TODO: generate more than one monster
       const randomMonsterName = monsterBag.getRandomItem();
       const monster = generateNewMonsterByName(randomMonsterName, level);
       // TODO: generate chest
       const encounter: IMonsterEncounter = {
         type: EEncounterType.Monster,
-        monster,
+        monsters: [monster],
       };
       return encounter;
     }
@@ -156,16 +167,12 @@ function generateEncounter(
       // TODO
       return;
     }
-    case EEncounterType.Pack: {
-      // TODO
-      return;
-    }
   }
 }
 
-export function generateDungeonLevel(level: number): Array<IMapTile> {
+export function generateDungeonLevel(level: number): Array<TMapTile> {
   const levelSpec = DungeonSpec[level];
-  const tiles: Array<IMapTile> = [];
+  const tiles: Array<TMapTile> = [];
   let terrainsAmount = 0;
   const terrainBag = new RandomBag<ETerrain | null>(levelSpec.terrains);
   let effectsAmount = 0;
@@ -185,6 +192,7 @@ export function generateDungeonLevel(level: number): Array<IMapTile> {
             open: false,
             terrain: ETerrain.StairsDown,
             effects: [],
+            encounter: undefined,
           });
           continue;
         }
@@ -197,6 +205,7 @@ export function generateDungeonLevel(level: number): Array<IMapTile> {
             open: true,
             terrain: ETerrain.StairsUp,
             effects: [],
+            encounter: undefined,
           });
           continue;
         }
@@ -255,7 +264,7 @@ export function isAdjacent(pos1: IMapCoordinates, pos2: IMapCoordinates) {
 
 export function getTileIndexByCoordinates(
   coordinates: IMapCoordinates,
-  levelMap: IMapTile[],
+  levelMap: TMapTile[],
 ) {
   const tileIndex = levelMap.findIndex(
     (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
@@ -268,7 +277,7 @@ export function getTileIndexByCoordinates(
 
 export function getMapTileByCoordinates(
   coordinates: IMapCoordinates,
-  levelMap: IMapTile[],
+  levelMap: TMapTile[],
 ) {
   const tileIndex = getTileIndexByCoordinates(coordinates, levelMap);
   return levelMap[tileIndex];

@@ -11,12 +11,12 @@ import {
   ETerrain,
   ETerrainEffect,
   IMapCoordinates,
-  IMapTile,
+  TMapTile,
 } from "./model";
 
 interface IDungeonTileProps {
   character?: boolean;
-  tile: IMapTile;
+  tile: TMapTile;
   onClick: (pos: IMapCoordinates) => void;
 }
 

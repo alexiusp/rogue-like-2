@@ -14,7 +14,7 @@ export default function EncounterScreen() {
         <BattleScreen
           chest={encounter.chest}
           effects={effects}
-          monsters={[encounter.monster]}
+          monsters={encounter.monsters}
           terrain={terrain}
         />
       );
