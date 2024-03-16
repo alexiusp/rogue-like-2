@@ -1,10 +1,8 @@
-import { Box, Stack, Typography, Zoom } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { blueGrey, deepPurple } from "@mui/material/colors";
 import { useUnit } from "effector-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import bg from "../assets/dungeon.jpg";
-import blood from "../assets/tiles/blood_splatter.png";
-import air from "../assets/tiles/spore_cloud.png";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import {
   getCharacterAttack,
@@ -24,6 +22,7 @@ import {
 } from "../monsters/model";
 import ActionButton from "./ActionButton";
 import "./BattleScreen.css";
+import HitAnimation from "./HitAnimation";
 import {
   ETerrain,
   ETerrainEffect,
@@ -40,7 +39,11 @@ interface IBattleScreenProps {
   terrain: ETerrain;
 }
 
-type TBattleRound = "character" | "monster";
+type TBattleRound =
+  | "character"
+  | "character-to-monster"
+  | "monster"
+  | "monster-to-character";
 
 export default function BattleScreen({
   chest,
@@ -51,22 +54,8 @@ export default function BattleScreen({
   const character = useUnit($character);
   const [currentMonsters, updateCurrentMonsters] = useState(monsters);
   const [battleRound, setRound] = useState<TBattleRound>("character");
-  const [animateHit, setHitAnimation] = useState(false);
-  useEffect(() => {
-    if (!animateHit) {
-      return;
-    }
-    const timeout = setTimeout(() => {
-      setHitAnimation(false);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [animateHit, setHitAnimation]);
-  useEffect(() => {
-    // check which round is it
-    if (battleRound !== "monster") {
-      return;
-    }
-    console.log("start monsters round");
+  const [animateHit, setHitAnimation] = useState<"hit" | "miss" | undefined>();
+  const handleMonstersRound = useCallback(() => {
     // iterate on monsters
     for (const monster of currentMonsters) {
       // skip monsters not angry and dead
@@ -79,9 +68,8 @@ export default function BattleScreen({
       const attackRoll = rollAttack(attack, defense);
       console.log("attack result:", attackRoll);
       if (!attackRoll) {
-        setHitImage(air);
-        setHitAnimation(true);
-        setRound("character");
+        setHitAnimation("miss");
+        return;
       }
       const damage = getMonsterDamage(monster);
       console.log("damage", damage);
@@ -89,15 +77,35 @@ export default function BattleScreen({
       console.log("protection", protection);
       const damageDone = rollDamage(damage, protection);
       console.log("damageDone", damageDone);
-      setHitImage(blood);
-      setHitAnimation(true);
-      const hp = Math.max(character.hp - damage, 0);
+      setHitAnimation("hit");
+      const hp = Math.max(character.hp - damageDone, 0);
       characterHpChanged(hp);
-      setRound("character");
       // TODO: handle character killed case
     }
-  }, [battleRound, currentMonsters, character]);
-  const [hitImage, setHitImage] = useState(blood);
+  }, [currentMonsters, character]);
+  useEffect(() => {
+    if (battleRound === "character" || battleRound === "monster") {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      if (battleRound === "character-to-monster") {
+        setRound("monster");
+      } else {
+        setRound("character");
+      }
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [battleRound, setRound]);
+  useEffect(() => {
+    // check which round is it
+    if (battleRound !== "monster") {
+      return;
+    }
+    console.log("start monsters round");
+    handleMonstersRound();
+    console.log("end monsters round");
+    setRound("monster-to-character");
+  }, [battleRound, handleMonstersRound, setRound]);
   const [mode, setMode] = useState<TBattleMode>();
   const updateMonster = (monster: IGameMonster, index: number) => {
     const updatedState = [...currentMonsters];
@@ -117,10 +125,9 @@ export default function BattleScreen({
     const attackRoll = rollAttack(attack, defense);
     console.log("attack result:", attackRoll);
     if (!attackRoll) {
-      setHitImage(air);
-      setHitAnimation(true);
+      setHitAnimation("miss");
       updateMonster(monster, index);
-      setRound("monster");
+      setRound("character-to-monster");
       return;
     }
     const damage = getCharacterDamage(character);
@@ -129,22 +136,21 @@ export default function BattleScreen({
     console.log("protection", protection);
     const damageDone = rollDamage(damage, protection);
     console.log("damageDone", damageDone);
-    setHitImage(blood);
-    setHitAnimation(true);
-    monster.hp = Math.max(monster.hp - damage, 0);
+    setHitAnimation("hit");
+    monster.hp = Math.max(monster.hp - damageDone, 0);
     if (monster.hp === 0) {
       // TODO: check if monster is killed
       monsterKilled();
     }
     updateMonster(monster, index);
-    setRound("monster");
+    setRound("character-to-monster");
   };
   const monsterAreaClicked = (monster: IGameMonster, index: number) => {
     if (battleRound !== "character") {
       return;
     }
     // TODO: implement handling of currently selected attack/spell
-    console.log("monsterAreaClicked for ", monster.monster);
+    console.log("monsterAreaClicked for ", monster.monster, mode);
     switch (mode) {
       case "fight":
         attackMonster(monster, index);
@@ -171,15 +177,13 @@ export default function BattleScreen({
               onClick={() => monsterAreaClicked(monster, index)}
             >
               <MonsterCard monster={monster} />
-              <Zoom
-                in={animateHit}
-                style={{ transitionDelay: !animateHit ? "300ms" : "0ms" }}
-              >
-                <img src={hitImage} className="hit-image" />
-              </Zoom>
             </div>
           ))}
         </Stack>
+        <HitAnimation
+          image={animateHit}
+          onAnimationEnd={() => setHitAnimation(undefined)}
+        />
         <Box sx={{ backgroundColor: blueGrey[500] }}>
           <Typography>TODO: active effects, spells, etc. icons</Typography>
         </Box>

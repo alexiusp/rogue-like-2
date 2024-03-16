@@ -18,10 +18,10 @@
   flex-direction: column;
 }
 
-.battle-screen .encounter .monsters .monster-area .hit-image {
+.battle-screen .encounter .hit-image {
   position: absolute;
-  top: calc(50% - 100px);
-  left: calc(50% - 100px);
-  width: 200px;
-  height: 200px;
+  top: calc(50% - 200px);
+  left: calc(50% - 200px);
+  width: 400px;
+  height: 400px;
 }
