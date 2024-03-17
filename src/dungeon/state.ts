@@ -185,7 +185,7 @@ sample({
 });
 
 // current encounter
-const $encounter = $currentMapTile.map((tile) => tile.encounter);
+const $encounter = $currentMapTile.map((tile) => tile.encounter ?? null);
 
 const startMonsterBattle = createEvent();
 startMonsterBattle.watch(() => console.info("startMonsterBattle"));
@@ -265,7 +265,7 @@ export const characterAttacksMonsterFx = createEffect<
 );
 
 // event to fire from UI
-const monsterAttacked = createEvent<number>();
+export const monsterAttacked = createEvent<number>();
 // collect data from stores to calculate an attack
 sample({
   clock: monsterAttacked,
@@ -387,10 +387,6 @@ export const monsterAttackCharacterFx = createEffect<
     new Promise((resolve, reject) => {
       const { character, monster } = params;
       console.log("monsterAttackCharacterFx", character, monster);
-
-      if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
-        reject();
-      }
       const attack = getMonsterAttack(monster);
       const defense = getCharacterDefense(character);
       console.log("attack", attack, "defense", defense);
@@ -398,6 +394,7 @@ export const monsterAttackCharacterFx = createEffect<
       console.log("attack result:", attackRoll);
       if (!attackRoll) {
         reject();
+        return;
       }
       const damage = getMonsterDamage(monster);
       console.log("damage", damage);
@@ -458,10 +455,79 @@ sample({
   },
 });
 
-// TODO: trigger changes on single monster attack (hit animation, transition)
-// TODO: update state on done and fail of the attack effect
-// TODO: trigger changes of monster cursor when transition effect is done
+// set animation state to result of an attack
+$hitResult.on(monsterAttackCharacterFx.done, () => "hit");
+$hitResult.on(monsterAttackCharacterFx.fail, () => "miss");
+
+// TODO: fix this update does not work!!!
+// update character state after successfull attack
+$character.on(monsterAttackCharacterFx.done, (_, params) => {
+  console.log("monsterAttackCharacterFx.done update character", _, params);
+  return params.result;
+});
+
+// monster attack completed - start transition to next monster
+sample({
+  clock: monsterAttackCharacterFx.finally,
+  target: monsterAttackTransitionFx,
+});
+
+// switch to next monster if any
+sample({
+  clock: monsterAttackTransitionFx.done,
+  target: $monstersCursor,
+  source: { index: $monstersCursor, length: $monstersLength },
+  filter: (src) => {
+    const { index, length } = src;
+    return (index ?? 0) < length - 2;
+  },
+  fn: (src) => (src.index ?? 0) + 1,
+});
+
+// reset hit result animation
+$hitResult.reset(monsterAttackTransitionFx.done);
+
+// trigger transition to character when all monsters attacked
+sample({
+  clock: monsterAttackTransitionFx.done,
+  target: $monstersCursor,
+  source: { index: $monstersCursor, length: $monstersLength },
+  filter: (src) => {
+    const { index, length } = src;
+    return (index ?? 0) < length - 2;
+  },
+  fn: (src) => (src.index ?? 0) + 1,
+});
+
+const monsterToCharacterTransition = createEvent();
+monsterToCharacterTransition.watch(() =>
+  console.info("monsterToCharacterTransition"),
+);
+
+sample({
+  clock: monsterAttackTransitionFx.finally,
+  target: monsterToCharacterTransition,
+  source: { index: $monstersCursor, length: $monstersLength },
+  filter: (src) => {
+    const { index, length } = src;
+    return (index ?? 0) === length - 1;
+  },
+});
+// switch round stage after attack is done
+$battleRound.on(monsterToCharacterTransition, () => "monster-to-character");
 
 const monsterToCharacterTransitionFx = createEffect(delay);
-$battleRound.on(monsterToCharacterTransitionFx.done, () => "character");
-$hitResult.reset(monsterToCharacterTransitionFx.done);
+
+// trigger monster to character transition effect when round triggered
+sample({
+  clock: monsterToCharacterTransition,
+  target: monsterToCharacterTransitionFx,
+});
+
+// start new character round when transition finished
+sample({
+  clock: monsterToCharacterTransitionFx.done,
+  target: startCharacterRound,
+});
+
+// TODO: detect end of the battle and exit

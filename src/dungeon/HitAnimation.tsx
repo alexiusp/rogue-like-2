@@ -1,26 +1,11 @@
 import { Zoom } from "@mui/material";
-import { useEffect } from "react";
+import { useUnit } from "effector-react";
 import blood from "../assets/tiles/blood_splatter.png";
 import air from "../assets/tiles/spore_cloud.png";
+import { $hitResult } from "./state";
 
-interface IHitAnimationProps {
-  image?: "hit" | "miss";
-  onAnimationEnd: () => void;
-}
-
-export default function HitAnimation({
-  image,
-  onAnimationEnd,
-}: IHitAnimationProps) {
-  useEffect(() => {
-    if (!image) {
-      return;
-    }
-    const timeout = setTimeout(() => {
-      onAnimationEnd();
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [image, onAnimationEnd]);
+export default function HitAnimation() {
+  const image = useUnit($hitResult);
   if (!image) {
     return null;
   }
