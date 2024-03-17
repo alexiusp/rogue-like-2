@@ -46,10 +46,10 @@ type TBattleRound =
   | "monster-to-character";
 
 export default function BattleScreen({
-  chest,
-  effects,
+  //chest,
+  //effects,
   monsters,
-  terrain,
+  //terrain,
 }: IBattleScreenProps) {
   const character = useUnit($character);
   const [currentMonsters, updateCurrentMonsters] = useState(monsters);
