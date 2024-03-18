@@ -69,12 +69,14 @@ export interface IGameMonster {
 }
 
 function generateMonsterHp(baseHp: number, level: number, stats: TStatsValues) {
-  const baseValue = getRandomInt(20, 10) + baseHp;
+  const baseValue = getRandomInt(baseHp, 10);
   const strBonus = (stats.strength - 14) / 2;
   const endBonus = stats.endurance - 10;
-  const finalHp = Math.round(
-    baseValue * (1 + level / 10) + strBonus + endBonus,
+  const finalHp = Math.max(
+    1,
+    Math.round(baseValue * (1 + level / 10) + strBonus + endBonus),
   );
+  console.log("generated monster hp:", baseValue, finalHp);
   return finalHp;
 }
 

@@ -16,7 +16,7 @@ const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
       charisma: 0,
       dexterity: 4,
     },
-    baseHp: 1,
+    baseHp: 15,
     baseMp: 0,
     specials: [],
     items: ["Bronze Dagger", null, null, null],

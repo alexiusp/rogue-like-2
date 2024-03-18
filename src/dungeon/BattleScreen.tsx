@@ -10,7 +10,7 @@ import ActionButton from "./ActionButton";
 import "./BattleScreen.css";
 import HitAnimation from "./HitAnimation";
 import { ETerrain, ETerrainEffect, IChest, TBattleMode } from "./model";
-import { $battleRound, monsterAttacked } from "./state";
+import { $battleRound, $monstersCursor, monsterAttacked } from "./state";
 
 interface IBattleScreenProps {
   chest?: IChest;
@@ -26,12 +26,13 @@ export default function BattleScreen({
   //terrain,
 }: IBattleScreenProps) {
   const battleRound = useUnit($battleRound);
+  const activeMonsterIndex = useUnit($monstersCursor);
   const [mode, setMode] = useState<TBattleMode>();
   const monsterAreaClicked = (monster: IGameMonster, index: number) => {
     if (battleRound !== "character") {
       return;
     }
-    // TODO: implement handling of currently selected attack/spell
+    // TODO: implement handling of currently selected attack/item/spell
     console.log("monsterAreaClicked for ", monster.monster, mode);
     switch (mode) {
       case "fight":
@@ -58,7 +59,10 @@ export default function BattleScreen({
               key={`${index}-${monster.monster}`}
               onClick={() => monsterAreaClicked(monster, index)}
             >
-              <MonsterCard monster={monster} />
+              <MonsterCard
+                active={index === activeMonsterIndex}
+                monster={monster}
+              />
             </div>
           ))}
         </Stack>

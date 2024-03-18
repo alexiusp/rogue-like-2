@@ -6,9 +6,10 @@ import { EAggroMode, IGameMonster } from "./model";
 
 interface IMonsterCardProps {
   monster: IGameMonster;
+  active: boolean;
 }
 
-export default function MonsterCard({ monster }: IMonsterCardProps) {
+export default function MonsterCard({ active, monster }: IMonsterCardProps) {
   const { hp, hpMax, aggro, monster: monsterName } = monster;
   const monsterData = GlobalMonsterCatalogue[monsterName];
   const monsterCardClasses = ["monster"];
@@ -28,7 +29,10 @@ export default function MonsterCard({ monster }: IMonsterCardProps) {
   }
   return (
     <Grow in={true}>
-      <Card className={monsterCardClasses.join(" ")} variant="outlined">
+      <Card
+        variant={active ? "elevation" : "outlined"}
+        className={monsterCardClasses.join(" ")}
+      >
         <CardMedia
           className="picture"
           image={`/src/assets/monsters/${monsterData.picture}`}
