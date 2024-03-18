@@ -7,6 +7,7 @@ import {
   EGender,
   ICharacterState,
   createNewCharacter,
+  findCharacterGuildIndex,
   getCharacterGuild,
   rerollStat,
 } from "./models";
@@ -195,7 +196,6 @@ export const $characterCurrentXp = $character.map((character) => {
   )?.xp;
   return currentXp || 0;
 });
-
 export const $characterXpToNextLevel = $character.map((character) => {
   const currentGuildId = character.guild;
   const currentGuild = getCharacterGuild(currentGuildId, character);
@@ -204,6 +204,27 @@ export const $characterXpToNextLevel = $character.map((character) => {
   const xpToNextLevel =
     GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
   return xpToNextLevel - currentXp;
+});
+export const xpGainedByCharacter = createEvent<number>();
+$character.on(xpGainedByCharacter, (character, xpGained) => {
+  const currentGuildId = character.guild;
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  if (!currentGuild) {
+    throw Error("Current guild information not found on character!");
+  }
+  const currentXp = currentGuild.xp;
+  const currentGuildLevel = currentGuild.level;
+  const xpToNextLevel =
+    GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
+  const newXpValue = Math.min(xpToNextLevel, currentXp + xpGained);
+  currentGuild.xp = newXpValue;
+  const guildIndex = findCharacterGuildIndex(currentGuildId, character);
+  const guilds = [...character.guilds];
+  guilds[guildIndex] = currentGuild;
+  return {
+    ...character,
+    guilds,
+  };
 });
 
 export const $characterInventory = $character.map(

@@ -5,9 +5,15 @@ import "./Screen.css";
 interface IScreenProps extends PropsWithChildren {
   header?: ReactNode;
   sx?: SxProps;
+  paperSx?: SxProps;
 }
 
-export default function Screen({ children, header, sx }: IScreenProps) {
+export default function Screen({
+  children,
+  header,
+  sx,
+  paperSx,
+}: IScreenProps) {
   const appBar = header ? (
     <AppBar position="absolute" className="screen-header">
       <Container maxWidth="md">
@@ -15,17 +21,22 @@ export default function Screen({ children, header, sx }: IScreenProps) {
       </Container>
     </AppBar>
   ) : null;
-  const mergedStyles: SxProps = {
+  const mergedBoxStyles: SxProps = {
     display: "flex",
     flexDirection: "column",
     ...sx,
   };
   const headerPadding = header ? <Toolbar></Toolbar> : null;
+  const mergedPaperStyles: SxProps = {
+    padding: 2,
+    mt: 1,
+    ...paperSx,
+  };
   return (
-    <Box sx={mergedStyles}>
+    <Box sx={mergedBoxStyles}>
       {appBar}
       {headerPadding}
-      <Paper sx={{ padding: 2, mt: 1 }}>{children}</Paper>
+      <Paper sx={mergedPaperStyles}>{children}</Paper>
     </Box>
   );
 }

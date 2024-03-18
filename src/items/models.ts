@@ -33,6 +33,8 @@ interface IItemAttributes {
 export interface IBaseItem {
   // unique name of the item
   name: string;
+  // picture of the item
+  picture: string;
   // generic name for item when not identified
   kind: TItemKind;
   // item material (price/id calculations will depend on this)
@@ -71,7 +73,7 @@ function isBaseItemEquippable(item: TBaseItem): item is IEquippableBaseItem {
   return !!(item as IEquippableBaseItem).slot;
 }
 
-type IdLevel = 0 | 1 | 2; //0 - unidentified, 1 - partially identified, 2 - fully identified
+export type IdLevel = 0 | 1 | 2; //0 - unidentified, 1 - partially identified, 2 - fully identified
 
 // additional properties of a particular item generated in the game
 export interface IGameItem {

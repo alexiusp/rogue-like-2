@@ -7,7 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 import { ReactNode } from "react";
-import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
+import ItemIcon from "./ItemIcon";
+import ItemName from "./ItemName";
 import { TGameItem } from "./models";
 
 interface IItemDetailsDialogProps {
@@ -26,14 +27,17 @@ export default function ItemDetailsDialog({
   }
   const idLevel = item.idLevel;
   const itemName = item.item;
-  const { name, kind } = GlobalItemsCatalogue[itemName];
-  const itemNameToDisplay = idLevel === 2 ? name : kind;
   return (
     <Dialog onClose={onClose} open={true}>
-      <DialogTitle>{itemNameToDisplay}</DialogTitle>
+      <DialogTitle>
+        <ItemName idLevel={idLevel} item={itemName} />
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
-          <Typography>{itemNameToDisplay}</Typography>
+          <Typography>
+            <ItemName idLevel={idLevel} item={itemName} />
+          </Typography>
+          <ItemIcon item={itemName} />
           <Typography>
             TODO: implement more detailed view for the item
           </Typography>

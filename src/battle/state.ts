@@ -24,7 +24,7 @@ import {
   IMonsterEncounter,
   IMonsterMapTile,
 } from "../dungeon/types";
-import { IGameItem } from "../items/models";
+import { TGameItem } from "../items/models";
 import {
   EAggroMode,
   IGameMonster,
@@ -38,7 +38,7 @@ import {
   getMonsterPV,
 } from "../monsters/model";
 import { forward } from "../navigation";
-import { TBattleRound, THitResult } from "./model";
+import { TBattleRound, THitResult } from "./types";
 
 const startCharacterRound = createEvent();
 startCharacterRound.watch(() => console.info("startCharacterRound"));
@@ -388,7 +388,7 @@ sample({ clock: battleEnded, target: forward, fn: () => "reward" });
 // TODO start reward calculation
 export const $encounterMoneyReward = createStore(0);
 $encounterMoneyReward.watch((_) => console.log("$encounterMoneyReward:", _));
-export const $encounterItemsReward = createStore<IGameItem[]>([]);
+export const $encounterItemsReward = createStore<TGameItem[]>([]);
 $encounterItemsReward.watch((_) => console.log("$encounterItemsReward:", _));
 export const $encounterXpReward = createStore(0);
 $encounterXpReward.watch((_) => console.log("$encounterXpReward:", _));

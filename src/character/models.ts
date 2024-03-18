@@ -103,6 +103,13 @@ export function getCharacterGuild(guild: EGuild, character: ICharacterState) {
   return character.guilds.find((g) => g.guild === guild);
 }
 
+export function findCharacterGuildIndex(
+  guild: EGuild,
+  character: ICharacterState,
+) {
+  return character.guilds.findIndex((g) => g.guild === guild);
+}
+
 export function getCharacterGuildXp(guild: EGuild, character: ICharacterState) {
   const guildInfo = getCharacterGuild(guild, character);
   return guildInfo?.xp ?? 0;

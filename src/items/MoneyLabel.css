@@ -1,0 +1,11 @@
+.money-label {
+  display: inline-flex;
+  flex-direction: row;
+}
+.money-label img {
+  width: 32px;
+  height: 32px;
+}
+.money-label span {
+  line-height: 32px;
+}

@@ -10,8 +10,8 @@ import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
 import HitAnimation from "./HitAnimation";
-import { TBattleMode } from "./model";
 import { $battleRound, $monstersCursor, monsterAttacked } from "./state";
+import { TBattleMode } from "./types";
 
 interface IBattleScreenProps {
   chest?: IChest;

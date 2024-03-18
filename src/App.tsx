@@ -15,7 +15,7 @@ import StartScreen from "./start/StartScreen";
 
 function App() {
   return (
-    <Container maxWidth="md">
+    <Container component="main" maxWidth="md">
       <Route route="menu">
         <MenuScreen />
       </Route>

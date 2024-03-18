@@ -1,0 +1,11 @@
+.xp-label {
+  display: inline-flex;
+  flex-direction: row;
+}
+.xp-label img {
+  width: 32px;
+  height: 32px;
+}
+.xp-label span {
+  line-height: 32px;
+}

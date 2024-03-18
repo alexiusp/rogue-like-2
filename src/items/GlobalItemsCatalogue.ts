@@ -5,6 +5,7 @@ import { TBaseItem } from "./models";
 const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   "Bronze Dagger": {
     name: "Bronze Dagger",
+    picture: "bronze_dagger.png",
     kind: "dagger",
     material: "Bronze",
     slot: "weapon",
@@ -27,6 +28,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Healing Potion": {
     name: "Healing Potion",
+    picture: "potionRed.png",
     kind: "potion",
     spell: "heal",
     aligned: false,
