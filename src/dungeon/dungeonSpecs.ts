@@ -1,5 +1,5 @@
 import { getNullBag } from "../common/random";
-import { EEncounterType, IDungeonLevelSpec } from "./model";
+import { EEncounterType, IDungeonLevelSpec } from "./types";
 
 const FirstLevel: IDungeonLevelSpec = {
   level: 1,

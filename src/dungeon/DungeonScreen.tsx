@@ -4,8 +4,9 @@ import { useUnit } from "effector-react";
 import Screen from "../layout/Screen";
 import "./Dungeon.css";
 import DungeonTile from "./DungeonTile";
-import { IMapCoordinates, isAdjacent } from "./model";
+import { isAdjacent } from "./model";
 import { $characterPosition, $dungeonLevelMap, moveCharacter } from "./state";
+import { IMapCoordinates } from "./types";
 
 export default function DungeonScreen() {
   const dungeonMap = useUnit($dungeonLevelMap);

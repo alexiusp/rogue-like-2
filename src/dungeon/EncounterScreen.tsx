@@ -2,8 +2,8 @@ import { Box } from "@mui/material";
 import { useUnit } from "effector-react";
 import { ReactNode } from "react";
 import BattleScreen from "../battle/BattleScreen";
-import { EEncounterType } from "./model";
 import { $currentMapTile } from "./state";
+import { EEncounterType } from "./types";
 
 export default function EncounterScreen() {
   const { effects, terrain, encounter } = useUnit($currentMapTile);

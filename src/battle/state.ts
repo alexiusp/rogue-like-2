@@ -8,9 +8,6 @@ import {
 } from "../character/models";
 import { $character } from "../character/state";
 import {
-  EEncounterType,
-  IMonsterEncounter,
-  IMonsterMapTile,
   getTileIndexByCoordinates,
   rollAttack,
   rollDamage,
@@ -23,9 +20,18 @@ import {
   startMonsterBattle,
 } from "../dungeon/state";
 import {
+  EEncounterType,
+  IMonsterEncounter,
+  IMonsterMapTile,
+} from "../dungeon/types";
+import { IGameItem } from "../items/models";
+import {
   EAggroMode,
   IGameMonster,
   areAllMonstersDead,
+  generateMonstersItemsReward,
+  generateMonstersMoneyReward,
+  generateMonstersXpReward,
   getMonsterAttack,
   getMonsterDV,
   getMonsterDamage,
@@ -361,7 +367,7 @@ sample({
   target: startCharacterRound,
 });
 
-export const battleEnded = createEvent();
+export const battleEnded = createEvent<IGameMonster[]>();
 battleEnded.watch(() => console.info("battleEnded"));
 // detect end of the battle after character round
 // TODO: add similar detection after monsters round in case they are poisoned etc.
@@ -371,9 +377,28 @@ sample({
     const result = clock.status === "done" ? clock.result : clock.error;
     return areAllMonstersDead(result);
   },
+  fn(clock) {
+    const result = clock.status === "done" ? clock.result : clock.error;
+    return result;
+  },
   target: battleEnded,
 });
 sample({ clock: battleEnded, target: forward, fn: () => "reward" });
 
 // TODO start reward calculation
-//const $encounterReward = createStore();
+export const $encounterMoneyReward = createStore(0);
+$encounterMoneyReward.watch((_) => console.log("$encounterMoneyReward:", _));
+export const $encounterItemsReward = createStore<IGameItem[]>([]);
+$encounterItemsReward.watch((_) => console.log("$encounterItemsReward:", _));
+export const $encounterXpReward = createStore(0);
+$encounterXpReward.watch((_) => console.log("$encounterXpReward:", _));
+
+$encounterMoneyReward.on(battleEnded, (_, monsters) =>
+  generateMonstersMoneyReward(monsters),
+);
+$encounterItemsReward.on(battleEnded, (_, monsters) =>
+  generateMonstersItemsReward(monsters),
+);
+$encounterXpReward.on(battleEnded, (_, monsters) =>
+  generateMonstersXpReward(monsters),
+);

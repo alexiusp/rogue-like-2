@@ -3,14 +3,11 @@ import { loadData, saveData } from "../common/db";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
-  EEncounterType,
-  ETerrain,
-  IMapCoordinates,
-  TMapTile,
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
 } from "./model";
+import { EEncounterType, ETerrain, IMapCoordinates, TMapTile } from "./types";
 
 type TDungeonState = {
   [level: number]: Array<TMapTile>;

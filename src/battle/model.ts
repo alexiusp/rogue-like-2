@@ -5,3 +5,5 @@ export type TBattleRound =
   | "monster-to-character";
 
 export type THitResult = "hit" | "miss";
+
+export type TBattleMode = "defend" | "fight" | "flee" | "items" | "spells";

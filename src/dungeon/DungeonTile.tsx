@@ -12,7 +12,7 @@ import {
   ETerrainEffect,
   IMapCoordinates,
   TMapTile,
-} from "./model";
+} from "./types";
 
 interface IDungeonTileProps {
   character?: boolean;

@@ -5,16 +5,12 @@ import { useState } from "react";
 import bg from "../assets/dungeon.jpg";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ActionButton from "../components/ActionButton/ActionButton";
-import {
-  ETerrain,
-  ETerrainEffect,
-  IChest,
-  TBattleMode,
-} from "../dungeon/model";
+import { ETerrain, ETerrainEffect, IChest } from "../dungeon/types";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
 import HitAnimation from "./HitAnimation";
+import { TBattleMode } from "./model";
 import { $battleRound, $monstersCursor, monsterAttacked } from "./state";
 
 interface IBattleScreenProps {
