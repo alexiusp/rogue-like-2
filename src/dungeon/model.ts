@@ -1,4 +1,4 @@
-import { RandomBag, getRandomInt, rollDiceCheck } from "../common/random";
+import { RandomBag } from "../common/random";
 import { generateNewMonsterByName } from "../monsters/model";
 import DungeonSpec from "./dungeonSpecs";
 import getMonstersForLevel from "./encounterSpecs";
@@ -127,7 +127,10 @@ export function generateDungeonLevel(level: number): Array<TMapTile> {
   return tiles;
 }
 
-export function isAdjacent(pos1: IMapCoordinates, pos2: IMapCoordinates) {
+export function areAdjacentCoordinates(
+  pos1: IMapCoordinates,
+  pos2: IMapCoordinates,
+) {
   if (pos1.x === pos2.x) {
     return pos1.y === pos2.y - 1 || pos1.y === pos2.y + 1;
   }
@@ -135,6 +138,13 @@ export function isAdjacent(pos1: IMapCoordinates, pos2: IMapCoordinates) {
     return pos1.x === pos2.x - 1 || pos1.x === pos2.x + 1;
   }
   return false;
+}
+
+export function areSameCoordinates(
+  pos1: IMapCoordinates,
+  pos2: IMapCoordinates,
+) {
+  return pos1.x === pos2.x && pos1.y === pos2.y;
 }
 
 export function getTileIndexByCoordinates(
@@ -158,12 +168,6 @@ export function getMapTileByCoordinates(
   return levelMap[tileIndex];
 }
 
-export function rollAttack(attackValue: number, defenseValue: number) {
-  const rollValue = 50 - attackValue + defenseValue;
-  return rollDiceCheck(rollValue, "1D100");
-}
-
-export function rollDamage(damageValue: number, protectionValue: number) {
-  // TODO: we can change min damage to 0 when we have a special UI to demonstarte it
-  return Math.max(1, Math.abs(getRandomInt(damageValue, 1) - protectionValue));
-}
+export const isStairsDown = (terrain: ETerrain) =>
+  terrain === ETerrain.StairsDown;
+export const isStairsUp = (terrain: ETerrain) => terrain === ETerrain.StairsUp;

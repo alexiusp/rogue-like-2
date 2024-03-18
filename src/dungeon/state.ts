@@ -6,6 +6,8 @@ import {
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
+  isStairsDown,
+  isStairsUp,
 } from "./model";
 import { EEncounterType, ETerrain, IMapCoordinates, TMapTile } from "./types";
 
@@ -170,3 +172,10 @@ sample({
   filter: (encounter) =>
     !!encounter && encounter.type === EEncounterType.Monster,
 });
+
+export const $isOnStairsUp = $currentMapTile.map((tile) =>
+  isStairsUp(tile.terrain),
+);
+export const $isOnStairsDown = $currentMapTile.map((tile) =>
+  isStairsDown(tile.terrain),
+);

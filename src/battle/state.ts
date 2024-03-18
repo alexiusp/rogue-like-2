@@ -7,11 +7,7 @@ import {
   getCharacterProtection,
 } from "../character/models";
 import { $character } from "../character/state";
-import {
-  getTileIndexByCoordinates,
-  rollAttack,
-  rollDamage,
-} from "../dungeon/model";
+import { getTileIndexByCoordinates } from "../dungeon/model";
 import {
   $currentLevel,
   $currentMapTile,
@@ -38,6 +34,7 @@ import {
   getMonsterPV,
 } from "../monsters/model";
 import { forward } from "../navigation";
+import { rollAttack, rollDamage } from "./model";
 import { TBattleRound, THitResult } from "./types";
 
 const startCharacterRound = createEvent();

@@ -8,13 +8,13 @@ import { Button, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
 import bg from "../assets/view-castle-with-nature-landscape.jpg";
-import { characterLoaded } from "../character/state";
+import { characterLoaded, characterSaved } from "../character/state";
 import { dungeonLoaded, startDungeonLevel } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";
 import CityStatusBar from "./CityStatusBar";
-import { bankStateLoaded } from "./bank/state";
-import { storeStateLoaded } from "./generalStore/state";
+import { bankStateLoaded, bankStateSaved } from "./bank/state";
+import { storeStateLoaded, storeStateSaved } from "./generalStore/state";
 
 export default function CityScreen() {
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -29,6 +29,9 @@ export default function CityScreen() {
     setDataLoaded(true);
   }, [dataLoaded, setDataLoaded]);
   const openDungeon = () => {
+    characterSaved();
+    bankStateSaved();
+    storeStateSaved();
     navigate("dungeon");
     startDungeonLevel(1);
   };
