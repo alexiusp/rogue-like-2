@@ -1,3 +1,5 @@
+import { getRandomInt } from "./random";
+
 export enum EAlignment {
   Good,
   Neutral,
@@ -23,4 +25,8 @@ export function getAlignmentLong(alignment?: EAlignment): string {
   return typeof alignment !== "undefined"
     ? AlignmentStrings[alignment][1]
     : "Unknown";
+}
+
+export function generateRandomAlignment() {
+  return getRandomInt(EAlignment.Evil) as EAlignment;
 }

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useUnit } from "effector-react";
 import { ReactNode } from "react";
-import BattleScreen from "./BattleScreen";
+import BattleScreen from "../battle/BattleScreen";
 import { EEncounterType } from "./model";
 import { $currentMapTile } from "./state";
 

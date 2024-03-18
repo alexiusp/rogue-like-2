@@ -1,5 +1,5 @@
 import { EAlignment } from "../common/alignment";
-import { getRandomInt } from "../common/random";
+import { RandomBag, getRandomInt } from "../common/random";
 import {
   TStatsValues,
   getStatsAttackModifier,
@@ -7,6 +7,7 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import { TGameItem, generateRandomItem } from "../items/models";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
@@ -145,4 +146,46 @@ export function getMonsterDamage(monster: IGameMonster) {
     `getMonsterDamage. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
   );
   return Math.round(baseValue + monsterDetails.level * statsModifier);
+}
+
+export function areAllMonstersDead(monsters: IGameMonster[]) {
+  return monsters.every((m) => m.hp === 0);
+}
+
+export function generateMonstersMoneyReward(monsters: IGameMonster[]) {
+  let total = 0;
+  for (const monster of monsters) {
+    const monsterData = GlobalMonsterCatalogue[monster.monster];
+    const moneyBag = new RandomBag(monsterData.money);
+    const reward = moneyBag.getRandomItem();
+    if (reward !== null) {
+      total += reward;
+    }
+  }
+  return total;
+}
+
+export function generateMonstersItemsReward(monsters: IGameMonster[]) {
+  const items: TGameItem[] = [];
+  monsters.forEach((monster) => {
+    const monsterData = GlobalMonsterCatalogue[monster.monster];
+    const moneyBag = new RandomBag(monsterData.items);
+    const reward = moneyBag.getRandomItem();
+    if (reward !== null) {
+      const item = generateRandomItem(reward);
+      items.push(item);
+    }
+  });
+  return items;
+}
+
+function getMonsterXpReward(monster: IGameMonster) {
+  const hp = monster.hpMax;
+  const monsterData = GlobalMonsterCatalogue[monster.monster];
+  return monsterData.level * 10 + hp;
+}
+
+export function generateMonstersXpReward(monsters: IGameMonster[]) {
+  const total = monsters.reduce((acc, m) => acc + getMonsterXpReward(m), 0);
+  return total;
 }

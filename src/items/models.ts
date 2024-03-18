@@ -1,4 +1,4 @@
-import { EAlignment } from "../common/alignment";
+import { EAlignment, generateRandomAlignment } from "../common/alignment";
 import { TGuildValues } from "../common/guilds";
 import { rollDiceCheck } from "../common/random";
 import { TStatsValues, getStatBonus } from "../common/stats";
@@ -66,6 +66,10 @@ export interface IUsableBaseItem extends IBaseItem {
 }
 
 export type TBaseItem = IUsableBaseItem | IEquippableBaseItem;
+
+function isBaseItemEquippable(item: TBaseItem): item is IEquippableBaseItem {
+  return !!(item as IEquippableBaseItem).slot;
+}
 
 type IdLevel = 0 | 1 | 2; //0 - unidentified, 1 - partially identified, 2 - fully identified
 
@@ -258,4 +262,29 @@ export function getEquippedItemsProtection(items: TGameItem[]) {
     }
     return sum;
   }, 0);
+}
+
+export function generateRandomItem(itemName: string): TGameItem {
+  const baseItem = GlobalItemsCatalogue[itemName];
+  const common: IGameItem = {
+    idLevel: 0,
+    item: itemName,
+  };
+  if (baseItem.aligned) {
+    common.alignment = generateRandomAlignment();
+  }
+  if (isBaseItemEquippable(baseItem)) {
+    const item: IEquipmentGameItem = {
+      ...common,
+      isEquipped: false,
+      kind: "equipable",
+    };
+    return item;
+  }
+  const item: IUsableGameItem = {
+    ...common,
+    kind: "usable",
+    usesLeft: baseItem.uses,
+  };
+  return item;
 }

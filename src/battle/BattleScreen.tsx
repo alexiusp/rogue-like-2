@@ -4,12 +4,17 @@ import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.jpg";
 import HealthStatusProgress from "../character/HealthStatusProgress";
+import ActionButton from "../components/ActionButton/ActionButton";
+import {
+  ETerrain,
+  ETerrainEffect,
+  IChest,
+  TBattleMode,
+} from "../dungeon/model";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
-import ActionButton from "./ActionButton";
 import "./BattleScreen.css";
 import HitAnimation from "./HitAnimation";
-import { ETerrain, ETerrainEffect, IChest, TBattleMode } from "./model";
 import { $battleRound, $monstersCursor, monsterAttacked } from "./state";
 
 interface IBattleScreenProps {

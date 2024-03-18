@@ -1,6 +1,6 @@
 import { IconButton } from "@mui/material";
+import { TBattleMode } from "../../dungeon/model";
 import "./ActionButton.css";
-import { TBattleMode } from "./model";
 
 interface IActionButtonProps {
   action: TBattleMode;
