@@ -6,12 +6,13 @@ import { $hitResult } from "./state";
 
 export default function HitAnimation() {
   const image = useUnit($hitResult);
-  if (!image) {
+  const show = !!image;
+  if (!show) {
     return null;
   }
   const animtaionImg = image === "hit" ? blood : air;
   return (
-    <Zoom in={!!image} style={{ transitionDelay: !image ? "300ms" : "0ms" }}>
+    <Zoom in={show}>
       <img src={animtaionImg} className="hit-image" />
     </Zoom>
   );

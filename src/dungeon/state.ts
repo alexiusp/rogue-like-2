@@ -220,6 +220,7 @@ type THitResult = "hit" | "miss";
 export const $hitResult = createStore<THitResult | null>(null);
 $hitResult.reset(startMonsterBattle);
 $hitResult.reset(startCharacterRound);
+$hitResult.watch((hitResult) => console.info("hitResult:", hitResult));
 
 type TMonsterAttackedParams = {
   mapTile: IMonsterMapTile;
@@ -257,6 +258,7 @@ export const characterAttacksMonsterFx = createEffect<
       const protection = getMonsterPV(monster);
       console.log("protection", protection);
       const damageDone = rollDamage(damage, protection);
+      // TODO: for 0 damage done we could have a different animation?
       console.log("damageDone", damageDone);
       monster.hp = Math.max(monster.hp - damageDone, 0);
       monsters[index] = monster;
@@ -320,8 +322,9 @@ sample({
   },
 });
 
+const BATTLE_ROUND_DELAY_MS = 1000;
 function delay() {
-  return new Promise((resolve) => setTimeout(resolve, 500));
+  return new Promise((resolve) => setTimeout(resolve, BATTLE_ROUND_DELAY_MS));
 }
 
 const characterToMonsterTransitionFx = createEffect(delay);
@@ -401,6 +404,7 @@ export const monsterAttackCharacterFx = createEffect<
       const protection = getCharacterProtection(character);
       console.log("protection", protection);
       const damageDone = rollDamage(damage, protection);
+      // TODO: for 0 damage done we could have a different animation?
       console.log("damageDone", damageDone);
       const hp = Math.max(character.hp - damageDone, 0);
       character.hp = hp;
@@ -459,11 +463,12 @@ sample({
 $hitResult.on(monsterAttackCharacterFx.done, () => "hit");
 $hitResult.on(monsterAttackCharacterFx.fail, () => "miss");
 
-// TODO: fix this update does not work!!!
 // update character state after successfull attack
 $character.on(monsterAttackCharacterFx.done, (_, params) => {
-  console.log("monsterAttackCharacterFx.done update character", _, params);
-  return params.result;
+  return {
+    ..._,
+    ...params.result,
+  };
 });
 
 // monster attack completed - start transition to next monster
