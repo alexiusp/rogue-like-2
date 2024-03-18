@@ -5,6 +5,7 @@ import GuildsScreen from "./city/GuildsScreen";
 import TavernScreen from "./city/TavernScreen";
 import BankScreen from "./city/bank/BankScreen";
 import GeneralStoreScreen from "./city/generalStore/GeneralStoreScreen";
+import AwardScreen from "./dungeon/AwardScreen";
 import DungeonScreen from "./dungeon/DungeonScreen";
 import EncounterScreen from "./dungeon/EncounterScreen";
 import { Route } from "./navigation";
@@ -47,6 +48,9 @@ function App() {
       </Route>
       <Route route="encounter">
         <EncounterScreen />
+      </Route>
+      <Route route="award">
+        <AwardScreen />
       </Route>
     </Container>
   );

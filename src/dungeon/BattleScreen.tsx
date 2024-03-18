@@ -52,7 +52,7 @@ export default function BattleScreen({
           backgroundImage: `url(${bg})`,
         }}
       >
-        <Stack className="monsters" direction="row">
+        <Stack spacing={0.5} className="monsters" direction="row">
           {monsters.map((monster, index) => (
             <div
               className="monster-area"
