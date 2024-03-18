@@ -99,7 +99,8 @@ export const itemsAreEqual =
   (item: V) => {
     const nameMatch = item.item === itemToCompare.item;
     const alignMatch = item.alignment === itemToCompare.alignment;
-    if (!nameMatch || !alignMatch) {
+    const idMatch = item.idLevel === itemToCompare.idLevel;
+    if (!nameMatch || !alignMatch || !idMatch) {
       return false;
     }
     if (itemToCompare.kind === "usable" && item.kind === "usable") {

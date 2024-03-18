@@ -313,3 +313,12 @@ $character.on(characterDroppedAnItem, (state, item) => {
     items: udpatedInventory,
   };
 });
+
+export const characterReceivedItems = createEvent<TGameItem[]>();
+$character.on(characterReceivedItems, (character, receivedItems) => {
+  const udpatedInventory = [...character.items, ...receivedItems];
+  return {
+    ...character,
+    items: udpatedInventory,
+  };
+});

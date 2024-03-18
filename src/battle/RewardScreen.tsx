@@ -2,16 +2,22 @@ import { Button, Stack, Typography } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import XpLabel from "../character/XpLabel";
-import { moneyAddedToCharacter, xpGainedByCharacter } from "../character/state";
+import {
+  characterReceivedItems,
+  moneyAddedToCharacter,
+  xpGainedByCharacter,
+} from "../character/state";
 import ItemDetailsDialog from "../items/ItemDetailsDialog";
 import ItemIcon from "../items/ItemIcon";
 import MoneyLabel from "../items/MoneyLabel";
 import { TGameItem } from "../items/models";
 import Screen from "../layout/Screen";
+import { forward } from "../navigation";
 import {
   $encounterItemsReward,
   $encounterMoneyReward,
   $encounterXpReward,
+  itemDropped,
 } from "./state";
 
 export default function RewardScreen() {
@@ -22,7 +28,14 @@ export default function RewardScreen() {
   const collectRewards = () => {
     moneyAddedToCharacter(money);
     xpGainedByCharacter(xp);
-    // TODO: add items to character
+    characterReceivedItems(items);
+    forward("dungeon");
+  };
+  const handleItemDrop = () => {
+    if (!selectedItem) {
+      return;
+    }
+    itemDropped(selectedItem);
   };
   return (
     <Screen
@@ -50,9 +63,13 @@ export default function RewardScreen() {
         </Stack>
         <Stack spacing={2} direction="row">
           {items.map((item, index) => (
-            <div key={`${index}-${item.item}`} onClick={() => selectItem(item)}>
+            <Button
+              variant="outlined"
+              key={`${index}-${item.item}`}
+              onClick={() => selectItem(item)}
+            >
               <ItemIcon item={item.item} />
-            </div>
+            </Button>
           ))}
         </Stack>
         <Button title="OK" onClick={collectRewards}>
@@ -62,6 +79,15 @@ export default function RewardScreen() {
       <ItemDetailsDialog
         item={selectedItem}
         onClose={() => selectItem(undefined)}
+        footer={
+          <>
+            {" "}
+            <Button variant="contained" onClick={handleItemDrop}>
+              drop
+            </Button>
+            <Button onClick={() => selectItem(undefined)}>OK</Button>
+          </>
+        }
       />
     </Screen>
   );
