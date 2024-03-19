@@ -1,5 +1,5 @@
 import { createEvent, createStore } from "effector";
-import { loadCharacterData, saveCharacterData } from "../../common/db";
+import { loadSharedData, saveSharedData } from "../../common/db";
 import {
   TGameItem,
   calculateShopItemPrice,
@@ -9,19 +9,19 @@ import initialStock from "./InitialStoreStock";
 import { TShopItem } from "./types";
 
 const startState = (() => {
-  const cachedData = loadCharacterData<Array<TShopItem>>("general-store");
+  const cachedData = loadSharedData<Array<TShopItem>>("general-store");
   return cachedData !== null ? cachedData : initialStock;
 })();
 export const $generalStore = createStore<Array<TShopItem>>(startState);
 
 export const storeStateSaved = createEvent();
 $generalStore.on(storeStateSaved, (state) => {
-  saveCharacterData("general-store", state);
+  saveSharedData("general-store", state);
   return state;
 });
 export const storeStateLoaded = createEvent();
 $generalStore.on(storeStateLoaded, (state) => {
-  const storeState = loadCharacterData<Array<TShopItem>>("general-store");
+  const storeState = loadSharedData<Array<TShopItem>>("general-store");
   if (!storeState) {
     return state;
   }
