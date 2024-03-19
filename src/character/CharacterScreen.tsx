@@ -16,7 +16,10 @@ import { getAlignmentLong } from "../common/alignment";
 import { EGuild } from "../guilds/types";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
+import GuildsTab from "./characterTabs/GuildsTab";
 import InventoryTab from "./characterTabs/InventoryTab";
+import ResistansesTab from "./characterTabs/ResistansesTab";
+import SpellsTab from "./characterTabs/SpellsTab";
 import {
   EGender,
   getCharacterAttack,
@@ -29,7 +32,7 @@ import { ECharacterRace } from "./races";
 import { $character, characterSaved } from "./state";
 
 type TMainTab = "char" | "guilds" | "res";
-type TSecondaryTab = "inv" | "skills" | "spells";
+type TSecondaryTab = "inv" | "buffers" | "spells";
 
 export default function CharacterScreen() {
   const [activeMainTab, toggleMainTab] = useState<TMainTab>("char");
@@ -79,8 +82,8 @@ export default function CharacterScreen() {
         </Typography>
         <Tabs value={activeMainTab} onChange={handleMainTabChange}>
           <Tab value="char" label="Character" />
-          <Tab value="guilds" label="Guilds" />
-          <Tab value="res" label="Resist." />
+          <Tab value="guilds" label="Guilds & skills" />
+          <Tab value="res" label="Resistances" />
         </Tabs>
         <List
           dense={true}
@@ -133,34 +136,15 @@ export default function CharacterScreen() {
             </ListItemText>
           </ListItem>
         </List>
-        <List
-          dense={true}
-          sx={{ display: activeMainTab === "guilds" ? "block" : "none" }}
-        >
-          <ListItem>
-            <ListItemText>Guilds info tab to be developed</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              ---
-            </ListItemText>
-          </ListItem>
-        </List>
-        <List
-          dense={true}
-          sx={{ display: activeMainTab === "res" ? "block" : "none" }}
-        >
-          <ListItem>
-            <ListItemText>Resistanses info tab to be developed</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              ---
-            </ListItemText>
-          </ListItem>
-        </List>
+        <GuildsTab show={activeMainTab === "guilds"} />
+        <ResistansesTab show={activeMainTab === "res"} />
         <Tabs value={activeSecondaryTab} onChange={handleSecondaryTabChange}>
           <Tab value="inv" label="Inventory" />
-          <Tab value="skills" label="Skills" />
           <Tab value="spells" label="Spells" />
+          <Tab value="buffers" label="Hotkeys" disabled={true} />
         </Tabs>
         <InventoryTab show={activeSecondaryTab === "inv"} />
+        <SpellsTab show={activeSecondaryTab === "spells"} />
       </Stack>
     </Screen>
   );

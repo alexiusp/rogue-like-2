@@ -46,3 +46,49 @@ export interface IGuildMaster {
   name: string;
   level: number;
 }
+
+/**
+ * TODO: Skills
+ * Passive skills:
+ * - fighting - general skill improving all fighting skills and attack/defense
+ * -- critical hit - does double damage, ignores protection
+ * -- backstab - does double damage to non-agry monster
+ * -- multiple swing - does more attacks per round
+ * - thieving - general skill improving all thief related skills
+ * -- perception - ability to detect and disarm traps, encounters, identify items
+ * -- open locks - ability to open non-magically closed chests
+ * -- poison - do a poisoned hit to a monster
+ * - magic - general skill to all spellcasters improving spell level and all related skills
+ * -- mana regeneration - slowly regenerate mana when in dungeon
+ * -- magical resistanse - resist opponents magical and special attacks
+ * -- focus - casts a spell at a higher spell level
+ * Active skills (can be used explicitly): TO BE DESIGNED
+ */
+
+export type TSkillKind = "fight" | "thief" | "magic";
+export type TFightingSkills = "fight" | "crit" | "backstab" | "swing";
+export type TThievingSkills = "thief" | "perception" | "open" | "poison";
+export type TMagicalSkills = "magic" | "regen" | "resist" | "focus";
+export type TSkillName = TFightingSkills | TThievingSkills | TMagicalSkills;
+
+export interface ISkill {
+  kind: TSkillKind;
+  skill: TSkillName;
+}
+
+export interface IFightingSkill extends ISkill {
+  kind: "fight";
+  skill: TFightingSkills;
+}
+
+export interface IThievingSkill extends ISkill {
+  kind: "thief";
+  skill: TThievingSkills;
+}
+
+export interface IMagicSkill extends ISkill {
+  kind: "magic";
+  skill: TMagicalSkills;
+}
+
+export type TSkill = IFightingSkill | IThievingSkill | IMagicSkill;
