@@ -15,7 +15,7 @@ import {
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import { getAlignmentLong } from "../common/alignment";
-import { EGuild } from "../common/guilds";
+import { EGuild } from "../guilds/types";
 import ItemDetailsDialog from "../items/ItemDetailsDialog";
 import { TGameItem } from "../items/models";
 import Screen from "../layout/Screen";

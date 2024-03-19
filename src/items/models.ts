@@ -1,7 +1,7 @@
 import { EAlignment, generateRandomAlignment } from "../common/alignment";
-import { TGuildValues } from "../common/guilds";
 import { rollDiceCheck } from "../common/random";
 import { TStatsValues, getStatBonus } from "../common/stats";
+import { TGuildValues } from "../guilds/types";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
 type TItemKind = "dagger" | "potion" | "sword" | "shield"; // TODO: add more types

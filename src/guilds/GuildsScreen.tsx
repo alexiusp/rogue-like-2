@@ -1,10 +1,14 @@
 import StoreIcon from "@mui/icons-material/Store";
 import { IconButton, Typography } from "@mui/material";
+import { useUnit } from "effector-react";
 import bg from "../assets/guilds-street.jpg";
+import { $characterCurrentGuild } from "../character/state";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
+import { EGuild } from "./types";
 
 export default function GuildsScreen() {
+  const currentGuild = useUnit($characterCurrentGuild);
   return (
     <Screen
       header={
@@ -19,7 +23,9 @@ export default function GuildsScreen() {
       }
     >
       <img src={bg} style={{ objectFit: "cover", width: "100%" }} />
-      <Typography>Guilds to be developed</Typography>
+      <Typography variant="h4" component="h2">
+        Welcome to the {EGuild[currentGuild]}&apos;s guild.
+      </Typography>
     </Screen>
   );
 }

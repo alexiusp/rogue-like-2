@@ -1,7 +1,8 @@
 import { createEvent, createStore } from "effector";
 import { EAlignment } from "../common/alignment";
 import { loadData, saveData, setSlotName } from "../common/db";
-import { EGuild, GuildXpRequirements } from "../common/guilds";
+import { getGuildXpRequirementsForLevel } from "../guilds/models";
+import { EGuild } from "../guilds/types";
 import { TGameItem, itemsAreEqual } from "../items/models";
 import {
   EGender,
@@ -210,15 +211,17 @@ export const $characterXpToNextLevel = $character.map((character) => {
   const currentGuild = getCharacterGuild(currentGuildId, character);
   const currentXp = currentGuild?.xp || 0;
   const currentGuildLevel = currentGuild?.level || 1;
-  const xpToNextLevel =
-    GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
+  const xpToNextLevel = getGuildXpRequirementsForLevel(
+    currentGuildId,
+    currentGuildLevel,
+  );
   return xpToNextLevel - currentXp;
 });
 export const $characterMaxXpForCurrentGuild = $character.map((character) => {
   const currentGuildId = character.guild;
   const currentGuild = getCharacterGuild(currentGuildId, character);
   const currentGuildLevel = currentGuild?.level || 1;
-  return GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
+  return getGuildXpRequirementsForLevel(currentGuildId, currentGuildLevel);
 });
 export const xpGainedByCharacter = createEvent<number>();
 $character.on(xpGainedByCharacter, (character, xpGained) => {
@@ -229,8 +232,10 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
   }
   const currentXp = currentGuild.xp;
   const currentGuildLevel = currentGuild.level;
-  const xpToNextLevel =
-    GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
+  const xpToNextLevel = getGuildXpRequirementsForLevel(
+    currentGuildId,
+    currentGuildLevel,
+  );
   const newXpValue = Math.min(xpToNextLevel, currentXp + xpGained);
   currentGuild.xp = newXpValue;
   const guildIndex = findCharacterGuildIndex(currentGuildId, character);
@@ -241,6 +246,9 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
     guilds,
   };
 });
+
+export const $characterCurrentGuild = $character.map((c) => c.guild);
+export const $characterGuilds = $character.map((c) => c.guilds);
 
 export const $characterInventory = $character.map(
   (character) => character.items,

@@ -1,5 +1,5 @@
-import { ZeroGuilds } from "../common/guilds";
 import { ZeroStats } from "../common/stats";
+import { ZeroGuilds } from "../guilds/models";
 import { TBaseItem } from "./models";
 
 const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {

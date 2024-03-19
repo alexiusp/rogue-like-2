@@ -1,5 +1,4 @@
 import { EAlignment } from "../common/alignment";
-import { EGuild, IGuildMembership } from "../common/guilds";
 import { getRandomInt } from "../common/random";
 import {
   TStatNames,
@@ -9,6 +8,7 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import { EGuild, IGuildMembership } from "../guilds/types";
 import {
   TGameItem,
   getEquippedItemsAttack,

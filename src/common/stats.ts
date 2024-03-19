@@ -26,12 +26,12 @@ export type TStatsValues = {
 };
 
 export const ZeroStats: TStatsValues = {
-  strength: 0,
-  intelligence: 0,
-  wisdom: 0,
-  endurance: 0,
-  charisma: 0,
-  dexterity: 0,
+  strength: 1,
+  intelligence: 1,
+  wisdom: 1,
+  endurance: 1,
+  charisma: 1,
+  dexterity: 1,
 };
 
 export function getStatBonus(statValue: number) {
