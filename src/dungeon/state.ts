@@ -1,5 +1,5 @@
 import { combine, createEvent, createStore, sample } from "effector";
-import { loadData, saveData } from "../common/db";
+import { loadCharacterData, saveCharacterData } from "../common/db";
 import { areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
@@ -17,7 +17,7 @@ type TDungeonState = {
 };
 
 const startState: TDungeonState = (() => {
-  const cachedData = loadData<TDungeonState>("dungeon");
+  const cachedData = loadCharacterData<TDungeonState>("dungeon");
   if (cachedData !== null) {
     return cachedData;
   }
@@ -29,12 +29,12 @@ const startState: TDungeonState = (() => {
 export const $dungeonState = createStore<TDungeonState>(startState);
 export const dungeonSaved = createEvent();
 $dungeonState.on(dungeonSaved, (state) => {
-  saveData("dungeon", state);
+  saveCharacterData("dungeon", state);
   return state;
 });
 export const dungeonLoaded = createEvent();
 $dungeonState.on(dungeonLoaded, (state) => {
-  const dungeonState = loadData<TDungeonState>("dungeon");
+  const dungeonState = loadCharacterData<TDungeonState>("dungeon");
   if (!dungeonState) {
     return state;
   }
@@ -44,7 +44,7 @@ $dungeonState.on(dungeonLoaded, (state) => {
 // this must be removed after development phase
 // characters must start every new session from the city
 const startingLevel: number = (() => {
-  const cachedData = loadData<number>("dungeon-level");
+  const cachedData = loadCharacterData<number>("dungeon-level");
   if (cachedData !== null) {
     return cachedData;
   }
@@ -53,11 +53,11 @@ const startingLevel: number = (() => {
 
 export const $currentLevel = createStore(startingLevel);
 $currentLevel.on(dungeonSaved, (state) => {
-  saveData("dungeon-level", state);
+  saveCharacterData("dungeon-level", state);
   return state;
 });
 $currentLevel.on(dungeonLoaded, (state) => {
-  const levelState = loadData<number>("dungeon-level");
+  const levelState = loadCharacterData<number>("dungeon-level");
   if (!levelState) {
     return state;
   }

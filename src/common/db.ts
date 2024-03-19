@@ -40,7 +40,8 @@ export function setSlotName(name: string) {
   localStorage.setItem(currentSaveSlot, name);
 }
 
-export function loadData<T>(key: string): T | null {
+// load "user" data linked to currently active saving slot
+export function loadCharacterData<T>(key: string): T | null {
   const currentSlot = getCurrentSlot();
   if (!currentSlot) {
     console.warn("Slot to load data is not defined!");
@@ -51,12 +52,25 @@ export function loadData<T>(key: string): T | null {
   return dataStr !== null ? JSON.parse(dataStr) : dataStr;
 }
 
-export function saveData<T>(key: string, data: T) {
+// load global data shared for all characters
+export function loadSharedData<T>(key: string): T | null {
+  const compiledKey = `shared-${key}`;
+  const dataStr = localStorage.getItem(compiledKey);
+  return dataStr !== null ? JSON.parse(dataStr) : dataStr;
+}
+
+// save "user" data linked to currently active saving slot
+export function saveCharacterData<T>(key: string, data: T) {
   const currentSlot = getCurrentSlot();
   if (!currentSlot) {
     console.warn("Slot to save data is not defined!");
     return;
   }
   const compiledKey = `${currentSlot}-${key}`;
+  return localStorage.setItem(compiledKey, JSON.stringify(data));
+}
+
+export function saveSharedData<T>(key: string, data: T) {
+  const compiledKey = `shared-${key}`;
   return localStorage.setItem(compiledKey, JSON.stringify(data));
 }

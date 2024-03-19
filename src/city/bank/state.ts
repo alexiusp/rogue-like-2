@@ -1,9 +1,9 @@
 import { createEvent, createStore } from "effector";
-import { loadData, saveData } from "../../common/db";
+import { loadCharacterData, saveCharacterData } from "../../common/db";
 
 const fallbackMoneyState = 0;
 const startState = (() => {
-  const cachedData = loadData<number>("bank-money");
+  const cachedData = loadCharacterData<number>("bank-money");
   return cachedData !== null ? cachedData : fallbackMoneyState;
 })();
 
@@ -11,12 +11,12 @@ export const $bankMoney = createStore<number>(startState);
 
 export const bankStateSaved = createEvent();
 $bankMoney.on(bankStateSaved, (state) => {
-  saveData("bank-money", state);
+  saveCharacterData("bank-money", state);
   return state;
 });
 export const bankStateLoaded = createEvent();
 $bankMoney.on(bankStateLoaded, (state) => {
-  const bankState = loadData<number>("bank-money");
+  const bankState = loadCharacterData<number>("bank-money");
   if (!bankState) {
     return state;
   }

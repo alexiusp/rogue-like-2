@@ -1,6 +1,10 @@
 import { createEvent, createStore } from "effector";
 import { EAlignment } from "../common/alignment";
-import { loadData, saveData, setSlotName } from "../common/db";
+import {
+  loadCharacterData,
+  saveCharacterData,
+  setSlotName,
+} from "../common/db";
 import { getGuildXpRequirementsForLevel } from "../guilds/models";
 import { EGuild } from "../guilds/types";
 import { TGameItem, itemsAreEqual } from "../items/models";
@@ -39,7 +43,7 @@ const fallbackState: ICharacterState = {
   mpMax: 0,
 };
 const startState = (() => {
-  const cachedData = loadData<ICharacterState>("character");
+  const cachedData = loadCharacterData<ICharacterState>("character");
   return cachedData !== null ? cachedData : fallbackState;
 })();
 
@@ -144,19 +148,19 @@ $character.on(characterCreated, (state) => {
   const newState = createNewCharacter(state);
   const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
   setSlotName(saveSlotName);
-  saveData("character", newState);
+  saveCharacterData("character", newState);
   return newState;
 });
 export const characterSaved = createEvent();
 $character.on(characterSaved, (state) => {
   const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
   setSlotName(saveSlotName);
-  saveData("character", state);
+  saveCharacterData("character", state);
   return state;
 });
 export const characterLoaded = createEvent();
 $character.on(characterLoaded, (state) => {
-  const character = loadData<ICharacterState>("character");
+  const character = loadCharacterData<ICharacterState>("character");
   if (!character) {
     return state;
   }
