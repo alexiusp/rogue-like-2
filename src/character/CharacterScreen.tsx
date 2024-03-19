@@ -1,7 +1,5 @@
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import {
-  Box,
-  Button,
   Divider,
   IconButton,
   List,
@@ -16,11 +14,9 @@ import { useUnit } from "effector-react";
 import { useState } from "react";
 import { getAlignmentLong } from "../common/alignment";
 import { EGuild } from "../guilds/types";
-import ItemDetailsDialog from "../items/ItemDetailsDialog";
-import { TGameItem } from "../items/models";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
-import InventoryList from "./InventoryList";
+import InventoryTab from "./characterTabs/InventoryTab";
 import {
   EGender,
   getCharacterAttack,
@@ -30,13 +26,7 @@ import {
   getCharacterTotalXp,
 } from "./models";
 import { ECharacterRace } from "./races";
-import {
-  $character,
-  characterDroppedAnItem,
-  characterEquippedAnItem,
-  characterSaved,
-  characterUnequippedAnItem,
-} from "./state";
+import { $character, characterSaved } from "./state";
 
 type TMainTab = "char" | "guilds" | "res";
 type TSecondaryTab = "inv" | "skills" | "spells";
@@ -59,36 +49,6 @@ export default function CharacterScreen() {
   const currentGuildInfo = character.guilds.find(
     (g) => g.guild === currentGuild,
   );
-  const [selectedItem, selectItem] = useState<TGameItem>();
-  const equipSelectedItem = () => {
-    if (
-      !selectedItem ||
-      selectedItem.kind !== "equipable" ||
-      selectedItem.isEquipped
-    ) {
-      return;
-    }
-    selectItem(undefined);
-    characterEquippedAnItem(selectedItem);
-  };
-  const unequipSelectedItem = () => {
-    if (
-      !selectedItem ||
-      selectedItem.kind !== "equipable" ||
-      !selectedItem.isEquipped
-    ) {
-      return;
-    }
-    selectItem(undefined);
-    characterUnequippedAnItem(selectedItem);
-  };
-  const dropSelectedItem = () => {
-    if (!selectedItem) {
-      return;
-    }
-    selectItem(undefined);
-    characterDroppedAnItem(selectedItem);
-  };
   const goBackToCity = () => {
     characterSaved();
     back();
@@ -200,32 +160,7 @@ export default function CharacterScreen() {
           <Tab value="skills" label="Skills" />
           <Tab value="spells" label="Spells" />
         </Tabs>
-        <Box sx={{ display: activeSecondaryTab === "inv" ? "block" : "none" }}>
-          <InventoryList
-            selectedItem={selectedItem}
-            onItemSelect={selectItem}
-          />
-          <ItemDetailsDialog
-            item={selectedItem}
-            onClose={() => selectItem(undefined)}
-            footer={
-              <>
-                {selectedItem &&
-                selectedItem.kind === "equipable" &&
-                !selectedItem.isEquipped &&
-                selectedItem.idLevel === 2 ? (
-                  <Button onClick={equipSelectedItem}>equip</Button>
-                ) : null}
-                {selectedItem &&
-                selectedItem.kind === "equipable" &&
-                selectedItem.isEquipped ? (
-                  <Button onClick={unequipSelectedItem}>uneqip</Button>
-                ) : null}
-                <Button onClick={dropSelectedItem}>drop</Button>
-              </>
-            }
-          />
-        </Box>
+        <InventoryTab show={activeSecondaryTab === "inv"} />
       </Stack>
     </Screen>
   );

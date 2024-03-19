@@ -273,7 +273,7 @@ export const $characterGuildQuest = $character.map((character) => {
   if (!currentGuild) {
     throw Error("Current guild information not found on character!");
   }
-  return currentGuild.quest;
+  return currentGuild.quest ?? null;
 });
 export const $characterCurrentGuild = $character.map((c) => c.guild);
 export const $characterGuilds = $character.map((c) => c.guilds);
