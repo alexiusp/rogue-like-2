@@ -1,9 +1,10 @@
 import { useUnit } from "effector-react";
-import HPProgressBar from "../components/HPProgressBar/HPProgressBar";
-import { $characterHealth, $characterMaxHealth } from "./state";
+import ProgressBar from "../components/ProgressBar";
+import { $characterHealth, $characterMaxHp } from "./state";
 
 export default function HealthStatusProgress() {
   const hp = useUnit($characterHealth);
-  const hpMax = useUnit($characterMaxHealth);
-  return <HPProgressBar hp={hp} hpMax={hpMax} />;
+  const hpMax = useUnit($characterMaxHp);
+  // TODO: consider to add some animation when health is low
+  return <ProgressBar current={hp} max={hpMax} color="error" />;
 }

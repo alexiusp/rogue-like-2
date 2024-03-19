@@ -1,5 +1,6 @@
 import { combine, createEvent, createStore, sample } from "effector";
 import { loadData, saveData } from "../common/db";
+import { areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
@@ -146,6 +147,14 @@ sample({
   source: $currentMapTile,
   target: startEncounter,
   filter: (mapTile) => {
+    const encounter = mapTile.encounter;
+    if (!encounter) {
+      return false;
+    }
+    if (encounter.type === EEncounterType.Monster) {
+      // check for alive monsters
+      return !areAllMonstersDead(encounter.monsters);
+    }
     return !!mapTile.encounter;
   },
 });

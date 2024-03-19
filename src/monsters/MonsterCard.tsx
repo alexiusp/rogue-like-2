@@ -1,5 +1,5 @@
 import { Card, CardMedia, Grow, Typography } from "@mui/material";
-import HPProgressBar from "../components/HPProgressBar/HPProgressBar";
+import ProgressBar from "../components/ProgressBar";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 import "./MonsterCard.css";
 import { EAggroMode, IGameMonster } from "./model";
@@ -27,6 +27,8 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
     default:
       break;
   }
+  // TODO: switch image to a "grave" or "skull" when monster is dead
+  // TODO: add badges for monster under spell or status
   return (
     <Grow in={true}>
       <Card
@@ -39,7 +41,7 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
         />
         <div>
           <Typography className="monster-name">{monsterName}</Typography>
-          <HPProgressBar hp={hp} hpMax={hpMax} />
+          <ProgressBar current={hp} max={hpMax} color="error" />
         </div>
       </Card>
     </Grow>

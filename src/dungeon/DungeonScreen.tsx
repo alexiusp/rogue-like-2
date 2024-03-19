@@ -4,11 +4,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Stack,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
+import HealthStatusProgress from "../character/HealthStatusProgress";
+import ManaStatusProgress from "../character/ManaStatusProgress";
+import XpStatusProgress from "../character/XpStatusProgress";
 import { characterSaved } from "../character/state";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
@@ -74,11 +78,16 @@ export default function DungeonScreen() {
         </>
       }
     >
-      <div className="dungeon">
-        <Grid container spacing={0} columns={dungeonMap.width}>
-          {cells}
-        </Grid>
-      </div>
+      <Stack direction="column" spacing={0.5}>
+        <div className="dungeon">
+          <Grid container spacing={0} columns={dungeonMap.width}>
+            {cells}
+          </Grid>
+        </div>
+        <HealthStatusProgress />
+        <ManaStatusProgress />
+        <XpStatusProgress />
+      </Stack>
       <Dialog
         onClose={() => toggleConfirmation(false)}
         open={ladderConfirmation}

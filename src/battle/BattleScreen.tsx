@@ -4,6 +4,7 @@ import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.jpg";
 import HealthStatusProgress from "../character/HealthStatusProgress";
+import ManaStatusProgress from "../character/ManaStatusProgress";
 import ActionButton from "../components/ActionButton/ActionButton";
 import { ETerrain, ETerrainEffect, IChest } from "../dungeon/types";
 import MonsterCard from "../monsters/MonsterCard";
@@ -73,6 +74,7 @@ export default function BattleScreen({
         </Box>
       </Stack>
       <HealthStatusProgress />
+      <ManaStatusProgress />
       <Stack direction="row" spacing={1}>
         <ActionButton
           disabled={battleRound === "monster"}

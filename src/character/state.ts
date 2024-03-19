@@ -173,9 +173,18 @@ $character.on(characterHpChanged, (character, hp) => {
   };
 });
 
-export const $characterMaxHealth = $character.map(
-  (character) => character.hpMax,
-);
+export const $characterMana = $character.map((character) => character.mp);
+export const characterMpChanged = createEvent<number>();
+$character.on(characterMpChanged, (character, mp) => {
+  return {
+    ...character,
+    mp,
+  };
+});
+
+export const $characterMaxHp = $character.map((character) => character.hpMax);
+
+export const $characterMaxMana = $character.map((character) => character.mpMax);
 
 export const $characterMoney = $character.map((character) => character.money);
 export const moneyAddedToCharacter = createEvent<number>();
@@ -204,6 +213,12 @@ export const $characterXpToNextLevel = $character.map((character) => {
   const xpToNextLevel =
     GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
   return xpToNextLevel - currentXp;
+});
+export const $characterMaxXpForCurrentGuild = $character.map((character) => {
+  const currentGuildId = character.guild;
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  const currentGuildLevel = currentGuild?.level || 1;
+  return GuildXpRequirements[currentGuildId][currentGuildLevel - 1];
 });
 export const xpGainedByCharacter = createEvent<number>();
 $character.on(xpGainedByCharacter, (character, xpGained) => {
