@@ -13,16 +13,19 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
+import { useState } from "react";
 import bg from "../assets/guilds-street.jpg";
 import {
   $characterCurrentGuild,
   $characterGuilds,
   $characterPinned,
   $characterStats,
+  characterJoinedGuild,
 } from "../character/state";
 import { statsSufficient } from "../common/stats";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
+import GuildExpInfo from "./GuildExpInfo";
 import GuildsList from "./GuildsList";
 import { GuildSpecs } from "./models";
 import { $currentGuildMaster, $guildCursor } from "./state";
@@ -37,17 +40,18 @@ export default function GuildsScreen() {
   const characterStats = useUnit($characterStats);
   const isCurrentGuild = characterCurrentGuild === guildCursor;
   const characterPinned = useUnit($characterPinned);
+  const [info, toggleInfo] = useState(false);
   const isMember = !!characterGuilds.find(
     (membership) => membership.guild === guildCursor,
   );
   const canJoin = statsSufficient(characterStats, statsRequired);
   let welcomeMessage = "Your stats are too low to join this guild!";
   if (canJoin) {
+    welcomeMessage = "Welcome, Visitor";
     if (isMember) {
       // TODO: prit out guild title
       welcomeMessage = "Welcome, Brother";
     }
-    welcomeMessage = "Welcome, Visitor";
   }
   return (
     <Screen
@@ -99,13 +103,21 @@ export default function GuildsScreen() {
             </Table>
             <Typography>{welcomeMessage}</Typography>
             <ButtonGroup>
-              <Button disabled={isCurrentGuild || !canJoin}>
+              <Button
+                disabled={isCurrentGuild || !canJoin}
+                onClick={() => characterJoinedGuild(guildCursor)}
+              >
                 {isMember ? "Re acquaint" : "Join"}
               </Button>
               <Button disabled={!characterPinned || !isCurrentGuild}>
                 Make level
               </Button>
-              <Button disabled={!isCurrentGuild}>Exp info</Button>
+              <Button
+                disabled={!isCurrentGuild}
+                onClick={() => toggleInfo(true)}
+              >
+                Exp info
+              </Button>
             </ButtonGroup>
           </Stack>
         </Grid>
@@ -113,6 +125,7 @@ export default function GuildsScreen() {
           <GuildsList />
         </Grid>
       </Grid>
+      <GuildExpInfo show={info} onClose={() => toggleInfo(false)} />
     </Screen>
   );
 }

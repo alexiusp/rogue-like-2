@@ -19,3 +19,12 @@ interface IMonsterQuest extends IQuest {
 }
 
 export type TQuest = IItemQuest | IMonsterQuest;
+
+export function printQuest(quest: TQuest) {
+  switch (quest.kind) {
+    case EQuestKind.Item:
+      return `bring ${quest.item}`;
+    case EQuestKind.Monster:
+      return `kill a ${quest.monster}`;
+  }
+}

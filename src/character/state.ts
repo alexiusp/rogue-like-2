@@ -5,8 +5,8 @@ import {
   saveCharacterData,
   setSlotName,
 } from "../common/db";
-import { getGuildXpRequirementsForLevel } from "../guilds/models";
-import { EGuild } from "../guilds/types";
+import { GuildSpecs, getGuildXpRequirementsForLevel } from "../guilds/models";
+import { EGuild, IGuildMembership } from "../guilds/types";
 import { TGameItem, itemsAreEqual } from "../items/models";
 import {
   EGender,
@@ -253,9 +253,57 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
   };
 });
 export const $characterPinned = $characterXpToNextLevel.map((xp) => xp === 0);
-
+export const $guildLevelMoneyCost = $character.map((character) => {
+  const currentGuildId = character.guild;
+  const GuildSpec = GuildSpecs[currentGuildId];
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  if (!currentGuild) {
+    throw Error("Current guild information not found on character!");
+  }
+  const currentGuildLevel = currentGuild.level;
+  const guildsAmount = character.guilds.length;
+  return Math.pow(
+    100 * (GuildSpec.xpRatio / 8) * currentGuildLevel,
+    guildsAmount,
+  );
+});
+export const $characterGuildQuest = $character.map((character) => {
+  const currentGuildId = character.guild;
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  if (!currentGuild) {
+    throw Error("Current guild information not found on character!");
+  }
+  return currentGuild.quest;
+});
 export const $characterCurrentGuild = $character.map((c) => c.guild);
 export const $characterGuilds = $character.map((c) => c.guilds);
+
+export const characterJoinedGuild = createEvent<EGuild>();
+$character.on(characterJoinedGuild, (state, guild) => {
+  const guildIndex = findCharacterGuildIndex(guild, state);
+  if (guildIndex >= 0) {
+    // if guild exist - reacquaint
+    return {
+      ...state,
+      guild,
+    };
+  }
+  // otherwise create new guild membership
+  const newGuildMembership: IGuildMembership = {
+    guild,
+    level: 1,
+    xp: 0,
+  };
+  // and add it to the guilds list
+  const updatedGuilds = [...state.guilds, newGuildMembership];
+  return {
+    ...state,
+    // set current guild to the new guild
+    guild,
+    // update guild membership list
+    guilds: updatedGuilds,
+  };
+});
 
 export const $characterInventory = $character.map(
   (character) => character.items,
