@@ -11,19 +11,14 @@ export type TStatNames = keyof typeof EStat;
 
 export const StatList: Readonly<Array<TStatNames>> = [
   "strength",
-  "endurance",
-  "dexterity",
-  "wisdom",
   "intelligence",
+  "wisdom",
+  "endurance",
   "charisma",
+  "dexterity",
 ];
 
-export type TStatsValues = {
-  -readonly [Property in keyof typeof EStat as Exclude<
-    Property,
-    number
-  >]: number;
-};
+export type TStatsValues = Record<TStatNames, number>;
 
 export const ZeroStats: TStatsValues = {
   strength: 1,
@@ -95,4 +90,17 @@ export function getStatsProtectionModifier(stats: TStatsValues) {
   const { endurance } = stats;
   const enduranceModifier = getStatBonus(endurance);
   return 1 + enduranceModifier / 10;
+}
+
+export function statsSufficient(
+  stats: TStatsValues,
+  statsRequired: TStatsValues,
+) {
+  const str = stats.strength >= statsRequired.strength;
+  const int = stats.intelligence >= statsRequired.intelligence;
+  const wis = stats.wisdom >= statsRequired.wisdom;
+  const end = stats.endurance >= statsRequired.endurance;
+  const cha = stats.charisma >= statsRequired.charisma;
+  const dex = stats.dexterity >= statsRequired.dexterity;
+  return str && int && wis && end && cha && dex;
 }

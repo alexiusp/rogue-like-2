@@ -42,6 +42,7 @@ export interface IGuildSpec {
 }
 
 export interface IGuildMaster {
+  guild: EGuild;
   name: string;
   level: number;
 }

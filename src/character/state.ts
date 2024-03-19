@@ -89,6 +89,8 @@ export const freePointsChanged = createEvent<number>();
 $freePoints.reset(raceChanged);
 $freePoints.on(freePointsChanged, (oldValue, newValue) => oldValue - newValue);
 
+export const $characterStats = $character.map((c) => c.stats);
+
 export const $characterStrength = $character.map(
   (character) => character.stats.strength,
 );
@@ -250,6 +252,7 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
     guilds,
   };
 });
+export const $characterPinned = $characterXpToNextLevel.map((xp) => xp === 0);
 
 export const $characterCurrentGuild = $character.map((c) => c.guild);
 export const $characterGuilds = $character.map((c) => c.guilds);

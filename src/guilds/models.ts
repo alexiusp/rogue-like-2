@@ -2,11 +2,11 @@ import { EAlignment } from "../common/alignment";
 import { ZeroStats } from "../common/stats";
 import { EGuild, IGuildMaster, IGuildSpec, TGuildValues } from "./types";
 
-export const GuildsList: EGuild[] = [
+export const FullGuildsList: Readonly<EGuild[]> = [
   EGuild.Adventurer,
   EGuild.Warrior,
   EGuild.Thief,
-];
+] as const;
 
 export const ZeroGuilds: TGuildValues = [
   { guild: EGuild.Adventurer, value: 1 },
@@ -70,8 +70,12 @@ export function getGuildXpRequirementsForLevel(guild: EGuild, level: number) {
 }
 
 export function getInitialGuildMasters(): IGuildMaster[] {
-  return GuildsList.map((g) => ({
+  // TODO: generate/predefine names for guild masters
+  return FullGuildsList.map((guild) => ({
+    guild,
     name: "GuildMaster",
-    level: Math.round(GuildSpecs[g].maxLevel + GuildSpecs[g].xpRatio / 8),
+    level: Math.round(
+      GuildSpecs[guild].maxLevel + GuildSpecs[guild].xpRatio / 8,
+    ),
   }));
 }
