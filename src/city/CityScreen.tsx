@@ -7,7 +7,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import { Button, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
-import bg from "../assets/view-castle-with-nature-landscape.jpg";
+import bg from "../assets/castle.webp";
 import { characterLoaded, characterSaved } from "../character/state";
 import { dungeonLoaded, startDungeonLevel } from "../dungeon/state";
 import Screen from "../layout/Screen";

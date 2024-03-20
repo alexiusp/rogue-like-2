@@ -1,6 +1,6 @@
 import BalanceIcon from "@mui/icons-material/Balance";
 import { IconButton, Stack, Typography } from "@mui/material";
-import bg from "../../assets/fantasy-medieval-store.jpg";
+import bg from "../../assets/fantasy-medieval-store.webp";
 import { characterSaved } from "../../character/state";
 import Screen from "../../layout/Screen";
 import { back } from "../../navigation";

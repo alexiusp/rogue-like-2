@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { blueGrey, deepPurple } from "@mui/material/colors";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import bg from "../assets/dungeon.jpg";
+import bg from "../assets/dungeon.webp";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import ActionButton from "../components/ActionButton/ActionButton";

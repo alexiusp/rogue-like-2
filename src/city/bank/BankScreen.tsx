@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import bg from "../../assets/bank.jpg";
+import bg from "../../assets/bank.webp";
 import {
   $characterMoney,
   characterSaved,

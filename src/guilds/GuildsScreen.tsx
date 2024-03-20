@@ -14,7 +14,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import bg from "../assets/guilds-street.jpg";
+import bg from "../assets/guilds-street.webp";
 import {
   $characterCurrentGuild,
   $characterGuilds,
