@@ -20,7 +20,7 @@ const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
     baseMp: 0,
     specials: [],
     items: ["Bronze Dagger", null, null, null],
-    money: [10, null],
+    money: [10, 10, 10, 5, 5, null],
   },
 };
 
