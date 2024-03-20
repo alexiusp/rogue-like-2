@@ -428,3 +428,59 @@ $character.on(characterIdentifiedAnItem, (character, { item, price }) => {
     money: character.money - price,
   };
 });
+
+export const characterEatBread = createEvent();
+$character.on(characterEatBread, (character) => {
+  const money = character.money - 10;
+  if (money < 0) {
+    throw Error("Not enough money");
+  }
+  const hp = Math.min(character.hp + 5, character.hpMax);
+  return {
+    ...character,
+    money,
+    hp,
+  };
+});
+
+export const characterEatLunch = createEvent();
+$character.on(characterEatLunch, (character) => {
+  const money = character.money - 100;
+  if (money < 0) {
+    throw Error("Not enough money");
+  }
+  const hp = Math.min(character.hp + 50, character.hpMax);
+  return {
+    ...character,
+    money,
+    hp,
+  };
+});
+
+export const characterDrinkBeer = createEvent();
+$character.on(characterDrinkBeer, (character) => {
+  const money = character.money - 20;
+  if (money < 0) {
+    throw Error("Not enough money");
+  }
+  const mp = Math.min(character.mp + 5, character.mpMax);
+  return {
+    ...character,
+    money,
+    mp,
+  };
+});
+
+export const characterDrinkWine = createEvent();
+$character.on(characterDrinkWine, (character) => {
+  const money = character.money - 200;
+  if (money < 0) {
+    throw Error("Not enough money");
+  }
+  const mp = Math.min(character.mp + 50, character.mpMax);
+  return {
+    ...character,
+    money,
+    mp,
+  };
+});

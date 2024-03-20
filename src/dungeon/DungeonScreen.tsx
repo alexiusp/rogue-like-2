@@ -108,7 +108,7 @@ export default function DungeonScreen() {
             Yes
           </Button>
           <Button size="small" onClick={() => toggleConfirmation(false)}>
-            No
+            Not yet
           </Button>
         </DialogActions>
       </Dialog>

@@ -42,10 +42,12 @@
 - guild level titles for character
 - items that modifies character stats -> related calculations, guild joining must not be affected
 
+# Bugs to fix:
+
+- when selling an item with other identical items in inventory first item in list will be sold instead of selected one
+
 # Next tasks (sorted):
 
-- items identification
-- health restoration in tavern
 - add two more monsters and items
 - leveling - hp/mp increase, attack/defense bonuses etc.
 - skill modifiers for attack/defense (depending on guild levels)
