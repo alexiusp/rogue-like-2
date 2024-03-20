@@ -8,6 +8,12 @@
 - encounter: chests: opened, locked, magically locked
 - encounter: lair
 - other terrains and effects
-- time/move counter when in dungeon to respawn dungeon after timeout (before character enters is again)
-- guild make level - hp/mp increase, attack/defense bonuses etc.
+- time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)
+- guild log - list of "events" happened with guild members, initialized with guild master takes the position
+- global quest (story) - need to design how and when it should be triggered
+
+# Next tasks (sorted):
+
 - items identification
+- add two more monsters and items
+- leveling - hp/mp increase, attack/defense bonuses etc.
