@@ -74,6 +74,7 @@ export function rollDices(diceToRoll: TDiceString) {
  */
 export function rollDiceCheck(value: number, dice: TDiceString) {
   const roll = rollDices(dice);
-  console.log("rollDiceCheck", value, roll);
-  return roll > value;
+  const result = roll > value;
+  console.log("rollDiceCheck", result);
+  return result;
 }

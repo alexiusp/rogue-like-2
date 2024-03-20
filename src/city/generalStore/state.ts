@@ -3,7 +3,7 @@ import { loadSharedData, saveSharedData } from "../../common/db";
 import {
   TGameItem,
   calculateShopItemPrice,
-  itemsAreEqual,
+  itemsAreSame,
 } from "../../items/models";
 import initialStock from "./InitialStoreStock";
 import { TShopItem } from "./types";
@@ -32,7 +32,7 @@ export const shopSoldAnItem = createEvent<TShopItem>();
 $generalStore.on(shopSoldAnItem, (currentItems, soldItem) => {
   // implement buy and recalculate the price
   const newStock = [...currentItems];
-  const itemIndex = newStock.findIndex(itemsAreEqual(soldItem));
+  const itemIndex = newStock.findIndex(itemsAreSame(soldItem));
   if (itemIndex < 0) {
     throw new Error("Item to sold not found in store stock!");
   }

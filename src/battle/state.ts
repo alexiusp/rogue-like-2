@@ -20,7 +20,7 @@ import {
   IMonsterEncounter,
   IMonsterMapTile,
 } from "../dungeon/types";
-import { TGameItem, itemsAreEqual } from "../items/models";
+import { TGameItem, itemsAreSame } from "../items/models";
 import {
   EAggroMode,
   IGameMonster,
@@ -409,7 +409,7 @@ $encounterXpReward.on(encounterEndedWithReward, (_, reward) => reward.xp);
 
 export const itemDropped = createEvent<TGameItem>();
 $encounterItemsReward.on(itemDropped, (items, item) => {
-  const index = items.findIndex(itemsAreEqual(item));
+  const index = items.findIndex(itemsAreSame(item));
   if (index < 0) {
     throw new Error("Item to drop not found in the loot!");
   }

@@ -99,7 +99,8 @@ export interface IUsableGameItem extends IGameItem {
 
 export type TGameItem = IEquipmentGameItem | IUsableGameItem;
 
-export const itemsAreEqual =
+/** This comparison is used to find identical items - all properties must match */
+export const itemsAreSame =
   <T extends TGameItem, V extends TGameItem>(itemToCompare: T) =>
   (item: V) => {
     const nameMatch = item.item === itemToCompare.item;
@@ -110,6 +111,18 @@ export const itemsAreEqual =
     }
     if (itemToCompare.kind === "usable" && item.kind === "usable") {
       return itemToCompare.usesLeft === item.usesLeft;
+    }
+    return true;
+  };
+
+/** This comparison is used to find similar items to count amount of items in shop */
+export const itemsAreEqual =
+  <T extends TGameItem, V extends TGameItem>(itemToCompare: T) =>
+  (item: V) => {
+    const nameMatch = item.item === itemToCompare.item;
+    const alignMatch = item.alignment === itemToCompare.alignment;
+    if (!nameMatch || !alignMatch) {
+      return false;
     }
     return true;
   };
@@ -184,7 +197,7 @@ export function calculateItemPriceToSell(
 ) {
   const baseShopPrice = calculateShopItemPrice(item.item, amountInShop);
   const baseItem = GlobalItemsCatalogue[item.item];
-  const idModifier = item.idLevel === 0 ? 0.01 : item.idLevel === 1 ? 0.1 : 1;
+  const idModifier = item.idLevel === 0 ? 0.5 : item.idLevel === 1 ? 0.8 : 1;
   let usesModifier = 1;
   if (item.kind === "usable") {
     usesModifier = item.usesLeft / (baseItem as IUsableBaseItem).uses;
@@ -202,6 +215,10 @@ export function calculateItemPriceToSell(
   return Math.floor(
     baseShopPrice * idModifier * usesModifier * charismaModifier * 0.8,
   );
+}
+
+export function calculateItemIdCost(priceToSell: number) {
+  return Math.floor(priceToSell * 0.6);
 }
 
 export function getItemAttribute<K extends keyof IItemAttributes>(

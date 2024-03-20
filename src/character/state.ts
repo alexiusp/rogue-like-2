@@ -7,7 +7,7 @@ import {
 } from "../common/db";
 import { GuildSpecs, getGuildXpRequirementsForLevel } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
-import { TGameItem, itemsAreEqual } from "../items/models";
+import { TGameItem, itemsAreSame } from "../items/models";
 import {
   EGender,
   ICharacterState,
@@ -330,7 +330,7 @@ export const characterSoldAnItem = createEvent<{
 }>();
 $character.on(characterSoldAnItem, (state, transaction) => {
   const { item, price } = transaction;
-  const itemIndex = state.items.findIndex(itemsAreEqual(item));
+  const itemIndex = state.items.findIndex(itemsAreSame(item));
   if (itemIndex < 0) {
     throw new Error("Item to sold not found in inventory!");
   }
@@ -345,7 +345,7 @@ $character.on(characterSoldAnItem, (state, transaction) => {
 
 export const characterEquippedAnItem = createEvent<TGameItem>();
 $character.on(characterEquippedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreEqual(item));
+  const itemIndex = state.items.findIndex(itemsAreSame(item));
   if (itemIndex < 0) {
     throw new Error("Item to equip not found in inventory!");
   }
@@ -362,7 +362,7 @@ $character.on(characterEquippedAnItem, (state, item) => {
 
 export const characterUnequippedAnItem = createEvent<TGameItem>();
 $character.on(characterUnequippedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreEqual(item));
+  const itemIndex = state.items.findIndex(itemsAreSame(item));
   if (itemIndex < 0) {
     throw new Error("Item to unequip not found in inventory!");
   }
@@ -380,7 +380,7 @@ $character.on(characterUnequippedAnItem, (state, item) => {
 
 export const characterDroppedAnItem = createEvent<TGameItem>();
 $character.on(characterDroppedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreEqual(item));
+  const itemIndex = state.items.findIndex(itemsAreSame(item));
   if (itemIndex < 0) {
     throw new Error("Item to drop not found in inventory!");
   }
