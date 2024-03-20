@@ -9,7 +9,7 @@ import {
 import { TGuildValues } from "../guilds/types";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
-type TItemKind = "dagger" | "potion" | "sword" | "shield";
+type TItemKind = "dagger" | "potion" | "sword" | "shield" | "boots" | "belt";
 
 type TSlot =
   | "head"
@@ -21,7 +21,8 @@ type TSlot =
   | "ring"
   | "amulet"
   | "gloves"
-  | "bracers";
+  | "bracers"
+  | "belt";
 
 type TMaterial = "Bronze" | "Iron" | "Steel" | "Adamantine" | "Mithril";
 
@@ -62,7 +63,7 @@ export interface IEquippableBaseItem extends IBaseItem {
   // amount of hands required
   hands: number;
   // amount of swings done per battle tick (for weapon slot)
-  swings: number;
+  swings?: number;
 }
 
 export interface IUsableBaseItem extends IBaseItem {
@@ -147,6 +148,9 @@ export function calculateBaseItemPrice({
       baseItemKindPrice = 10;
       break;
     case "sword":
+      baseItemKindPrice = 10;
+      break;
+    default:
       baseItemKindPrice = 10;
       break;
   }
@@ -346,7 +350,7 @@ export function getHandsStatusLabel(baseItem: TBaseItem) {
     return "Item requires no hands.";
   }
   const hands = baseItem.hands > 1 ? "Two" : "One";
-  const swings = baseItem.swings;
+  const swings = baseItem.swings ?? 0;
   const swingsSuffix =
     swings > 0 ? `, ${swings} swing${swings > 1 ? "s" : ""}` : ".";
   return `${hands}-handed item${swingsSuffix}`;

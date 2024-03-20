@@ -22,10 +22,7 @@ export const ZeroGuilds: TGuildValues = FullGuildsList.map((guild) => ({
 }));
 
 export function isNotGuildRestricted(requirements: TGuildValues) {
-  return (
-    requirements.length === FullGuildsList.length &&
-    requirements.every((r) => r.value === 1)
-  );
+  return requirements.length === FullGuildsList.length;
 }
 
 export const GuildSpecs: Record<EGuild, IGuildSpec> = {

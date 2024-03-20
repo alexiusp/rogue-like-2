@@ -16,7 +16,10 @@ export default function StoreListItem({
   onSelect,
 }: IStoreListItemProps) {
   const { amount, item: itemName, alignment, kind } = item;
-  const alignmentSuffix = alignment ? ` (${getAlignmentShort(alignment)})` : "";
+  const alignmentSuffix =
+    typeof alignment !== "undefined"
+      ? ` (${getAlignmentShort(alignment)})`
+      : "";
   const usableSuffix = kind === "usable" ? ` [${item.usesLeft}]` : "";
   const itemLabel = `${itemName}${alignmentSuffix}${usableSuffix}`;
   return (
