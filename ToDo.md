@@ -40,6 +40,7 @@
 - add more item types (see TItemKind)
 - guild masters list save on update instead of manual saving
 - guild level titles for character
+- items that modifies character stats -> related calculations, guild joining must not be affected
 
 # Next tasks (sorted):
 

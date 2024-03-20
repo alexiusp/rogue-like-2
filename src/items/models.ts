@@ -1,6 +1,11 @@
+import { ICharacterState } from "../character/models";
 import { EAlignment, generateRandomAlignment } from "../common/alignment";
 import { rollDiceCheck } from "../common/random";
 import { TStatsValues, getStatBonus } from "../common/stats";
+import {
+  getMaxSkillFromGuilds,
+  getTotalSkillFromGuilds,
+} from "../guilds/models";
 import { TGuildValues } from "../guilds/types";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
@@ -267,11 +272,34 @@ export function getEquippedItemsProtection(items: TGameItem[]) {
   }, 0);
 }
 
-// TODO: add perception check to determine id level
-export function generateRandomItem(itemName: string): TGameItem {
+export function generateRandomItem(
+  itemName: string,
+  character: ICharacterState,
+): TGameItem {
+  let idLevel: IdLevel = 0;
+  const intBonus = getStatBonus(character.stats.intelligence);
+  const wisBonus = getStatBonus(character.stats.wisdom);
+  const perceptionSkill = getMaxSkillFromGuilds("perception", character.guilds);
+  const thiefSkill = getTotalSkillFromGuilds("thief", character.guilds);
+  const skillBonus = 2 * perceptionSkill.max + thiefSkill;
+  // two dice checks one for each id level
+  const diceCheck1 = rollDiceCheck(
+    20 - intBonus - wisBonus - skillBonus,
+    "1D20",
+  );
+  if (diceCheck1) {
+    idLevel = 1;
+  }
+  const diceCheck2 = rollDiceCheck(
+    20 - intBonus - wisBonus - skillBonus,
+    "1D20",
+  );
+  if (diceCheck2) {
+    idLevel = 2;
+  }
   const baseItem = GlobalItemsCatalogue[itemName];
   const common: IGameItem = {
-    idLevel: 0,
+    idLevel,
     item: itemName,
   };
   if (baseItem.aligned) {

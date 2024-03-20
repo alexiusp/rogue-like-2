@@ -1,3 +1,4 @@
+import { ICharacterState } from "../character/models";
 import { EAlignment } from "../common/alignment";
 import { RandomBag, getRandomInt } from "../common/random";
 import {
@@ -164,14 +165,17 @@ export function generateMonstersMoneyReward(monsters: IGameMonster[]) {
   return total;
 }
 
-export function generateMonstersItemsReward(monsters: IGameMonster[]) {
+export function generateMonstersItemsReward(
+  monsters: IGameMonster[],
+  character: ICharacterState,
+) {
   const items: TGameItem[] = [];
   monsters.forEach((monster) => {
     const monsterData = GlobalMonsterCatalogue[monster.monster];
     const moneyBag = new RandomBag(monsterData.items);
     const reward = moneyBag.getRandomItem();
     if (reward !== null) {
-      const item = generateRandomItem(reward);
+      const item = generateRandomItem(reward, character);
       items.push(item);
     }
   });

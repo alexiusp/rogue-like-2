@@ -35,7 +35,7 @@ import {
 } from "../monsters/model";
 import { forward } from "../navigation";
 import { rollAttack, rollDamage } from "./model";
-import { TBattleRound, THitResult } from "./types";
+import { IEncounterReward, TBattleRound, THitResult } from "./types";
 
 const startCharacterRound = createEvent();
 startCharacterRound.watch(() => console.info("startCharacterRound"));
@@ -384,15 +384,29 @@ $encounterItemsReward.watch((_) => console.log("$encounterItemsReward:", _));
 export const $encounterXpReward = createStore(0);
 $encounterXpReward.watch((_) => console.log("$encounterXpReward:", _));
 
-$encounterMoneyReward.on(battleEnded, (_, monsters) =>
-  generateMonstersMoneyReward(monsters),
-);
-$encounterItemsReward.on(battleEnded, (_, monsters) =>
-  generateMonstersItemsReward(monsters),
-);
-$encounterXpReward.on(battleEnded, (_, monsters) =>
-  generateMonstersXpReward(monsters),
-);
+const encounterEndedWithReward = createEvent<IEncounterReward>();
+
+sample({
+  clock: battleEnded,
+  source: $character,
+  target: encounterEndedWithReward,
+  fn(character, monsters) {
+    const money = generateMonstersMoneyReward(monsters);
+    const xp = generateMonstersXpReward(monsters);
+    const items = generateMonstersItemsReward(monsters, character);
+    const reward: IEncounterReward = {
+      money,
+      xp,
+      items,
+    };
+    return reward;
+  },
+});
+
+$encounterMoneyReward.on(encounterEndedWithReward, (_, reward) => reward.money);
+$encounterItemsReward.on(encounterEndedWithReward, (_, reward) => reward.items);
+$encounterXpReward.on(encounterEndedWithReward, (_, reward) => reward.xp);
+
 export const itemDropped = createEvent<TGameItem>();
 $encounterItemsReward.on(itemDropped, (items, item) => {
   const index = items.findIndex(itemsAreEqual(item));
