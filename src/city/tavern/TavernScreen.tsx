@@ -2,6 +2,7 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import { IconButton, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import bg from "../../assets/tavern.jpg";
+import { characterSaved } from "../../character/state";
 import Screen from "../../layout/Screen";
 import { back } from "../../navigation";
 import DrinksTab from "./DrinksTab";
@@ -14,11 +15,16 @@ export default function TavernScreen() {
   const handleTabChange = (_: React.SyntheticEvent, newValue: TTabName) => {
     toggleTab(newValue);
   };
+  const goBackToCity = () => {
+    characterSaved();
+    back();
+  };
+
   return (
     <Screen
       header={
         <>
-          <IconButton onClick={() => back()} size="small">
+          <IconButton onClick={goBackToCity} size="small">
             <RestaurantIcon />
           </IconButton>
           <Typography variant="h3" component="h1">
