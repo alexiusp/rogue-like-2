@@ -21,6 +21,15 @@ export const StatList: Readonly<Array<TStatNames>> = [
 export type TStatsValues = Record<TStatNames, number>;
 
 export const ZeroStats: TStatsValues = {
+  strength: 0,
+  intelligence: 0,
+  wisdom: 0,
+  endurance: 0,
+  charisma: 0,
+  dexterity: 0,
+};
+
+export const NoStatsRequired: TStatsValues = {
   strength: 1,
   intelligence: 1,
   wisdom: 1,

@@ -1,5 +1,5 @@
 import { EAlignment } from "../common/alignment";
-import { ZeroStats } from "../common/stats";
+import { NoStatsRequired } from "../common/stats";
 import {
   EGuild,
   IGuildMaster,
@@ -16,9 +16,17 @@ export const FullGuildsList: Readonly<EGuild[]> = [
   EGuild.Thief,
 ] as const;
 
-export const ZeroGuilds: TGuildValues = [
-  { guild: EGuild.Adventurer, value: 1 },
-];
+export const ZeroGuilds: TGuildValues = FullGuildsList.map((guild) => ({
+  guild,
+  value: 1,
+}));
+
+export function isNotGuildRestricted(requirements: TGuildValues) {
+  return (
+    requirements.length === FullGuildsList.length &&
+    requirements.every((r) => r.value === 1)
+  );
+}
 
 export const GuildSpecs: Record<EGuild, IGuildSpec> = {
   [EGuild.Adventurer]: {
@@ -27,7 +35,7 @@ export const GuildSpecs: Record<EGuild, IGuildSpec> = {
     maxLevel: 30,
     xpRatio: 8,
     questRatio: 20,
-    statsRequired: ZeroStats,
+    statsRequired: NoStatsRequired,
     alignments: [EAlignment.Good, EAlignment.Neutral, EAlignment.Evil],
   },
   [EGuild.Warrior]: {

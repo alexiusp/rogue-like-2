@@ -1,11 +1,5 @@
-import {
-  Avatar,
-  Chip,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-} from "@mui/material";
-import { EAlignment, getAlignmentShort } from "../../common/alignment";
+import { Chip, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { getAlignmentShort } from "../../common/alignment";
 import { TShopItem } from "./types";
 
 interface IStoreListItemProps {
@@ -21,16 +15,10 @@ export default function StoreListItem({
   selected,
   onSelect,
 }: IStoreListItemProps) {
-  const { amount, item: itemName, alignment } = item;
-  const alignmentChip =
-    typeof alignment !== "undefined" ? (
-      <Chip
-        variant="outlined"
-        size="small"
-        avatar={<Avatar>{getAlignmentShort(alignment)}</Avatar>}
-        label={EAlignment[alignment]}
-      />
-    ) : null;
+  const { amount, item: itemName, alignment, kind } = item;
+  const alignmentSuffix = alignment ? ` (${getAlignmentShort(alignment)})` : "";
+  const usableSuffix = kind === "usable" ? ` [${item.usesLeft}]` : "";
+  const itemLabel = `${itemName}${alignmentSuffix}${usableSuffix}`;
   return (
     <ListItem
       disablePadding
@@ -38,13 +26,7 @@ export default function StoreListItem({
       secondaryAction={<Chip label={amount} variant="outlined" />}
     >
       <ListItemButton selected={selected} onClick={() => onSelect()}>
-        <ListItemText
-          primary={
-            <>
-              {itemName} {alignmentChip}
-            </>
-          }
-        />
+        <ListItemText primary={itemLabel} />
       </ListItemButton>
     </ListItem>
   );

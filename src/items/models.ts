@@ -47,6 +47,8 @@ export interface IBaseItem {
   statsRequired: TStatsValues;
   // requires guild level to be used/equipped
   guildRequired: TGuildValues;
+  // bonuses to stats when item is equipped or used
+  statsBonuses: TStatsValues;
 }
 
 export interface IEquippableBaseItem extends IBaseItem {
@@ -58,8 +60,6 @@ export interface IEquippableBaseItem extends IBaseItem {
   hands: number;
   // amount of swings done per battle tick (for weapon slot)
   swings: number;
-  // bonuses to stats when item is equipped
-  statsBonuses: TStatsValues;
 }
 
 export interface IUsableBaseItem extends IBaseItem {
@@ -69,7 +69,9 @@ export interface IUsableBaseItem extends IBaseItem {
 
 export type TBaseItem = IUsableBaseItem | IEquippableBaseItem;
 
-function isBaseItemEquippable(item: TBaseItem): item is IEquippableBaseItem {
+export function isBaseItemEquippable(
+  item: TBaseItem,
+): item is IEquippableBaseItem {
   return !!(item as IEquippableBaseItem).slot;
 }
 
@@ -267,6 +269,7 @@ export function getEquippedItemsProtection(items: TGameItem[]) {
   }, 0);
 }
 
+// TODO: add perception check to determine id level
 export function generateRandomItem(itemName: string): TGameItem {
   const baseItem = GlobalItemsCatalogue[itemName];
   const common: IGameItem = {
@@ -290,4 +293,30 @@ export function generateRandomItem(itemName: string): TGameItem {
     usesLeft: baseItem.uses,
   };
   return item;
+}
+
+export function getHandsStatusLabel(baseItem: TBaseItem) {
+  if (!isBaseItemEquippable(baseItem)) {
+    return "Item requires no hands.";
+  }
+  if (baseItem.hands === 0) {
+    return "Item requires no hands.";
+  }
+  const hands = baseItem.hands > 1 ? "Two" : "One";
+  const swings = baseItem.swings;
+  const swingsSuffix =
+    swings > 0 ? `, ${swings} swing${swings > 1 ? "s" : ""}` : ".";
+  return `${hands}-handed item${swingsSuffix}`;
+}
+
+export function getItemSpellStatusLabel(baseItem: TBaseItem) {
+  const { spell } = baseItem;
+  if (!spell) {
+    return "";
+  }
+  let suffix = "when used";
+  if (isBaseItemEquippable(baseItem)) {
+    suffix = "when equipped";
+  }
+  return `Casts spell "${spell}" ${suffix}`;
 }
