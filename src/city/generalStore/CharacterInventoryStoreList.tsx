@@ -8,17 +8,18 @@ import {
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InventoryList from "../../character/InventoryList";
 import MoneyStatusBadge from "../../character/MoneyStatusBadge";
 import {
   $characterCharisma,
+  $characterInventory,
   characterDroppedAnItem,
+  characterIdentifiedAnItem,
   characterSoldAnItem,
 } from "../../character/state";
 import ItemDetailsDialog from "../../items/ItemDetailsDialog";
 import {
-  TGameItem,
   calculateItemIdCost,
   calculateItemPriceToSell,
   itemsAreEqual,
@@ -28,44 +29,60 @@ import { $generalStore, shopBoughtAnItem } from "./state";
 export default function CharacterInventoryStoreList() {
   const storeStock = useUnit($generalStore);
   const charisma = useUnit($characterCharisma);
-  const [selectedItem, selectItem] = useState<TGameItem | undefined>(undefined);
+  const inventory = useUnit($characterInventory);
+  const [selectedItemIndex, selectIndex] = useState(-1);
+  const deselectItemHandler = () => selectIndex(-1);
   const [selectedItemPrice, setPrice] = useState(0);
   const [selectedItemIdCost, setIdCost] = useState(0);
+  const recalculatePrices = useCallback(
+    (itemIndex: number) => {
+      const item = inventory[itemIndex];
+      const itemInStock = storeStock.find(itemsAreEqual(item));
+      const amountInShop = itemInStock ? itemInStock.amount : 0;
+      const price = calculateItemPriceToSell(item, amountInShop, charisma);
+      setPrice(price);
+      if (item.idLevel < 2) {
+        const idCost = calculateItemIdCost(price);
+        setIdCost(idCost);
+      }
+    },
+    [storeStock, inventory, charisma],
+  );
   useEffect(() => {
-    if (!selectedItem) {
+    if (selectedItemIndex < 0) {
       return;
     }
-    const itemInStock = storeStock.find(itemsAreEqual(selectedItem));
-    const amountInShop = itemInStock ? itemInStock.amount : 0;
-    const price = calculateItemPriceToSell(
-      selectedItem,
-      amountInShop,
-      charisma,
-    );
-    setPrice(price);
-    if (selectedItem.idLevel < 2) {
-      const idCost = calculateItemIdCost(price);
-      setIdCost(idCost);
-    }
-  }, [selectedItem, storeStock, charisma]);
+    recalculatePrices(selectedItemIndex);
+  }, [selectedItemIndex, recalculatePrices]);
   const handleItemSell = () => {
-    if (!selectedItem) {
+    if (selectedItemIndex < 0) {
       return;
     }
-    shopBoughtAnItem(selectedItem);
-    characterSoldAnItem({ item: selectedItem, price: selectedItemPrice });
-    selectItem(undefined);
+    shopBoughtAnItem(inventory[selectedItemIndex]);
+    characterSoldAnItem({
+      item: inventory[selectedItemIndex],
+      price: selectedItemPrice,
+    });
+    deselectItemHandler();
   };
   const handleItemDrop = () => {
-    if (!selectedItem) {
+    if (selectedItemIndex < 0) {
       return;
     }
-    characterDroppedAnItem(selectedItem);
-    selectItem(undefined);
+    characterDroppedAnItem(inventory[selectedItemIndex]);
+    deselectItemHandler();
   };
   const handleId = () => {
-    //
+    if (selectedItemIndex < 0) {
+      return;
+    }
+    characterIdentifiedAnItem({
+      item: inventory[selectedItemIndex],
+      price: selectedItemIdCost,
+    });
+    recalculatePrices(selectedItemIndex);
   };
+
   return (
     <Card elevation={2} sx={{ flex: "1 1 50%" }}>
       <CardHeader
@@ -76,18 +93,23 @@ export default function CharacterInventoryStoreList() {
         }
       />
       <CardContent>
-        <InventoryList onItemSelect={selectItem} selectedItem={selectedItem} />
+        <InventoryList
+          onIndexSelect={selectIndex}
+          selectedItem={inventory[selectedItemIndex]}
+        />
       </CardContent>
       <ItemDetailsDialog
-        item={selectedItem}
-        onClose={() => selectItem(undefined)}
+        item={inventory[selectedItemIndex]}
+        onClose={deselectItemHandler}
         footer={
           <>
             <Chip label={<Typography>Price: {selectedItemPrice}</Typography>} />
             <Stack spacing={1} direction="row">
-              {selectedItemIdCost > 0 ? (
+              {selectedItemIndex >= 0 &&
+              selectedItemIdCost > 0 &&
+              inventory[selectedItemIndex].idLevel < 2 ? (
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="warning"
                   onClick={handleId}
                   startIcon={<Chip label={selectedItemIdCost} />}
@@ -99,7 +121,7 @@ export default function CharacterInventoryStoreList() {
                 sell
               </Button>
               <Button onClick={handleItemDrop}>drop</Button>
-              <Button onClick={() => selectItem(undefined)}>cancel</Button>
+              <Button onClick={deselectItemHandler}>cancel</Button>
             </Stack>
           </>
         }

@@ -7,7 +7,7 @@ import {
 } from "../common/db";
 import { GuildSpecs, getGuildXpRequirementsForLevel } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
-import { TGameItem, itemsAreSame } from "../items/models";
+import { IdLevel, TGameItem, itemsAreSame } from "../items/models";
 import {
   EGender,
   ICharacterState,
@@ -398,5 +398,33 @@ $character.on(characterReceivedItems, (character, receivedItems) => {
   return {
     ...character,
     items: udpatedInventory,
+  };
+});
+
+export const characterIdentifiedAnItem = createEvent<{
+  item: TGameItem;
+  price: number;
+}>();
+$character.on(characterIdentifiedAnItem, (character, { item, price }) => {
+  console.log("characterIdentifiedAnItem", item);
+  if (item.idLevel === 2) {
+    return character;
+  }
+  const newIdLevel: IdLevel = item.idLevel >= 1 ? 2 : 1;
+  const itemIndex = character.items.findIndex(itemsAreSame(item));
+  if (itemIndex < 0) {
+    throw new Error("Item to identify not found in inventory!");
+  }
+  const udpatedInventory = [...character.items];
+  const identifiedItem: TGameItem = {
+    ...item,
+    idLevel: newIdLevel,
+  };
+  console.log("characterIdentifiedAnItem", identifiedItem);
+  udpatedInventory.splice(itemIndex, 1, identifiedItem);
+  return {
+    ...character,
+    items: udpatedInventory,
+    money: character.money - price,
   };
 });
