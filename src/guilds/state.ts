@@ -18,8 +18,6 @@ $guildMasters.on(guildInfoLoaded, (state) => {
   }
   return cachedData;
 });
-// TODO: implement an effect for saving state on each change instead of manual saving
-// state will not change frequently so we can safely save it on each change
 export const guildInfoSaved = createEvent();
 $guildMasters.on(guildInfoSaved, (state) => {
   saveSharedData("guild-masters", state);
@@ -42,6 +40,3 @@ export const $currentGuildMaster = combine(
 
 export const guildVisited = createEvent<EGuild>();
 $guildCursor.on(guildVisited, (_, guild) => guild);
-
-// TODO: implement guild log: list of "events" in each guild
-// (which character made a level or completed a quest etc.)

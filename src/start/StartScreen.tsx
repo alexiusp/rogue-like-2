@@ -25,7 +25,6 @@ import { navigate } from "../navigation";
 export default function StartScreen() {
   const character = useUnit($character);
   const submitHandler = () => {
-    // TODO: implement validation
     navigate("generate");
   };
   return (
@@ -85,7 +84,6 @@ export default function StartScreen() {
             <MenuItem value={EAlignment.Evil}>Evil</MenuItem>
           </Select>
         </FormControl>
-        {/* TODO: implement random name generation */}
         <TextField
           value={character.name}
           onChange={(e) => nameChanged(e.target.value)}

@@ -98,7 +98,6 @@ export function generateNewMonsterByName(
     hp,
     hpMax: hp,
     aggro: EAggroMode.Neutral,
-    // TODO: magic is not implemented yet
     mp: 0,
     mpMax: 0,
   };

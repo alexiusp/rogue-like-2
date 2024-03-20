@@ -4,7 +4,7 @@ import { TStatsValues, getStatBonus } from "../common/stats";
 import { TGuildValues } from "../guilds/types";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
-type TItemKind = "dagger" | "potion" | "sword" | "shield"; // TODO: add more types
+type TItemKind = "dagger" | "potion" | "sword" | "shield";
 
 type TSlot =
   | "head"
@@ -28,8 +28,6 @@ interface IItemAttributes {
 }
 
 // base information about an item
-// TODO: to be developed in future:
-// cursed item
 export interface IBaseItem {
   // unique name of the item
   name: string;
@@ -158,7 +156,7 @@ export function calculateBaseItemPrice({
       materialModifier = 1;
   }
   // if item has magical enchantment it will cost much higher
-  // TODO: implement different modifiers for different spells
+  // implement different modifiers for different spells
   const magicalModifier = spell ? 3 : 1;
   return (
     baseItemKindPrice * alignmentModifier * materialModifier * magicalModifier

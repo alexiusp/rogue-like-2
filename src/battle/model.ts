@@ -6,6 +6,5 @@ export function rollAttack(attackValue: number, defenseValue: number) {
 }
 
 export function rollDamage(damageValue: number, protectionValue: number) {
-  // TODO: we can change min damage to 0 when we have a special UI to demonstarte it
   return Math.max(1, Math.abs(getRandomInt(damageValue, 1) - protectionValue));
 }

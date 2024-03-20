@@ -43,7 +43,6 @@ export interface ICharacter {
 }
 
 export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
-  // TODO: implement bonuses from races, no race bonuses for elf or human
   const raceBonus = getRaceHealthModifier(race);
   const strBonus = Math.round((stats.strength - 14) / 2);
   const endBonus = Math.round(stats.endurance - 10);
@@ -78,7 +77,6 @@ export interface ICharacterState extends ICharacter {
 export function createNewCharacter(charData: ICharacter): ICharacterState {
   const race = charData.race;
   const hp = getInitialCharacterHealth(charData);
-  // TODO: implement magic points generation
   return {
     ...charData,
     age: RaceAgeMap[race][0],
@@ -131,7 +129,7 @@ export function getCharacterAttack(character: ICharacterState) {
   const raceModifier = getRaceAttackModifier(character.race);
   // modifier from stats
   const statsModifier = getStatsAttackModifier(character.stats);
-  // TODO: modifier by guild skills
+  // modifier by guild skills
   const skillsModifier = 1;
   // modifier from equipped items
   const itemsModifier = getEquippedItemsAttack(character.items);
@@ -148,7 +146,7 @@ export function getCharacterDamage(character: ICharacterState) {
   const raceModifier = getRaceDamageModifier(character.race);
   // modifier from stats
   const statsModifier = getStatsDamageModifier(character.stats);
-  // TODO: modifier by guild skills
+  // modifier by guild skills
   const skillsModifier = 1;
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
@@ -163,7 +161,7 @@ export function getCharacterDefense(character: ICharacterState) {
   const raceModifier = getRaceDefenseModifier(character.race);
   // modifier from stats
   const statsModifier = getStatsDefenseModifier(character.stats);
-  // TODO: modifier by guild skills
+  // modifier by guild skills
   const skillsModifier = 1;
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
@@ -178,7 +176,7 @@ export function getCharacterProtection(character: ICharacterState) {
   const raceModifier = getRaceProtectionModifier(character.race);
   // modifier from stats
   const statsModifier = getStatsProtectionModifier(character.stats);
-  // TODO: modifier by guild skills
+  // modifier by guild skills
   const skillsModifier = 1;
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,

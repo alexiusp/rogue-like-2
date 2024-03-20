@@ -22,10 +22,7 @@ export default function GenerateCharacter() {
   const freePoints = useUnit($freePoints);
   const rerollStats = () => raceChanged(race);
   const submitHandler = () => {
-    // TODO: validate for free points left to distribute
     characterCreated();
-    // save game can be first called here
-    // currently its called directly from event above
     navigate("city");
   };
   return (

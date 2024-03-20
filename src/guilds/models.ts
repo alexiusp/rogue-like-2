@@ -86,10 +86,9 @@ export function getGuildXpRequirementsForLevel(guild: EGuild, level: number) {
 }
 
 export function getInitialGuildMasters(): IGuildMaster[] {
-  // TODO: generate/predefine names for guild masters
   return FullGuildsList.map((guild) => ({
     guild,
-    name: "GuildMaster",
+    name: `Master ${EGuild[guild]}`,
     level: Math.round(
       GuildSpecs[guild].maxLevel + GuildSpecs[guild].xpRatio / 8,
     ),

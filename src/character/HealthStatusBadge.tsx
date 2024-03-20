@@ -7,7 +7,6 @@ export default function HealthStatusBadge() {
   const hp = useUnit($characterHealth);
   const hpMax = useUnit($characterMaxHp);
   const label = `${hp} / ${hpMax}`;
-  // TODO: change chip color when health lower than threshold
   return (
     <Tooltip title="Health" arrow placement="top">
       <Chip

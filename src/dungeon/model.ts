@@ -18,20 +18,16 @@ function generateEncounter(
 ): TGameTileEncounter | undefined {
   switch (type) {
     case EEncounterType.Chest: {
-      // TODO
       return;
     }
     case EEncounterType.Event: {
-      // TODO
       return;
     }
     case EEncounterType.Monster: {
       const possibleMonsters = getMonstersForLevel(level);
       const monsterBag = new RandomBag(possibleMonsters);
-      // TODO: generate more than one monster
       const randomMonsterName = monsterBag.getRandomItem();
       const monster = generateNewMonsterByName(randomMonsterName, level);
-      // TODO: generate chest
       const encounter: IMonsterEncounter = {
         type: EEncounterType.Monster,
         monsters: [monster],
@@ -39,7 +35,6 @@ function generateEncounter(
       return encounter;
     }
     case EEncounterType.Lair: {
-      // TODO
       return;
     }
   }
@@ -99,7 +94,6 @@ export function generateDungeonLevel(level: number): Array<TMapTile> {
       if (effectsAmount < levelSpec.maxEffects) {
         const newEffect = effectsBag.getRandomItem();
         if (newEffect !== null) {
-          // TODO: implement a possibility to generate several effects
           effects.push(newEffect);
           effectsAmount += 1;
         }

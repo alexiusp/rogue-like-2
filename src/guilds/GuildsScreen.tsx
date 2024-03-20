@@ -49,7 +49,6 @@ export default function GuildsScreen() {
   if (canJoin) {
     welcomeMessage = "Welcome, Visitor";
     if (isMember) {
-      // TODO: prit out guild title
       welcomeMessage = "Welcome, Brother";
     }
   }

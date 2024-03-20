@@ -34,7 +34,6 @@ export default function BattleScreen({
     if (battleRound !== "character") {
       return;
     }
-    // TODO: implement handling of currently selected attack/item/spell
     console.log("monsterAreaClicked for ", monster.monster, mode);
     switch (mode) {
       case "fight":

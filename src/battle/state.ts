@@ -60,7 +60,6 @@ type TMonsterAttackedParams = {
   character: ICharacterState;
 };
 // calculate results of an character attacking a single monster
-// TODO: refactor to support multiple attacks
 export const characterAttacksMonsterFx = createEffect<
   TMonsterAttackedParams,
   Array<IGameMonster>,
@@ -71,7 +70,6 @@ export const characterAttacksMonsterFx = createEffect<
       const monsters = mapTile.encounter.monsters;
       // all monsters must aggro
       for (const m of monsters) {
-        // TODO: check if monster is charmed
         m.aggro = EAggroMode.Angry;
       }
       // select attacked monster
@@ -87,7 +85,6 @@ export const characterAttacksMonsterFx = createEffect<
       const damage = getCharacterDamage(character);
       const protection = getMonsterPV(monster);
       const damageDone = rollDamage(damage, protection);
-      // TODO: for 0 damage done we could have a different animation?
       console.log("damageDone", damageDone);
       monster.hp = Math.max(monster.hp - damageDone, 0);
       monsters[index] = monster;
@@ -233,7 +230,6 @@ export const monsterAttackCharacterFx = createEffect<
       const damage = getMonsterDamage(monster);
       const protection = getCharacterProtection(character);
       const damageDone = rollDamage(damage, protection);
-      // TODO: for 0 damage done we could have a different animation?
       console.log("damageDone", damageDone);
       const hp = Math.max(character.hp - damageDone, 0);
       character.hp = hp;
@@ -367,7 +363,6 @@ sample({
 export const battleEnded = createEvent<IGameMonster[]>();
 battleEnded.watch(() => console.info("battleEnded"));
 // detect end of the battle after character round
-// TODO: add similar detection after monsters round in case they are poisoned etc.
 sample({
   clock: characterAttacksMonsterFx.finally,
   filter: (clock) => {
@@ -382,7 +377,6 @@ sample({
 });
 sample({ clock: battleEnded, target: forward, fn: () => "reward" });
 
-// TODO start reward calculation
 export const $encounterMoneyReward = createStore(0);
 $encounterMoneyReward.watch((_) => console.log("$encounterMoneyReward:", _));
 export const $encounterItemsReward = createStore<TGameItem[]>([]);

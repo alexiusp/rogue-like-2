@@ -55,7 +55,6 @@ export const RaceAgeMap: {
 export function getRaceHealthModifier(race: ECharacterRace) {
   let modifier: number;
   switch (race) {
-    // TODO add modifier for trolls etc.
     default:
       // default bonus for human-like races is 0
       modifier = 0;
@@ -80,7 +79,6 @@ export function getRaceAttackModifier(race: ECharacterRace) {
 export function getRaceDamageModifier(race: ECharacterRace) {
   let modifier: number;
   switch (race) {
-    // TODO add modifier for trolls etc.
     default:
       // default value for human-like races is 1
       modifier = 1;
@@ -91,7 +89,6 @@ export function getRaceDamageModifier(race: ECharacterRace) {
 export function getRaceDefenseModifier(race: ECharacterRace) {
   let modifier: number;
   switch (race) {
-    // TODO add modifier for orks, trolls etc.
     default:
       // default value for human-like races is 1
       modifier = 1;
@@ -102,7 +99,6 @@ export function getRaceDefenseModifier(race: ECharacterRace) {
 export function getRaceProtectionModifier(race: ECharacterRace) {
   let modifier: number;
   switch (race) {
-    // TODO add modifier for orks, trolls etc.
     case ECharacterRace.Elf:
       modifier = 0.95;
       break;

@@ -17,7 +17,6 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
     case EAggroMode.Angry:
       monsterCardClasses.push("angry");
       break;
-
     case EAggroMode.Neutral:
       monsterCardClasses.push("neutral");
       break;
@@ -27,8 +26,6 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
     default:
       break;
   }
-  // TODO: switch image to a "grave" or "skull" when monster is dead
-  // TODO: add badges for monster under spell or status
   return (
     <Grow in={true}>
       <Card

@@ -48,7 +48,7 @@ export interface IGuildMaster {
 }
 
 /**
- * TODO: Skills
+ * # Skills
  * Passive skills:
  * - fighting - general skill improving all fighting skills and attack/defense
  * -- critical hit - does double damage, ignores protection

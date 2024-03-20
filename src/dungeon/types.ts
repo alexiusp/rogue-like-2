@@ -27,7 +27,7 @@ export enum ETerrainEffect {
 export enum EEncounterType {
   Monster, // one or several monsters, optionally a chest
   Lair, // one boss, optionally pack of lesser monsters, optionally a chest
-  Event, // TODO: to be implemented
+  Event, // some random event/npc met in dungeon with possible actions and rewards/losses
   Chest, // chest
 }
 
@@ -55,8 +55,9 @@ export interface IDungeonLevelSpec {
   maxEncounters: number;
 }
 
-/* TODO:
- * event encounter - an event when user must make a choice, roll a dice for attribute and get some reward if succeed
+/*
+ * event encounter - an event when user must make a choice, roll a dice for attribute
+ * and get some reward if succeed or loose some money/xp/health etc. if failed
  */
 
 interface ITrap {

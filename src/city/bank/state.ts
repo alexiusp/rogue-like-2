@@ -28,5 +28,3 @@ $bankMoney.on(depositMoney, (account, money) => account + money);
 
 export const withdrawMoney = createEvent<number>();
 $bankMoney.on(withdrawMoney, (account, money) => account - money);
-
-// TODO: implement items storage
