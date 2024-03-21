@@ -18,21 +18,15 @@ export default function ProgressBar({
   color,
 }: IHPProgressBarProps) {
   const label = `${current} / ${max}`;
-  let progress = <LinearProgress className="progress-bar" color={color} />;
-  if (current <= max) {
-    const value = Math.round((current / max) * 100);
-    progress = (
+  const value = Math.round((Math.min(current, max) / max) * 100);
+  return (
+    <Box className="progress">
       <LinearProgress
         className="progress-bar"
         variant="determinate"
         color={color}
         value={value}
       />
-    );
-  }
-  return (
-    <Box className="progress">
-      {progress}
       <Typography className="progress-label">{label}</Typography>
     </Box>
   );

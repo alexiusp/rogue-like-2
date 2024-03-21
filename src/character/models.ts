@@ -8,6 +8,12 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import {
+  getGuildsAttackModifier,
+  getGuildsDamageModifier,
+  getGuildsDefenseModifier,
+  getGuildsProtectionModifier,
+} from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
 import {
   TGameItem,
@@ -124,13 +130,13 @@ export const rerollStat = (statName: TStatNames, charRace: ECharacterRace) => {
 };
 
 export function getCharacterAttack(character: ICharacterState) {
-  const baseValue = 10;
+  const baseValue = 20;
   // modifier by race
   const raceModifier = getRaceAttackModifier(character.race);
   // modifier from stats
   const statsModifier = getStatsAttackModifier(character.stats);
   // modifier by guild skills
-  const skillsModifier = 1;
+  const skillsModifier = getGuildsAttackModifier(character.guilds);
   // modifier from equipped items
   const itemsModifier = getEquippedItemsAttack(character.items);
   return Math.round(
@@ -139,7 +145,7 @@ export function getCharacterAttack(character: ICharacterState) {
 }
 
 export function getCharacterDamage(character: ICharacterState) {
-  const baseValue = 1;
+  const baseValue = 5;
   // get base damage value from item
   const itemValue = getEquippedItemsDamage(character.items);
   // modifier by race
@@ -147,7 +153,7 @@ export function getCharacterDamage(character: ICharacterState) {
   // modifier from stats
   const statsModifier = getStatsDamageModifier(character.stats);
   // modifier by guild skills
-  const skillsModifier = 1;
+  const skillsModifier = getGuildsDamageModifier(character.guilds);
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
   );
@@ -162,7 +168,7 @@ export function getCharacterDefense(character: ICharacterState) {
   // modifier from stats
   const statsModifier = getStatsDefenseModifier(character.stats);
   // modifier by guild skills
-  const skillsModifier = 1;
+  const skillsModifier = getGuildsDefenseModifier(character.guilds);
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
   );
@@ -177,7 +183,7 @@ export function getCharacterProtection(character: ICharacterState) {
   // modifier from stats
   const statsModifier = getStatsProtectionModifier(character.stats);
   // modifier by guild skills
-  const skillsModifier = 1;
+  const skillsModifier = getGuildsProtectionModifier(character.guilds);
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
   );

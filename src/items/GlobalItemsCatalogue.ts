@@ -22,6 +22,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
     statsBonuses: ZeroStats,
     guildRequired: ZeroGuilds,
     attributes: {
+      attack: 1,
       damage: 3,
     },
     hands: 1,
@@ -49,6 +50,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
       { guild: EGuild.Warrior, value: 4 },
     ],
     attributes: {
+      attack: 1,
       damage: 6,
     },
     hands: 1,
@@ -74,8 +76,8 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
       { guild: EGuild.Warrior, value: 1 },
     ],
     attributes: {
-      attack: 1,
-      defenseValue: 3,
+      attack: 3,
+      defenseValue: 1,
       protectionValue: 1,
     },
     hands: 1,
@@ -113,6 +115,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
     guildRequired: ZeroGuilds,
     attributes: {
       attack: 1,
+      defenseValue: 1,
     },
     hands: 0,
   },

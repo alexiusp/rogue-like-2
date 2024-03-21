@@ -1,4 +1,5 @@
 import { EAlignment } from "../common/alignment";
+import { getRandomInt } from "../common/random";
 import { NoStatsRequired } from "../common/stats";
 import {
   EGuild,
@@ -165,4 +166,32 @@ export function getMaxSkillFromGuilds(
     }
   }
   return { max, guild: maxGuild };
+}
+
+export function generateHpForGuildLevel(guildId: EGuild, level: number) {
+  const guildSpec = GuildSpecs[guildId];
+  if (level > guildSpec.maxLevel) {
+    return guildSpec.minHp;
+  }
+  return getRandomInt(guildSpec.maxHp, guildSpec.minHp);
+}
+
+export function getGuildsAttackModifier(guilds: IGuildMembership[]) {
+  const fightingSkill = getTotalSkillFromGuilds("fight", guilds);
+  return 1 + fightingSkill * 0.1;
+}
+
+export function getGuildsDamageModifier(guilds: IGuildMembership[]) {
+  const fightingSkill = getTotalSkillFromGuilds("fight", guilds);
+  return 1 + fightingSkill * 0.2;
+}
+
+export function getGuildsDefenseModifier(guilds: IGuildMembership[]) {
+  const fightingSkill = getTotalSkillFromGuilds("fight", guilds);
+  return 1 + fightingSkill * 0.2;
+}
+
+export function getGuildsProtectionModifier(guilds: IGuildMembership[]) {
+  const fightingSkill = getTotalSkillFromGuilds("fight", guilds);
+  return 1 + fightingSkill * 0.1;
 }

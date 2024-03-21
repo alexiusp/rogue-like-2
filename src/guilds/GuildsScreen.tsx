@@ -2,6 +2,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import {
   Button,
   ButtonGroup,
+  Chip,
   IconButton,
   Stack,
   Table,
@@ -16,12 +17,17 @@ import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/guilds-street.webp";
 import {
+  $canAffordLevelUp,
   $characterCurrentGuild,
   $characterGuilds,
   $characterReadyToLevelUp,
   $characterStats,
+  $guildLevelMoneyCost,
   characterJoinedGuild,
+  characterLevelsUp,
+  characterSaved,
 } from "../character/state";
+import CityStatusBar from "../city/CityStatusBar";
 import { statsSufficient } from "../common/stats";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
@@ -40,6 +46,8 @@ export default function GuildsScreen() {
   const characterStats = useUnit($characterStats);
   const isCurrentGuild = characterCurrentGuild === guildCursor;
   const characterReadyToLvlUp = useUnit($characterReadyToLevelUp);
+  const canAffordLvlUp = useUnit($canAffordLevelUp);
+  const moneyRequired = useUnit($guildLevelMoneyCost);
   const [info, toggleInfo] = useState(false);
   const isMember = !!characterGuilds.find(
     (membership) => membership.guild === guildCursor,
@@ -52,11 +60,16 @@ export default function GuildsScreen() {
       welcomeMessage = "Welcome, Brother";
     }
   }
+  const levelUpHandler = useUnit(characterLevelsUp);
+  const goBackToCity = () => {
+    characterSaved();
+    back();
+  };
   return (
     <Screen
       header={
         <>
-          <IconButton onClick={() => back()} size="small">
+          <IconButton onClick={goBackToCity} size="small">
             <StoreIcon />
           </IconButton>
           <Typography variant="h3" component="h1">
@@ -66,6 +79,7 @@ export default function GuildsScreen() {
       }
     >
       <img src={bg} style={{ objectFit: "cover", width: "100%" }} />
+      <CityStatusBar />
       <Typography variant="h4" component="h2">
         Welcome to the {EGuild[guildCursor]}&apos;s guild.
       </Typography>
@@ -108,7 +122,23 @@ export default function GuildsScreen() {
               >
                 {isMember ? "Re acquaint" : "Join"}
               </Button>
-              <Button disabled={!characterReadyToLvlUp || !isCurrentGuild}>
+              <Button
+                startIcon={
+                  <Chip
+                    component="span"
+                    label={
+                      <Typography component="span">{moneyRequired}</Typography>
+                    }
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                  />
+                }
+                disabled={
+                  !characterReadyToLvlUp || !isCurrentGuild || !canAffordLvlUp
+                }
+                onClick={levelUpHandler}
+              >
                 Make level
               </Button>
               <Button

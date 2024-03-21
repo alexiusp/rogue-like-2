@@ -1,11 +1,15 @@
-import { createEvent, createStore } from "effector";
+import { combine, createEvent, createStore } from "effector";
 import { EAlignment } from "../common/alignment";
 import {
   loadCharacterData,
   saveCharacterData,
   setSlotName,
 } from "../common/db";
-import { GuildSpecs, getGuildXpRequirementsForLevel } from "../guilds/models";
+import {
+  GuildSpecs,
+  generateHpForGuildLevel,
+  getGuildXpRequirementsForLevel,
+} from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
 import { IdLevel, TGameItem, itemsAreSame } from "../items/models";
 import {
@@ -294,6 +298,11 @@ export const $guildLevelMoneyCost = $character.map((character) => {
     guildsAmount,
   );
 });
+export const $canAffordLevelUp = combine(
+  $guildLevelMoneyCost,
+  $characterMoney,
+  (cost, money) => cost <= money,
+);
 export const $characterGuildQuest = $character.map((character) => {
   const currentGuildId = character.guild;
   const currentGuild = getCharacterGuild(currentGuildId, character);
@@ -329,6 +338,51 @@ $character.on(characterJoinedGuild, (state, guild) => {
     guild,
     // update guild membership list
     guilds: updatedGuilds,
+  };
+});
+
+export const characterLevelsUp = createEvent();
+$character.on(characterLevelsUp, (character) => {
+  const currentGuildId = character.guild;
+  const guildIndex = findCharacterGuildIndex(currentGuildId, character);
+  if (guildIndex < 0) {
+    throw Error("Current guild information not found on character!");
+  }
+  const GuildSpec = GuildSpecs[currentGuildId];
+  // update guild info
+  const currentGuild = character.guilds[guildIndex];
+  const currentGuildLevel = currentGuild.level;
+  const xpToLevel = getGuildXpRequirementsForLevel(
+    currentGuildId,
+    currentGuildLevel,
+  );
+  const updatedGuild: IGuildMembership = {
+    ...currentGuild,
+    level: currentGuildLevel + 1,
+    xp: currentGuild.xp - xpToLevel,
+  };
+  const udpatedGuilds = [...character.guilds];
+  udpatedGuilds.splice(guildIndex, 1, updatedGuild);
+  // calculate payment
+  const guildsAmount = udpatedGuilds.length;
+  const price = Math.pow(
+    100 * (GuildSpec.xpRatio / 8) * currentGuildLevel,
+    guildsAmount,
+  );
+  // calculate update to hp/mp
+  const hpBoost = generateHpForGuildLevel(
+    currentGuildId,
+    currentGuildLevel + 1,
+  );
+  console.log("hpBoost for level:", hpBoost);
+  const hpMax = character.hpMax + hpBoost;
+  const hp = hpMax;
+  return {
+    ...character,
+    guilds: udpatedGuilds,
+    money: character.money - price,
+    hp,
+    hpMax,
   };
 });
 
@@ -462,7 +516,7 @@ $character.on(characterEatBread, (character) => {
   if (money < 0) {
     throw Error("Not enough money");
   }
-  const hp = Math.min(character.hp + 5, character.hpMax);
+  const hp = Math.min(character.hp + 10, character.hpMax);
   return {
     ...character,
     money,
@@ -476,7 +530,7 @@ $character.on(characterEatLunch, (character) => {
   if (money < 0) {
     throw Error("Not enough money");
   }
-  const hp = Math.min(character.hp + 50, character.hpMax);
+  const hp = Math.min(character.hp + 100, character.hpMax);
   return {
     ...character,
     money,
@@ -490,7 +544,7 @@ $character.on(characterDrinkBeer, (character) => {
   if (money < 0) {
     throw Error("Not enough money");
   }
-  const mp = Math.min(character.mp + 5, character.mpMax);
+  const mp = Math.min(character.mp + 10, character.mpMax);
   return {
     ...character,
     money,
@@ -504,7 +558,7 @@ $character.on(characterDrinkWine, (character) => {
   if (money < 0) {
     throw Error("Not enough money");
   }
-  const mp = Math.min(character.mp + 50, character.mpMax);
+  const mp = Math.min(character.mp + 100, character.mpMax);
   return {
     ...character,
     money,

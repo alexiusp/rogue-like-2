@@ -33,17 +33,6 @@ const BaseLevel2ItemLoot: (string | null)[] = [
 
 const BaseLevel1MoneyLoot: (number | null)[] = [
   50,
-  20,
-  10,
-  10,
-  10,
-  5,
-  5,
-  ...getNullBag(3),
-];
-
-const BaseLevel2MoneyLoot: (number | null)[] = [
-  100,
   50,
   20,
   20,
@@ -51,6 +40,21 @@ const BaseLevel2MoneyLoot: (number | null)[] = [
   10,
   10,
   10,
+  10,
+  null,
+];
+
+const BaseLevel2MoneyLoot: (number | null)[] = [
+  100,
+  100,
+  50,
+  50,
+  50,
+  20,
+  20,
+  20,
+  20,
+  20,
   ...getNullBag(2),
 ];
 

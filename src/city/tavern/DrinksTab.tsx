@@ -46,7 +46,7 @@ export default function DrinksTab({ show }: IDrinksTabProps) {
           >
             <ListItemText
               primary="Order some bread"
-              secondary="5 HP for 10 Gold"
+              secondary="10 HP for 10 Gold"
             />
           </ListItemButton>
         </ListItem>
@@ -57,7 +57,7 @@ export default function DrinksTab({ show }: IDrinksTabProps) {
           >
             <ListItemText
               primary="Order some beer"
-              secondary="5 MP for 20 Gold"
+              secondary="10 MP for 20 Gold"
             />
           </ListItemButton>
         </ListItem>
@@ -68,7 +68,7 @@ export default function DrinksTab({ show }: IDrinksTabProps) {
           >
             <ListItemText
               primary="Order full lunch"
-              secondary="50 HP for 100 Gold"
+              secondary="100 HP for 100 Gold"
             />
           </ListItemButton>
         </ListItem>
@@ -77,7 +77,10 @@ export default function DrinksTab({ show }: IDrinksTabProps) {
             onClick={() => characterDrinkWine()}
             disabled={money < 200}
           >
-            <ListItemText primary="Order wine" secondary="50 MP for 200 Gold" />
+            <ListItemText
+              primary="Order wine"
+              secondary="100 MP for 200 Gold"
+            />
           </ListItemButton>
         </ListItem>
       </List>

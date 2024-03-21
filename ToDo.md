@@ -41,7 +41,7 @@
 - guild level titles for character
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
-- character death handling (return to city with lost of xp/money/stats etc.)
+- leveling: generate guild quest - depends on quest implementation
 
 # Bugs to fix:
 
@@ -49,7 +49,7 @@
 
 # Next tasks (sorted):
 
-- leveling - hp/mp increase, attack/defense bonuses etc.
+- character death handling (return to city with lost of xp/money/stats etc.)
 - skill modifiers for attack/defense (depending on guild levels)
 - aggro check roll when entering encounter
 - time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)
