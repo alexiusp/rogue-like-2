@@ -178,7 +178,9 @@ $battleRound.on(startMonstersRound, () => "monster");
 
 // length of monsters array of current encounter
 const $monstersLength = createStore<number>(0);
+$monstersLength.watch((length) => console.info("$monstersLength:", length));
 export const $monstersCursor = createStore<number | null>(null);
+$monstersCursor.watch((cursor) => console.info("$monstersCursor:", cursor));
 $monstersCursor.reset(startCharacterRound);
 
 // calculate monsters length
@@ -198,6 +200,9 @@ $monstersCursor.on(startMonstersRound, () => 0);
 // event to fire when monster attacks character
 // parameter - monster index in the monsters list of an encounter
 const characterAttackedByMonster = createEvent<number | null>();
+characterAttackedByMonster.watch((cursor) =>
+  console.info("characterAttackedByMonster:", cursor),
+);
 
 sample({
   clock: $monstersCursor,
@@ -243,14 +248,17 @@ sample({
   source: { character: $character, encounter: $encounter },
   target: monsterAttackCharacterFx,
   filter: (src, clock) => {
+    console.log("characterAttackedByMonster monster attack start check", clock);
     if (clock === null) {
       return false;
     }
     const monster = (src.encounter as IMonsterEncounter).monsters[clock];
     // skip monsters not angry or dead
     if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
+      console.log("characterAttackedByMonster dead or not angry - skip");
       return false;
     }
+    console.log("characterAttackedByMonster monster attack start check", true);
     return true;
   },
   fn(src, clock) {
@@ -272,14 +280,20 @@ sample({
   source: { character: $character, encounter: $encounter },
   target: monsterAttackTransitionFx,
   filter: (src, clock) => {
+    console.log("characterAttackedByMonster monster skip check", clock);
     if (clock === null) {
       return false;
     }
     const monster = (src.encounter as IMonsterEncounter).monsters[clock];
     // skipped monsters not angry or dead should trigger immediate transition
     if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
+      console.log(
+        "characterAttackedByMonster monster dead or not angry - trigger transition to next",
+        clock,
+      );
       return true;
     }
+    console.log("characterAttackedByMonster monster skip check", false);
     return false;
   },
 });
@@ -307,28 +321,19 @@ sample({
   clock: monsterAttackTransitionFx.done,
   target: $monstersCursor,
   source: { index: $monstersCursor, length: $monstersLength },
-  filter: (src) => {
+  fn: (src) => {
     const { index, length } = src;
-    return (index ?? 0) < length - 2;
+    const check = index !== null && index < length - 1;
+    console.log("switch to next monster", index, length, check);
+    // set cursor to null if last monster
+    return check ? (index ?? 0) + 1 : null;
   },
-  fn: (src) => (src.index ?? 0) + 1,
 });
 
 // reset hit result animation
 $hitResult.reset(monsterAttackTransitionFx.done);
 
 // trigger transition to character when all monsters attacked
-sample({
-  clock: monsterAttackTransitionFx.done,
-  target: $monstersCursor,
-  source: { index: $monstersCursor, length: $monstersLength },
-  filter: (src) => {
-    const { index, length } = src;
-    return (index ?? 0) < length - 2;
-  },
-  fn: (src) => (src.index ?? 0) + 1,
-});
-
 const monsterToCharacterTransition = createEvent();
 monsterToCharacterTransition.watch(() =>
   console.info("monsterToCharacterTransition"),
@@ -339,8 +344,11 @@ sample({
   target: monsterToCharacterTransition,
   source: { index: $monstersCursor, length: $monstersLength },
   filter: (src) => {
-    const { index, length } = src;
-    return (index ?? 0) === length - 1;
+    const { index } = src;
+    // if cursor is reset to null - monster phase is finished
+    const monstersAttackFinished = index === null;
+    console.log("monstersAttackFinished", monstersAttackFinished);
+    return monstersAttackFinished;
   },
 });
 // switch round stage after attack is done
