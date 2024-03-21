@@ -352,14 +352,9 @@ $character.on(characterLevelsUp, (character) => {
   // update guild info
   const currentGuild = character.guilds[guildIndex];
   const currentGuildLevel = currentGuild.level;
-  const xpToLevel = getGuildXpRequirementsForLevel(
-    currentGuildId,
-    currentGuildLevel,
-  );
   const updatedGuild: IGuildMembership = {
     ...currentGuild,
     level: currentGuildLevel + 1,
-    xp: currentGuild.xp - xpToLevel,
   };
   const udpatedGuilds = [...character.guilds];
   udpatedGuilds.splice(guildIndex, 1, updatedGuild);
