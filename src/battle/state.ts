@@ -6,7 +6,11 @@ import {
   getCharacterDefense,
   getCharacterProtection,
 } from "../character/models";
-import { $character } from "../character/state";
+import {
+  $character,
+  $characterIsDead,
+  characterResurrected,
+} from "../character/state";
 import { getTileIndexByCoordinates } from "../dungeon/model";
 import {
   $currentLevel,
@@ -320,10 +324,14 @@ sample({
 sample({
   clock: monsterAttackTransitionFx.done,
   target: $monstersCursor,
-  source: { index: $monstersCursor, length: $monstersLength },
+  source: {
+    index: $monstersCursor,
+    length: $monstersLength,
+    characterIsDead: $characterIsDead,
+  },
   fn: (src) => {
-    const { index, length } = src;
-    const check = index !== null && index < length - 1;
+    const { index, length, characterIsDead } = src;
+    const check = index !== null && index < length - 1 && !characterIsDead;
     console.log("switch to next monster", index, length, check);
     // set cursor to null if last monster
     return check ? (index ?? 0) + 1 : null;
@@ -424,4 +432,12 @@ $encounterItemsReward.on(itemDropped, (items, item) => {
   const udpatedItems = [...items];
   udpatedItems.splice(index, 1);
   return udpatedItems;
+});
+
+export const waitForRescueTeam = createEvent();
+
+sample({
+  clock: waitForRescueTeam,
+  source: $currentLevel,
+  target: characterResurrected,
 });

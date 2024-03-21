@@ -59,6 +59,7 @@ export default function DungeonScreen() {
       forward("city");
     }
   };
+
   const cells = dungeonMap.map.map((tile, index) => (
     <Grid xs={1} key={`cell-${index}`}>
       <DungeonTile

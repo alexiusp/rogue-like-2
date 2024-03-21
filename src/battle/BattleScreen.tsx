@@ -1,17 +1,32 @@
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { blueGrey, deepPurple } from "@mui/material/colors";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.webp";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
+import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
 import { ETerrain, ETerrainEffect, IChest } from "../dungeon/types";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
 import HitAnimation from "./HitAnimation";
-import { $battleRound, $monstersCursor, monsterAttacked } from "./state";
+import {
+  $battleRound,
+  $monstersCursor,
+  monsterAttacked,
+  waitForRescueTeam,
+} from "./state";
 import { TBattleMode } from "./types";
 
 interface IBattleScreenProps {
@@ -30,8 +45,9 @@ export default function BattleScreen({
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
   const [mode, setMode] = useState<TBattleMode>();
+  const characterIsDead = useUnit($characterIsDead);
   const monsterAreaClicked = (monster: IGameMonster, index: number) => {
-    if (battleRound !== "character") {
+    if (battleRound !== "character" || characterIsDead) {
       return;
     }
     console.log("monsterAreaClicked for ", monster.monster, mode);
@@ -43,6 +59,7 @@ export default function BattleScreen({
         break;
     }
   };
+  const waitForRescue = useUnit(waitForRescueTeam);
   return (
     <Stack direction="column" spacing={0.5} className="battle-screen">
       <Stack
@@ -109,6 +126,24 @@ export default function BattleScreen({
       <Box sx={{ backgroundColor: deepPurple[500] }}>
         <Typography>saved actions/spells/items</Typography>
       </Box>
+      <Dialog open={characterIsDead}>
+        <DialogTitle>You are dead!</DialogTitle>
+        <DialogContent>
+          <Typography>
+            You died in the Dungeon. Please wait for some other dungeon explorer
+            to find your body and morgue worker to resurrect you.
+          </Typography>
+          <Typography>
+            Remember that there is always a risk of &quot;complications&quot; as
+            result of a resurrect spell.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button size="small" variant="contained" onClick={waitForRescue}>
+            Wait for rescue
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 }
