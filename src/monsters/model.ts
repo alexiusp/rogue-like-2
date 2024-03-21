@@ -1,6 +1,6 @@
 import { ICharacterState } from "../character/models";
 import { EAlignment } from "../common/alignment";
-import { RandomBag, getRandomInt } from "../common/random";
+import { RandomBag, TRandomBag, getRandomInt } from "../common/random";
 import {
   TStatsValues,
   getStatsAttackModifier,
@@ -8,11 +8,12 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import { ETerrainEffect } from "../dungeon/types";
 import { TGameItem, generateRandomItem } from "../items/models";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
-type TMonsterType = "animal" | "insect" | "humanoid" | "undead";
+type TMonsterType = "animal" | "insect" | "reptile" | "humanoid" | "undead";
 
 // base monster info stored in the catalogue and common for all monsters
 // of the same name
@@ -40,9 +41,14 @@ export interface IBaseMonster {
   // attacks, resistances, spells etc.
   specials: Array<string>;
   // random bag of possible additional loot (names to calculate from)
-  items: Array<string | null>;
+  items: TRandomBag<string>;
   // random bag of possible money loot
-  money: Array<number | null>;
+  money: TRandomBag<number>;
+  // random bag for possible amount in encounter
+  pack: TRandomBag<number>;
+  // possible terraing effects for this monster
+  // some monsters can for example only live in water or in sand
+  effects: Array<ETerrainEffect | null>;
 }
 
 export enum EAggroMode {

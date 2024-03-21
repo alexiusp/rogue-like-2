@@ -13,9 +13,10 @@
   - check if monster is dead after spells do their effect
   - cursed items
 - encounters:
-  - monster: generate more than one monster, generate optional chest
-  - monster: switch image of dead monster to skull or grave
-  - monster: badges for spells/effect
+  - monster: generate optional chest
+  - monster: switch image of dead monster to skull or grave on battle screen
+  - monster: badges for spells/effect - depends on magic and monster special attacks implementation
+  - monster: size for monster - depends on character races (trolls and halflings) implementation
   - chests: opened, locked, magically locked
   - lair
   - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character
@@ -40,6 +41,7 @@
 - guild level titles for character
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
+- character death handling (return to city with lost of xp/money/stats etc.)
 
 # Bugs to fix:
 
@@ -48,7 +50,6 @@
 
 # Next tasks (sorted):
 
-- add two more monsters and items
 - leveling - hp/mp increase, attack/defense bonuses etc.
 - skill modifiers for attack/defense (depending on guild levels)
 - aggro check roll when entering encounter

@@ -5,7 +5,7 @@
   border: 1px solid;
 }
 .dungeon .cell.open {
-  background-image: url(/src/assets/tiles/ground.jpg);
+  background-image: url(/src/assets/tiles/ground.webp);
   background-size: cover;
   background-position: center;
 }

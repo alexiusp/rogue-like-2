@@ -1,8 +1,14 @@
 export const getRandomInt = (max = 1, min = 0) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
+export type TRandomBag<T> = Array<T | null>;
+
 export function getNullBag(amount: number): Array<null> {
   return new Array(amount).fill(null);
+}
+
+export function getNumberBag(amount: number, filler: number): Array<number> {
+  return new Array(amount).fill(filler);
 }
 
 export class RandomBag<T> {

@@ -1,11 +1,11 @@
 import { Button } from "@mui/material";
 import { ReactNode } from "react";
 import avatar from "../assets/avatar.png";
-import fog from "../assets/tiles/fog.png";
+import fog from "../assets/tiles/fog.webp";
 import ladder from "../assets/tiles/ladder1.png";
 import pit from "../assets/tiles/pit.png";
 import skull from "../assets/tiles/skull.png";
-import water from "../assets/tiles/water.jpg";
+import water from "../assets/tiles/water.webp";
 import {
   EEncounterType,
   ETerrain,

@@ -1,5 +1,5 @@
 import { getNullBag } from "../common/random";
-import { EEncounterType, IDungeonLevelSpec } from "./types";
+import { EEncounterType, ETerrainEffect, IDungeonLevelSpec } from "./types";
 
 const FirstLevel: IDungeonLevelSpec = {
   level: 1,
@@ -9,9 +9,14 @@ const FirstLevel: IDungeonLevelSpec = {
   stairsDown: { x: 1, y: 3 },
   terrains: [],
   maxTerrain: 0,
-  effects: [],
+  effects: [...getNullBag(18), ETerrainEffect.Fog, ETerrainEffect.Water],
   maxEffects: 0,
-  encounters: [...getNullBag(9), EEncounterType.Monster],
+  encounters: [
+    ...getNullBag(9),
+    EEncounterType.Monster,
+    EEncounterType.Monster,
+    EEncounterType.Monster,
+  ],
   maxEncounters: 20,
 };
 

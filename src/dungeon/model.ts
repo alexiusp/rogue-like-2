@@ -1,7 +1,10 @@
 import { RandomBag } from "../common/random";
 import { generateNewMonsterByName } from "../monsters/model";
 import DungeonSpec from "./dungeonSpecs";
-import getMonstersForLevel from "./encounterSpecs";
+import {
+  getAmountOfMonsters,
+  getMonstersForLevelAndTerrain,
+} from "./encounterSpecs";
 import {
   EEncounterType,
   ETerrain,
@@ -15,6 +18,8 @@ import {
 function generateEncounter(
   type: EEncounterType,
   level: number,
+  terrain: ETerrain,
+  effects: ETerrainEffect[],
 ): TGameTileEncounter | undefined {
   switch (type) {
     case EEncounterType.Chest: {
@@ -24,13 +29,26 @@ function generateEncounter(
       return;
     }
     case EEncounterType.Monster: {
-      const possibleMonsters = getMonstersForLevel(level);
+      const possibleMonsters = getMonstersForLevelAndTerrain(
+        level,
+        terrain,
+        effects,
+      );
+      if (!possibleMonsters || possibleMonsters.length === 0) {
+        return;
+      }
       const monsterBag = new RandomBag(possibleMonsters);
       const randomMonsterName = monsterBag.getRandomItem();
-      const monster = generateNewMonsterByName(randomMonsterName, level);
+      const amount = getAmountOfMonsters(randomMonsterName);
+      if (amount === null) {
+        return;
+      }
+      const monsters = new Array(amount)
+        .fill(null)
+        .map(() => generateNewMonsterByName(randomMonsterName, level));
       const encounter: IMonsterEncounter = {
         type: EEncounterType.Monster,
-        monsters: [monster],
+        monsters,
       };
       return encounter;
     }
@@ -103,8 +121,17 @@ export function generateDungeonLevel(level: number): Array<TMapTile> {
       if (encounterAmount < levelSpec.maxEncounters) {
         const newEncounterType = encountersBag.getRandomItem();
         if (newEncounterType !== null) {
-          encounter = generateEncounter(newEncounterType, level);
-          encounterAmount += 1;
+          encounter = generateEncounter(
+            newEncounterType,
+            level,
+            terrain,
+            effects,
+          );
+          if (encounter) {
+            // if no encounter is possible for this terrain/effects combination
+            // don't count it
+            encounterAmount += 1;
+          }
         }
       }
       tiles.push({

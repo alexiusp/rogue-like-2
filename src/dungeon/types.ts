@@ -1,3 +1,4 @@
+import { TRandomBag } from "../common/random";
 import { TGameItem } from "../items/models";
 import { IGameMonster } from "../monsters/model";
 
@@ -42,15 +43,15 @@ export interface IDungeonLevelSpec {
   stairsUp?: IMapCoordinates;
   stairsDown?: IMapCoordinates;
   // random bag to generate terrain from
-  terrains: Array<ETerrain | null>;
+  terrains: TRandomBag<ETerrain>;
   // max number of non-floor and non-stairs terrain
   maxTerrain: number;
   // random bag to generate effects from
-  effects: Array<ETerrainEffect | null>;
+  effects: TRandomBag<ETerrainEffect>;
   // max number of terrains with effect
   maxEffects: number;
   // random bag to generate encounters from
-  encounters: Array<EEncounterType | null>;
+  encounters: TRandomBag<EEncounterType>;
   // max numbers of encounters to generate
   maxEncounters: number;
 }
