@@ -221,7 +221,7 @@ export const $characterXpToNextLevel = $character.map((character) => {
     currentGuildId,
     currentGuildLevel,
   );
-  return xpToNextLevel - currentXp;
+  return Math.max(xpToNextLevel - currentXp, 0);
 });
 export const $characterMaxXpForCurrentGuild = $character.map((character) => {
   const currentGuildId = character.guild;
@@ -238,11 +238,13 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
   }
   const currentXp = currentGuild.xp;
   const currentGuildLevel = currentGuild.level;
+  // limit xp gain by current guild level + 1
   const xpToNextLevel = getGuildXpRequirementsForLevel(
     currentGuildId,
-    currentGuildLevel,
+    currentGuildLevel + 1,
   );
-  const newXpValue = Math.min(xpToNextLevel, currentXp + xpGained);
+  // "pinned" state - xp to second level - 1
+  const newXpValue = Math.min(xpToNextLevel - 1, currentXp + xpGained);
   currentGuild.xp = newXpValue;
   const guildIndex = findCharacterGuildIndex(currentGuildId, character);
   const guilds = [...character.guilds];
@@ -252,7 +254,32 @@ $character.on(xpGainedByCharacter, (character, xpGained) => {
     guilds,
   };
 });
-export const $characterPinned = $characterXpToNextLevel.map((xp) => xp === 0);
+export const $characterPinned = $character.map((character) => {
+  const currentGuildId = character.guild;
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  if (!currentGuild) {
+    throw Error("Current guild information not found on character!");
+  }
+  const currentXp = currentGuild.xp;
+  const currentGuildLevel = currentGuild.level;
+  const xpToPin =
+    getGuildXpRequirementsForLevel(currentGuildId, currentGuildLevel + 1) - 1;
+  return currentXp === xpToPin;
+});
+export const $characterReadyToLevelUp = $character.map((character) => {
+  const currentGuildId = character.guild;
+  const currentGuild = getCharacterGuild(currentGuildId, character);
+  if (!currentGuild) {
+    throw Error("Current guild information not found on character!");
+  }
+  const currentXp = currentGuild.xp;
+  const currentGuildLevel = currentGuild.level;
+  const xpToLevel = getGuildXpRequirementsForLevel(
+    currentGuildId,
+    currentGuildLevel,
+  );
+  return currentXp >= xpToLevel;
+});
 export const $guildLevelMoneyCost = $character.map((character) => {
   const currentGuildId = character.guild;
   const GuildSpec = GuildSpecs[currentGuildId];

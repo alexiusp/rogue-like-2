@@ -18,7 +18,7 @@ import bg from "../assets/guilds-street.webp";
 import {
   $characterCurrentGuild,
   $characterGuilds,
-  $characterPinned,
+  $characterReadyToLevelUp,
   $characterStats,
   characterJoinedGuild,
 } from "../character/state";
@@ -39,7 +39,7 @@ export default function GuildsScreen() {
   const characterGuilds = useUnit($characterGuilds);
   const characterStats = useUnit($characterStats);
   const isCurrentGuild = characterCurrentGuild === guildCursor;
-  const characterPinned = useUnit($characterPinned);
+  const characterReadyToLvlUp = useUnit($characterReadyToLevelUp);
   const [info, toggleInfo] = useState(false);
   const isMember = !!characterGuilds.find(
     (membership) => membership.guild === guildCursor,
@@ -108,7 +108,7 @@ export default function GuildsScreen() {
               >
                 {isMember ? "Re acquaint" : "Join"}
               </Button>
-              <Button disabled={!characterPinned || !isCurrentGuild}>
+              <Button disabled={!characterReadyToLvlUp || !isCurrentGuild}>
                 Make level
               </Button>
               <Button

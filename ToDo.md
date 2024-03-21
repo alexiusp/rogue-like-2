@@ -46,7 +46,6 @@
 # Bugs to fix:
 
 - when selling an item with other identical items in inventory first item in list will be sold instead of selected one
-- "pinned" state must start 1xp before second level, not right after reaching the current one
 
 # Next tasks (sorted):
 

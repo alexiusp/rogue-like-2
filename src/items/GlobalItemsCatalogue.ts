@@ -74,7 +74,9 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
       { guild: EGuild.Warrior, value: 1 },
     ],
     attributes: {
-      damage: 6,
+      attack: 1,
+      defenseValue: 3,
+      protectionValue: 1,
     },
     hands: 1,
   },
