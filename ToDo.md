@@ -49,5 +49,4 @@
 
 # Next tasks (sorted):
 
-- aggro check roll when entering encounter
 - time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)

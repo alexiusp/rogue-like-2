@@ -1,6 +1,8 @@
 import { combine, createEvent, createStore, sample } from "effector";
+import { rollAggro } from "../character/models";
+import { $character } from "../character/state";
 import { loadCharacterData, saveCharacterData } from "../common/db";
-import { areAllMonstersDead } from "../monsters/model";
+import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
@@ -10,7 +12,13 @@ import {
   isStairsDown,
   isStairsUp,
 } from "./model";
-import { EEncounterType, ETerrain, IMapCoordinates, TMapTile } from "./types";
+import {
+  EEncounterType,
+  ETerrain,
+  IMapCoordinates,
+  IMonsterEncounter,
+  TMapTile,
+} from "./types";
 
 type TDungeonState = {
   [level: number]: Array<TMapTile>;
@@ -188,3 +196,41 @@ export const $isOnStairsUp = $currentMapTile.map((tile) =>
 export const $isOnStairsDown = $currentMapTile.map((tile) =>
   isStairsDown(tile.terrain),
 );
+
+// roll for aggro when entering battle
+sample({
+  clock: startMonsterBattle,
+  source: {
+    mapTile: $currentMapTile,
+    character: $character,
+    state: $dungeonState,
+    level: $currentLevel,
+  },
+  target: $dungeonState,
+  fn: ({ character, level, mapTile, state }) => {
+    const levelMap = [...state[level]];
+    const tileIndex = getTileIndexByCoordinates(
+      { x: mapTile.x, y: mapTile.y },
+      levelMap,
+    );
+    const monsters = (mapTile.encounter as IMonsterEncounter).monsters;
+    const updatedMonsters = monsters.map((monster) => {
+      const isAggro = rollAggro(character, monster);
+      console.log(`monster ${monster.monster} get angry: ${isAggro}`);
+      return {
+        ...monster,
+        aggro: isAggro ? EAggroMode.Angry : EAggroMode.Neutral,
+      };
+    });
+    // check charisma and alignment for triggering aggro
+    mapTile.encounter = {
+      ...(mapTile.encounter as IMonsterEncounter),
+      monsters: updatedMonsters,
+    };
+    levelMap[tileIndex] = mapTile;
+    return {
+      ...state,
+      [level]: levelMap,
+    };
+  },
+});

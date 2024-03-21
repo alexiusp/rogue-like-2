@@ -1,8 +1,9 @@
 import { EAlignment } from "../common/alignment";
-import { getRandomInt } from "../common/random";
+import { getRandomInt, rollDiceCheck } from "../common/random";
 import {
   TStatNames,
   TStatsValues,
+  getStatBonus,
   getStatsAttackModifier,
   getStatsDamageModifier,
   getStatsDefenseModifier,
@@ -22,6 +23,8 @@ import {
   getEquippedItemsDefense,
   getEquippedItemsProtection,
 } from "../items/models";
+import GlobalMonsterCatalogue from "../monsters/GlobalMonsterCatalogue";
+import { IGameMonster } from "../monsters/model";
 import {
   ECharacterRace,
   RaceAgeMap,
@@ -119,6 +122,14 @@ export function getCharacterGuildXp(guild: EGuild, character: ICharacterState) {
   return guildInfo?.xp ?? 0;
 }
 
+export function getCharacterGuildLevel(
+  guild: EGuild,
+  character: ICharacterState,
+) {
+  const guildInfo = getCharacterGuild(guild, character);
+  return guildInfo?.level ?? 1;
+}
+
 export function getCharacterTotalXp(character: ICharacterState) {
   return character.guilds.reduce((sum, guild) => sum + guild.xp, 0);
 }
@@ -187,4 +198,16 @@ export function getCharacterProtection(character: ICharacterState) {
   return Math.round(
     (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
   );
+}
+
+export function rollAggro(character: ICharacterState, monster: IGameMonster) {
+  const { alignment, guild, stats } = character;
+  const baseMonster = GlobalMonsterCatalogue[monster.monster];
+  const difLevel = getCharacterGuildLevel(guild, character) - baseMonster.level;
+  const levelBonus = (difLevel - 1) * 4;
+  const statBonus = getStatBonus(stats.charisma) * 2;
+  const monsterAlignment = baseMonster.alignment;
+  const alignmentBonus = alignment !== monsterAlignment ? -2 : 2;
+  const rollValue = 50 + levelBonus + statBonus + alignmentBonus;
+  return rollDiceCheck(rollValue, "1D100");
 }
