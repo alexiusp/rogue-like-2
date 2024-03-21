@@ -49,7 +49,5 @@
 
 # Next tasks (sorted):
 
-- character death handling (return to city with lost of xp/money/stats etc.)
-- skill modifiers for attack/defense (depending on guild levels)
 - aggro check roll when entering encounter
 - time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)
