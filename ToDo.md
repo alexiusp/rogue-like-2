@@ -49,6 +49,5 @@
 
 # Next tasks (sorted):
 
-- time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)
 - Messages buffer - to describe events or battle log to use
 - health badge/progress color change and/or animation when health is low/critical

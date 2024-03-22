@@ -19,6 +19,7 @@ import {
   getTileIndexByCoordinates,
   isMonsterEncounterTile,
   isTileStairs,
+  respawnTiles,
 } from "./model";
 import {
   EEncounterType,
@@ -282,7 +283,7 @@ sample({
   },
   target: $dungeonState,
   fn({ level, state }, pos) {
-    const levelMap = [...state[level]];
+    let levelMap = [...state[level]];
     // increase all respawn timeouts
     for (let index = 0; index < levelMap.length; index++) {
       const tile = levelMap[index];
@@ -294,7 +295,6 @@ sample({
       if (areSameCoordinates(pos, { x: tile.x, y: tile.y })) {
         respawnTimer = 0;
       }
-      // TODO: check if respawn timer reached limit
       // and we need to regenerate (respawn) this tile
       const udpatedTile: ICommonMapTile = {
         ...tile,
@@ -302,6 +302,9 @@ sample({
       };
       levelMap[index] = udpatedTile;
     }
+    // check if respawn timer reached limit on any of the tiles
+    // and regenerate tiles where it does
+    levelMap = respawnTiles(level, levelMap);
     return {
       ...state,
       [level]: levelMap,
