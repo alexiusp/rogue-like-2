@@ -11,6 +11,7 @@ import {
   $characterIsDead,
   characterResurrected,
 } from "../character/state";
+import { createDelayEffect } from "../common/delay";
 import { getTileIndexByCoordinates } from "../dungeon/model";
 import {
   $currentLevel,
@@ -157,9 +158,7 @@ sample({
 });
 
 const BATTLE_ROUND_DELAY_MS = 1000;
-function delay() {
-  return new Promise((resolve) => setTimeout(resolve, BATTLE_ROUND_DELAY_MS));
-}
+const delay = createDelayEffect(BATTLE_ROUND_DELAY_MS);
 
 const characterToMonsterTransitionFx = createEffect(delay);
 // reset hit result when transition done

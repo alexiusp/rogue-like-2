@@ -1,7 +1,14 @@
-import { combine, createEvent, createStore, sample } from "effector";
+import {
+  combine,
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+} from "effector";
 import { rollAggro } from "../character/models";
 import { $character } from "../character/state";
 import { loadCharacterData, saveCharacterData } from "../common/db";
+import { createDelayEffect } from "../common/delay";
 import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
@@ -74,9 +81,26 @@ $currentLevel.on(dungeonLoaded, (state) => {
 
 export const $characterPosition = createStore<IMapCoordinates>({ x: 0, y: 0 });
 export const moveCharacter = createEvent<IMapCoordinates>();
-$characterPosition.on(moveCharacter, (_, newPos) => newPos);
+export const characterPositionChanged = createEvent<IMapCoordinates>();
+$characterPosition.on(characterPositionChanged, (_, newPos) => newPos);
 $characterPosition.watch((currentPos) => {
   console.info("character position:", currentPos);
+});
+
+const delay = createDelayEffect(300);
+const characterMovementFx = createEffect<IMapCoordinates, IMapCoordinates>(
+  async (pos) => {
+    // wait some time before moving character to position
+    await delay();
+    return pos;
+  },
+);
+// start delay after opening tile
+sample({ clock: moveCharacter, target: characterMovementFx });
+// after delay move character to tile
+sample({
+  clock: characterMovementFx.doneData,
+  target: characterPositionChanged,
 });
 
 export const $dungeonLevelMap = combine(
@@ -86,7 +110,6 @@ export const $dungeonLevelMap = combine(
   (level, state, position) => {
     const levelSpec = DungeonSpec[level];
     const levelMap = state[level];
-    console.log("$dungeonLevelMap update");
     return {
       width: levelSpec.width,
       height: levelSpec.height,
@@ -97,7 +120,6 @@ export const $dungeonLevelMap = combine(
 );
 
 export const $currentMapTile = $dungeonLevelMap.map((state) => {
-  console.log("$currentMapTile update");
   return getMapTileByCoordinates(state.character, state.map);
 });
 
@@ -108,7 +130,7 @@ $currentLevel.on(startDungeonLevel, (_, level) => level);
 sample({
   clock: startDungeonLevel,
   source: $dungeonState,
-  target: moveCharacter,
+  target: characterPositionChanged,
   fn: (dungeonState, level) => {
     console.log("dungeon start sampler", level);
     const levelMap = dungeonState[level];
@@ -151,7 +173,7 @@ startEncounter.watch(() => console.info("startEncounter"));
 
 // trigger startEncounter event
 sample({
-  clock: moveCharacter,
+  clock: characterPositionChanged,
   source: $currentMapTile,
   target: startEncounter,
   filter: (mapTile) => {
