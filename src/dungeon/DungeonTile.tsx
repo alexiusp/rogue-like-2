@@ -29,7 +29,7 @@ export default function DungeonTile({
   const { open, terrain, x, y } = tile;
   const tileLayers: ReactNode[] = [];
   const buttonClassNames = ["cell"];
-  let fowLevel = 1;
+  let fowLevel = 0;
   if (open) {
     buttonClassNames.push("open");
     switch (terrain) {
@@ -95,14 +95,16 @@ export default function DungeonTile({
       fowLevel = respawnTimer / MAX_RESPAWN_TIMEOUT;
     }
   }
+  let characterLayer = null;
   if (character) {
-    tileLayers.push(<img src={avatar} key="character" alt="Character" />);
+    characterLayer = <img src={avatar} key="character" alt="Character" />;
   }
   const classes = buttonClassNames.join(" ");
   return (
     <Button className={classes} focusRipple onClick={() => onClick({ x, y })}>
       {tileLayers}
       <Box className="fog-of-war" sx={{ opacity: fowLevel }} />
+      {characterLayer}
     </Button>
   );
 }

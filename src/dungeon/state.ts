@@ -13,6 +13,7 @@ import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
+  areSameCoordinates,
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
@@ -266,6 +267,41 @@ sample({
       monsters: updatedMonsters,
     };
     levelMap[tileIndex] = mapTile;
+    return {
+      ...state,
+      [level]: levelMap,
+    };
+  },
+});
+
+sample({
+  clock: characterPositionChanged,
+  source: {
+    state: $dungeonState,
+    level: $currentLevel,
+  },
+  target: $dungeonState,
+  fn({ level, state }, pos) {
+    const levelMap = [...state[level]];
+    // increase all respawn timeouts
+    for (let index = 0; index < levelMap.length; index++) {
+      const tile = levelMap[index];
+      if (!tile.open || isTileStairs(tile)) {
+        continue;
+      }
+      let respawnTimer = tile.respawnTimer + 1;
+      // reset timer when character visit the tile
+      if (areSameCoordinates(pos, { x: tile.x, y: tile.y })) {
+        respawnTimer = 0;
+      }
+      // TODO: check if respawn timer reached limit
+      // and we need to regenerate (respawn) this tile
+      const udpatedTile: ICommonMapTile = {
+        ...tile,
+        respawnTimer,
+      };
+      levelMap[index] = udpatedTile;
+    }
     return {
       ...state,
       [level]: levelMap,
