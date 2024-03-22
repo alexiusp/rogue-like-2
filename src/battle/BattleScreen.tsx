@@ -16,7 +16,6 @@ import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
-import { ETerrain, ETerrainEffect, IChest } from "../dungeon/types";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
@@ -30,10 +29,10 @@ import {
 import { TBattleMode } from "./types";
 
 interface IBattleScreenProps {
-  chest?: IChest;
-  effects: Array<ETerrainEffect>;
+  //  chest?: IChest;
+  //  effects: Array<ETerrainEffect>;
   monsters: Array<IGameMonster>;
-  terrain: ETerrain;
+  //  terrain: ETerrain;
 }
 
 export default function BattleScreen({
@@ -42,6 +41,7 @@ export default function BattleScreen({
   monsters,
   //terrain,
 }: IBattleScreenProps) {
+  console.log("battlescreen render", monsters);
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
   const [mode, setMode] = useState<TBattleMode>();

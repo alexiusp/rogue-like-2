@@ -14,6 +14,7 @@
 - encounters:
   - monster: generate optional chest
   - monster: switch image of dead monster to skull or grave on battle screen
+  - map: differentiate between tiles with alive monsters and dead monsters (finished encounter)
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
   - monster: size for monster - depends on character races (trolls and halflings) implementation
   - chests: opened, locked, magically locked

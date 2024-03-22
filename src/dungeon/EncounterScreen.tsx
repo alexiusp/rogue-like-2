@@ -2,22 +2,15 @@ import { Box } from "@mui/material";
 import { useUnit } from "effector-react";
 import { ReactNode } from "react";
 import BattleScreen from "../battle/BattleScreen";
-import { $currentMapTile } from "./state";
+import { $encounter } from "./state";
 import { EEncounterType } from "./types";
 
 export default function EncounterScreen() {
-  const { effects, terrain, encounter } = useUnit($currentMapTile);
+  const encounter = useUnit($encounter);
   let subScreen: ReactNode;
   switch (encounter?.type) {
     case EEncounterType.Monster:
-      subScreen = (
-        <BattleScreen
-          chest={encounter.chest}
-          effects={effects}
-          monsters={encounter.monsters}
-          terrain={terrain}
-        />
-      );
+      subScreen = <BattleScreen monsters={encounter.monsters} />;
       break;
 
     default:

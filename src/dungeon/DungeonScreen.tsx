@@ -56,7 +56,11 @@ export default function DungeonScreen() {
     if (ladderDown) {
       startDungeonLevel(currentLevel + 1);
     } else {
-      forward("city");
+      if (currentLevel > 1) {
+        startDungeonLevel(currentLevel - 1);
+      } else {
+        forward("city");
+      }
     }
   };
 

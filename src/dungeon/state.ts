@@ -16,14 +16,14 @@ import {
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
-  isStairsDown,
-  isStairsUp,
+  isMonsterEncounterTile,
+  isTileStairs,
 } from "./model";
 import {
   EEncounterType,
-  ETerrain,
+  ICommonMapTile,
   IMapCoordinates,
-  IMonsterEncounter,
+  IStairsMapTile,
   TMapTile,
 } from "./types";
 
@@ -55,6 +55,7 @@ $dungeonState.on(dungeonLoaded, (state) => {
   }
   return dungeonState;
 });
+$dungeonState.watch((state) => console.log("dungeon state updated:", state));
 
 // this must be removed after development phase
 // characters must start every new session from the city
@@ -118,10 +119,17 @@ export const $dungeonLevelMap = combine(
     };
   },
 );
+$dungeonLevelMap.watch((dungeonLevelMap) =>
+  console.log("dungeonLevelMap updated", dungeonLevelMap),
+);
 
 export const $currentMapTile = $dungeonLevelMap.map((state) => {
-  return getMapTileByCoordinates(state.character, state.map);
+  const tile = getMapTileByCoordinates(state.character, state.map);
+  return tile;
 });
+$currentMapTile.watch((currentMapTile) =>
+  console.log("$currentMapTile updated", currentMapTile),
+);
 
 export const startDungeonLevel = createEvent<number>();
 $currentLevel.on(startDungeonLevel, (_, level) => level);
@@ -135,10 +143,11 @@ sample({
     console.log("dungeon start sampler", level);
     const levelMap = dungeonState[level];
     const ladderIndex = levelMap.findIndex(
-      (tile) => tile.terrain === ETerrain.StairsUp,
+      (tile) => (tile as IStairsMapTile).direction === "up",
     );
     console.log("ladder", ladderIndex, levelMap);
     if (ladderIndex < 0) {
+      console.error(levelMap, ladderIndex);
       throw new Error("Invalid map! Ladder not found!");
     }
     const ladderTile = levelMap[ladderIndex];
@@ -177,6 +186,9 @@ sample({
   source: $currentMapTile,
   target: startEncounter,
   filter: (mapTile) => {
+    if (isTileStairs(mapTile)) {
+      return false;
+    }
     const encounter = mapTile.encounter;
     if (!encounter) {
       return false;
@@ -197,7 +209,10 @@ sample({
 });
 
 // current encounter
-export const $encounter = $currentMapTile.map((tile) => tile.encounter ?? null);
+export const $encounter = $currentMapTile.map(
+  (tile) => (tile as ICommonMapTile).encounter ?? null,
+);
+$encounter.watch((encounter) => console.log("encounter udpated:", encounter));
 
 // see src/battle/model for further details about battle calculation
 export const startMonsterBattle = createEvent();
@@ -212,11 +227,11 @@ sample({
     !!encounter && encounter.type === EEncounterType.Monster,
 });
 
-export const $isOnStairsUp = $currentMapTile.map((tile) =>
-  isStairsUp(tile.terrain),
+export const $isOnStairsUp = $currentMapTile.map(
+  (tile) => isTileStairs(tile) && tile.direction == "up",
 );
-export const $isOnStairsDown = $currentMapTile.map((tile) =>
-  isStairsDown(tile.terrain),
+export const $isOnStairsDown = $currentMapTile.map(
+  (tile) => isTileStairs(tile) && tile.direction == "down",
 );
 
 // roll for aggro when entering battle
@@ -230,12 +245,15 @@ sample({
   },
   target: $dungeonState,
   fn: ({ character, level, mapTile, state }) => {
+    if (!isMonsterEncounterTile(mapTile)) {
+      return state;
+    }
     const levelMap = [...state[level]];
     const tileIndex = getTileIndexByCoordinates(
       { x: mapTile.x, y: mapTile.y },
       levelMap,
     );
-    const monsters = (mapTile.encounter as IMonsterEncounter).monsters;
+    const monsters = mapTile.encounter.monsters;
     const updatedMonsters = monsters.map((monster) => {
       const isAggro = rollAggro(character, monster);
       console.log(`monster ${monster.monster} get angry: ${isAggro}`);
@@ -246,7 +264,7 @@ sample({
     });
     // check charisma and alignment for triggering aggro
     mapTile.encounter = {
-      ...(mapTile.encounter as IMonsterEncounter),
+      ...mapTile.encounter,
       monsters: updatedMonsters,
     };
     levelMap[tileIndex] = mapTile;

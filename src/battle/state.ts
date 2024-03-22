@@ -72,11 +72,11 @@ export const characterAttacksMonsterFx = createEffect<
 >(
   ({ mapTile, index, character }) =>
     new Promise((resolve, reject) => {
-      const monsters = mapTile.encounter.monsters;
       // all monsters must aggro
-      for (const m of monsters) {
-        m.aggro = EAggroMode.Angry;
-      }
+      const monsters = mapTile.encounter.monsters.map((m) => ({
+        ...m,
+        aggro: EAggroMode.Angry,
+      }));
       // select attacked monster
       const monster = monsters[index];
       const attack = getCharacterAttack(character);
@@ -135,21 +135,23 @@ sample({
   source: { state: $dungeonState, level: $currentLevel },
   target: $dungeonState,
   fn: (source, clock) => {
+    console.log("update dungeon state", clock.status);
     const params = clock.params;
     const result = clock.status === "done" ? clock.result : clock.error;
     const { state, level } = source;
+    console.log("update dungeon state", result);
     const updatedMonsters = [...result];
     const levelMap = [...state[level]];
-    const mapTile = params.mapTile;
+    const updatedMapTile = { ...params.mapTile };
     const tileIndex = getTileIndexByCoordinates(
-      { x: mapTile.x, y: mapTile.y },
+      { x: updatedMapTile.x, y: updatedMapTile.y },
       levelMap,
     );
-    mapTile.encounter = {
-      ...mapTile.encounter,
+    updatedMapTile.encounter = {
+      ...updatedMapTile.encounter,
       monsters: updatedMonsters,
     };
-    levelMap[tileIndex] = mapTile;
+    levelMap[tileIndex] = updatedMapTile;
     return {
       ...state,
       [level]: levelMap,
@@ -258,7 +260,11 @@ sample({
     const monster = (src.encounter as IMonsterEncounter).monsters[clock];
     // skip monsters not angry or dead
     if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
-      console.log("characterAttackedByMonster dead or not angry - skip");
+      console.log(
+        "characterAttackedByMonster dead or not angry - skip",
+        EAggroMode[monster.aggro],
+        monster.hp,
+      );
       return false;
     }
     console.log("characterAttackedByMonster monster attack start check", true);
@@ -292,6 +298,7 @@ sample({
     if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
       console.log(
         "characterAttackedByMonster monster dead or not angry - trigger transition to next",
+        monster,
         clock,
       );
       return true;

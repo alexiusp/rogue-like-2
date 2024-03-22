@@ -11,6 +11,8 @@ import {
   ETerrainEffect,
   IMapCoordinates,
   IMonsterEncounter,
+  IMonsterMapTile,
+  IStairsMapTile,
   TGameTileEncounter,
   TMapTile,
 } from "./types";
@@ -74,27 +76,27 @@ export function generateDungeonLevel(level: number): Array<TMapTile> {
       // check if stairs needs to be placed here
       if (levelSpec.stairsDown) {
         if (x === levelSpec.stairsDown.x && y === levelSpec.stairsDown.y) {
-          tiles.push({
+          const stairsDownTile: IStairsMapTile = {
             x,
             y,
             open: false,
-            terrain: ETerrain.StairsDown,
-            effects: [],
-            encounter: undefined,
-          });
+            terrain: ETerrain.Floor,
+            direction: "down",
+          };
+          tiles.push(stairsDownTile);
           continue;
         }
       }
       if (levelSpec.stairsUp) {
         if (x === levelSpec.stairsUp.x && y === levelSpec.stairsUp.y) {
-          tiles.push({
+          const stairsUpTile: IStairsMapTile = {
             x,
             y,
             open: true,
-            terrain: ETerrain.StairsUp,
-            effects: [],
-            encounter: undefined,
-          });
+            terrain: ETerrain.Floor,
+            direction: "up",
+          };
+          tiles.push(stairsUpTile);
           continue;
         }
       }
@@ -141,6 +143,7 @@ export function generateDungeonLevel(level: number): Array<TMapTile> {
         terrain,
         effects,
         encounter,
+        respawnTimer: 0,
       });
     }
   }
@@ -189,6 +192,17 @@ export function getMapTileByCoordinates(
   return levelMap[tileIndex];
 }
 
-export const isStairsDown = (terrain: ETerrain) =>
-  terrain === ETerrain.StairsDown;
-export const isStairsUp = (terrain: ETerrain) => terrain === ETerrain.StairsUp;
+export function isTileStairs(tile: TMapTile): tile is IStairsMapTile {
+  return !!(tile as IStairsMapTile).direction;
+}
+
+export function isMonsterEncounterTile(
+  tile: TMapTile,
+): tile is IMonsterMapTile {
+  if (isTileStairs(tile)) {
+    return false;
+  }
+  return !!tile.encounter && tile.encounter.type === EEncounterType.Monster;
+}
+
+export const MAX_RESPAWN_TIMEOUT = 12;

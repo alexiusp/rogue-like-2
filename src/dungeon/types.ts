@@ -9,18 +9,16 @@ export interface IMapCoordinates {
 
 export enum ETerrain {
   Floor, // most common terrain type - nothing special
-  StairsUp, // character can go to the previos level here
-  StairsDown, // character can go to the next level here
   Pit, // character receives damage if not levitating
   Teleporter, // character is teleported randomly
   Chute, // character receives damage and falls to the next level
+  Water, // character starts to drown after some time unless levitating or similar
+  Quicksand, // character starts to loose health after some time unless levitating or similar
 }
 
 export enum ETerrainEffect {
   Fog, // reduces visibility and accuracy
   Darkness, // reduces visibility and accuracy
-  Water, // character starts to drown after some time unless levitating or similar
-  Quicksand, // character starts to loose health after some time unless levitating or similar
   Antimagic, // character can not cast magic
   Extinguish, // same as antimagic but also existing spells are removed
 }
@@ -54,6 +52,8 @@ export interface IDungeonLevelSpec {
   encounters: TRandomBag<EEncounterType>;
   // max numbers of encounters to generate
   maxEncounters: number;
+  // custom respawn timeout (optional)
+  respawnTimeout?: number;
 }
 
 /*
@@ -110,30 +110,40 @@ interface IBaseMapTile {
   open: boolean;
   // terrain type to render
   terrain: ETerrain;
+}
+
+export interface IStairsMapTile extends IBaseMapTile {
+  direction: "up" | "down";
+}
+
+export interface ICommonMapTile extends IBaseMapTile {
   // effects to render
   effects: Array<ETerrainEffect>;
   // encounter to trigger/render
   encounter?: TGameTileEncounter;
+  // timer to count time before tile must be regenerated
+  respawnTimer: number;
 }
 
-export interface IEmptyMapTile extends IBaseMapTile {
+export interface IEmptyMapTile extends ICommonMapTile {
   encounter: undefined;
 }
 
-export interface IMonsterMapTile extends IBaseMapTile {
+export interface IMonsterMapTile extends ICommonMapTile {
   encounter: IMonsterEncounter;
 }
 
-export interface ILairMapTile extends IBaseMapTile {
+export interface ILairMapTile extends ICommonMapTile {
   encounter: ILairEncounter;
 }
 
-export interface IChestMapTile extends IBaseMapTile {
+export interface IChestMapTile extends ICommonMapTile {
   encounter: IChestEncounter;
 }
 
 // map tile data generated for use in runtime
 export type TMapTile =
+  | IStairsMapTile
   | IEmptyMapTile
   | IMonsterMapTile
   | ILairMapTile
