@@ -4,7 +4,6 @@
 - character avatar selection
   - improve save slots to include avatar as menu item icon
 - Buffers or hotkeys - panel with quick access to spells/items
-- Messages buffer - to describe events or battle log to use
 - refactor battle to propagate dealt damage as event payload to properly display it
 - magic/spells: need to design how to structure the data in a best way
   - use of spells in battle/encounter
@@ -19,19 +18,18 @@
   - monster: size for monster - depends on character races (trolls and halflings) implementation
   - chests: opened, locked, magically locked
   - lair
-  - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character
+  - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character, monster ambush
 - other terrains and effects
   - multiple effects on same tile
 - guild log - list of "events" happened with guild members, initialized with guild master takes the position
 - global quest (story) - need to design how and when it should be triggered
 - tavern quests (should be similar to quests from the guild)
 - tavern gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
-- item use in battle/dungeon/city
+- item use in battle/dungeon/city - depends on spells implementation
 - special animation for hits with 0 damage
 - multiple attacks (swings) handling
 - AoE attacks/spells in battle
 - charming of monsters
-- health badge/progress color change and/or animation when health is low/critical
 - add more races: dwarf, ork, troll, lizardmen etc.
 - bank items storage (stash)
 - create character form validation
@@ -42,6 +40,7 @@
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
 - leveling: generate guild quest - depends on quest implementation
+- Mage tower: part of main quest, collect lore scrolls and books, uncurses items
 
 # Bugs to fix:
 
@@ -50,3 +49,5 @@
 # Next tasks (sorted):
 
 - time/move counter (for each tile) when player is in dungeon to respawn/regenerate dungeon tiles after timeout (before character enters is again? or in realtime)
+- Messages buffer - to describe events or battle log to use
+- health badge/progress color change and/or animation when health is low/critical

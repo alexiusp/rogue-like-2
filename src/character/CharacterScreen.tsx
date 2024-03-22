@@ -16,6 +16,7 @@ import { getAlignmentLong } from "../common/alignment";
 import { EGuild } from "../guilds/types";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
+import CharacterAgeLabel from "./CharacterAgeLabel";
 import GuildsTab from "./characterTabs/GuildsTab";
 import InventoryTab from "./characterTabs/InventoryTab";
 import ResistansesTab from "./characterTabs/ResistansesTab";
@@ -92,7 +93,7 @@ export default function CharacterScreen() {
           <ListItem>
             <ListItemText>Age</ListItemText>
             <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {character.age}
+              <CharacterAgeLabel age={character.age} />
             </ListItemText>
           </ListItem>
           <Divider component="li" />
