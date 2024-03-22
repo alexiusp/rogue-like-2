@@ -46,6 +46,7 @@
 # Bugs to fix:
 
 - when selling an item with other identical items in inventory first item in list will be sold instead of selected one
+- when identifying items it is possible to have a - amount of money after that
 
 # Next tasks (sorted):
 
