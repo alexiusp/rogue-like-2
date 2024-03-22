@@ -140,12 +140,10 @@ sample({
   source: $dungeonState,
   target: characterPositionChanged,
   fn: (dungeonState, level) => {
-    console.log("dungeon start sampler", level);
     const levelMap = dungeonState[level];
     const ladderIndex = levelMap.findIndex(
       (tile) => (tile as IStairsMapTile).direction === "up",
     );
-    console.log("ladder", ladderIndex, levelMap);
     if (ladderIndex < 0) {
       console.error(levelMap, ladderIndex);
       throw new Error("Invalid map! Ladder not found!");

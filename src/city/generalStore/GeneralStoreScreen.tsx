@@ -10,7 +10,6 @@ import { storeStateSaved } from "./state";
 
 export default function GeneralStoreScreen() {
   const goBackToCity = () => {
-    console.log("back to city");
     characterSaved();
     storeStateSaved();
     back();

@@ -41,7 +41,6 @@ export default function BattleScreen({
   monsters,
   //terrain,
 }: IBattleScreenProps) {
-  console.log("battlescreen render", monsters);
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
   const [mode, setMode] = useState<TBattleMode>();

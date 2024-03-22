@@ -190,7 +190,6 @@ export function calculateShopItemPrice(itemName: string, amountInShop: number) {
   const basePrice = calculateBaseItemPrice(item);
   const amountModifier =
     amountInShop <= 0 ? 10 : 1 + (10 - Math.min(10, amountInShop)) * 0.1;
-  console.log("calculateShopItemPrice", itemName, basePrice, amountModifier);
   return Math.floor(basePrice * amountModifier);
 }
 
@@ -208,14 +207,6 @@ export function calculateItemPriceToSell(
   }
   const charismaBonus = getStatBonus(charisma);
   const charismaModifier = rollDiceCheck(20 - charismaBonus, "1D20") ? 1.2 : 1;
-  console.log(
-    "calculateItemPriceToSell",
-    baseItem.name,
-    baseShopPrice,
-    idModifier,
-    usesModifier,
-    charismaModifier,
-  );
   return Math.floor(
     baseShopPrice * idModifier * usesModifier * charismaModifier * 0.8,
   );

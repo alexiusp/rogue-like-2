@@ -28,9 +28,6 @@ export function getMonstersForLevelAndTerrain(
         canLiveForNow && baseMonster.effects.includes(tEffect),
       true,
     );
-    console.log(
-      `${monsterName} can live in (${effects.map((e) => ETerrainEffect[e]).join(",")}): ${canLive}`,
-    );
     return canLive;
   });
 }

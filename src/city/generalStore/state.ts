@@ -5,12 +5,12 @@ import {
   calculateShopItemPrice,
   itemsAreSame,
 } from "../../items/models";
-import initialStock from "./InitialStoreStock";
+import getInitialStoreStock from "./InitialStoreStock";
 import { TShopItem } from "./types";
 
 const startState = (() => {
   const cachedData = loadSharedData<Array<TShopItem>>("general-store");
-  return cachedData !== null ? cachedData : initialStock;
+  return cachedData !== null ? cachedData : getInitialStoreStock();
 })();
 export const $generalStore = createStore<Array<TShopItem>>(startState);
 

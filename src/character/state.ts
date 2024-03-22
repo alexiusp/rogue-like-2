@@ -494,7 +494,6 @@ export const characterIdentifiedAnItem = createEvent<{
   price: number;
 }>();
 $character.on(characterIdentifiedAnItem, (character, { item, price }) => {
-  console.log("characterIdentifiedAnItem", item);
   if (item.idLevel === 2) {
     return character;
   }
@@ -508,7 +507,6 @@ $character.on(characterIdentifiedAnItem, (character, { item, price }) => {
     ...item,
     idLevel: newIdLevel,
   };
-  console.log("characterIdentifiedAnItem", identifiedItem);
   udpatedInventory.splice(itemIndex, 1, identifiedItem);
   return {
     ...character,
