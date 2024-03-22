@@ -8,6 +8,7 @@ import TavernScreen from "./city/tavern/TavernScreen";
 import DungeonScreen from "./dungeon/DungeonScreen";
 import EncounterScreen from "./dungeon/EncounterScreen";
 import GuildsScreen from "./guilds/GuildsScreen";
+import Messages from "./messages/Messages";
 import { Route } from "./navigation";
 import GenerateCharacter from "./start/GenerateCharacter";
 import MenuScreen from "./start/MenuScreen";
@@ -52,6 +53,7 @@ function App() {
       <Route route="reward">
         <RewardScreen />
       </Route>
+      <Messages />
     </Container>
   );
 }

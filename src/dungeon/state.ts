@@ -9,6 +9,7 @@ import { rollAggro } from "../character/models";
 import { $character } from "../character/state";
 import { loadCharacterData, saveCharacterData } from "../common/db";
 import { createDelayEffect } from "../common/delay";
+import { messageAdded } from "../messages/state";
 import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
@@ -59,28 +60,7 @@ $dungeonState.on(dungeonLoaded, (state) => {
 });
 $dungeonState.watch((state) => console.log("dungeon state updated:", state));
 
-// this must be removed after development phase
-// characters must start every new session from the city
-const startingLevel: number = (() => {
-  const cachedData = loadCharacterData<number>("dungeon-level");
-  if (cachedData !== null) {
-    return cachedData;
-  }
-  return 1;
-})();
-
-export const $currentLevel = createStore(startingLevel);
-$currentLevel.on(dungeonSaved, (state) => {
-  saveCharacterData("dungeon-level", state);
-  return state;
-});
-$currentLevel.on(dungeonLoaded, (state) => {
-  const levelState = loadCharacterData<number>("dungeon-level");
-  if (!levelState) {
-    return state;
-  }
-  return levelState;
-});
+export const $currentLevel = createStore(1);
 
 export const $characterPosition = createStore<IMapCoordinates>({ x: 0, y: 0 });
 export const moveCharacter = createEvent<IMapCoordinates>();
@@ -135,6 +115,12 @@ $currentMapTile.watch((currentMapTile) =>
 
 export const startDungeonLevel = createEvent<number>();
 $currentLevel.on(startDungeonLevel, (_, level) => level);
+
+sample({
+  clock: startDungeonLevel,
+  target: messageAdded,
+  fn: (level) => `Entering dungeon level ${level}`,
+});
 
 // position character on the map when starting a level
 sample({

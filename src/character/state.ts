@@ -21,6 +21,7 @@ import {
 } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
 import { IdLevel, TGameItem, itemsAreSame } from "../items/models";
+import { messageAdded } from "../messages/state";
 import { forward } from "../navigation";
 import {
   EGender,
@@ -574,75 +575,98 @@ $character.on(characterDrinkWine, (character) => {
 // input argument - dungeon level
 export const characterResurrected = createEvent<number>();
 
-$character.on(characterResurrected, (character, level) => {
-  console.log("You were resurrected. You feel older.");
-  const { age, race, stats, money, guild, guilds, hpMax } = character;
-  const maxAge = RaceAgeMap[race][1];
-  const ageBonus = (maxAge - 2 * age) / maxAge;
-  const statBonus = getStatBonus(stats.endurance);
-  const diceCheckValue = Math.round(15 + statBonus + ageBonus);
-  const gotComplications = rollDiceCheck(diceCheckValue, "1D20");
-  // if complications occur - character will lose one point of endurance
-  const udpatedStats = {
-    ...stats,
-  };
-  // ageing - one moth per level of the dungeon
-  let udpatedAge = age + level / 12;
-  if (gotComplications) {
-    console.log(
-      "There were complications! You lost one point of endurance and aged even more than usually.",
-    );
-    // current complications are only endurance and age
-    udpatedStats.endurance -= 1;
-    udpatedAge += level / 12;
-    // consider to drain more stats if character is old
-  }
-  // character loses money up to a particular sum
-  // this is why its good to store them in the bank ;)
-  const cost = Math.pow(100, level);
-  const updatedMoney = Math.max(0, money - cost);
-  console.log(
-    `Morgue workers took ${Math.min(money, cost)} gold for their services.`,
-  );
-  // character also looses all xp up to the current level starting point
-  const guildIndex = findCharacterGuildIndex(guild, character);
-  const currentGuild = guilds[guildIndex];
-  const xpToLevel = getGuildXpRequirementsForLevel(
-    guild,
-    currentGuild.level - 1,
-  );
-  console.log(
-    `Your experience for ${EGuild[guild]} guild is decreased to ${xpToLevel}.`,
-  );
-  const updatedGuild: IGuildMembership = {
-    ...currentGuild,
-    xp: xpToLevel,
-  };
-  const udpatedGuilds = [...guilds];
-  udpatedGuilds.splice(guildIndex, 1, updatedGuild);
+interface ICharacterResurrectionProps {
+  character: ICharacterState;
+  level: number;
+}
+const characterResurrectionFx = createEffect<
+  ICharacterResurrectionProps,
+  ICharacterState
+>(
+  (props) =>
+    new Promise((res) => {
+      const { character, level } = props;
+      messageAdded("You were resurrected. You feel older.");
+      const { age, race, stats, money, guild, guilds, hpMax } = character;
+      const maxAge = RaceAgeMap[race][1];
+      const ageBonus = (maxAge - 2 * age) / maxAge;
+      const statBonus = getStatBonus(stats.endurance);
+      const diceCheckValue = Math.round(15 + statBonus + ageBonus);
+      const gotComplications = rollDiceCheck(diceCheckValue, "1D20");
+      // if complications occur - character will lose one point of endurance
+      const udpatedStats = {
+        ...stats,
+      };
+      // ageing - one moth per level of the dungeon
+      let udpatedAge = age + level / 12;
+      if (gotComplications) {
+        messageAdded(
+          "There were complications! You lost one point of endurance and aged even more than usually.",
+        );
+        // current complications are only endurance and age
+        udpatedStats.endurance -= 1;
+        udpatedAge += level / 12;
+        // consider to drain more stats if character is old
+      }
+      // character loses money up to a particular sum
+      // this is why its good to store them in the bank ;)
+      const cost = Math.pow(100, level);
+      const updatedMoney = Math.max(0, money - cost);
+      messageAdded(
+        `Morgue workers took ${Math.min(money, cost)} gold for their services.`,
+      );
+      // character also looses all xp up to the current level starting point
+      const guildIndex = findCharacterGuildIndex(guild, character);
+      const currentGuild = guilds[guildIndex];
+      const xpToLevel = getGuildXpRequirementsForLevel(
+        guild,
+        currentGuild.level - 1,
+      );
+      messageAdded(
+        `Your experience for ${EGuild[guild]} guild is decreased to ${xpToLevel}.`,
+      );
+      const updatedGuild: IGuildMembership = {
+        ...currentGuild,
+        xp: xpToLevel,
+      };
+      const udpatedGuilds = [...guilds];
+      udpatedGuilds.splice(guildIndex, 1, updatedGuild);
+      res({
+        ...character,
+        age: udpatedAge,
+        stats: udpatedStats,
+        money: updatedMoney,
+        guilds: udpatedGuilds,
+        hp: hpMax,
+      });
+    }),
+);
+
+sample({
+  clock: characterResurrected,
+  source: $character,
+  target: characterResurrectionFx,
+  fn: (src, clk) => ({ character: src, level: clk }),
+});
+$character.on(characterResurrectionFx.doneData, (character) => {
   return {
     ...character,
-    age: udpatedAge,
-    stats: udpatedStats,
-    money: updatedMoney,
-    guilds: udpatedGuilds,
-    hp: hpMax,
   };
 });
 
 // resurrection process implemented as effect to separate character state update, saving and redirect to city
-const characterResurrectionFx = createEffect(createDelayEffect(100));
+const characterResurrectionDelayFx = createEffect(createDelayEffect(100));
 
 sample({
-  clock: characterResurrected,
-  target: characterResurrectionFx,
+  clock: characterResurrectionFx.finally,
+  target: characterResurrectionDelayFx,
 });
 
 // start saving after updating the state
-sample({ clock: characterResurrectionFx.done, target: characterSaved });
+sample({ clock: characterResurrectionDelayFx.done, target: characterSaved });
 // trigger redirect to city after saving
 sample({
-  clock: characterResurrectionFx.finally,
+  clock: characterResurrectionDelayFx.finally,
   target: forward,
   fn: () => "city",
 });

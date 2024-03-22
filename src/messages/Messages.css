@@ -1,0 +1,7 @@
+.messages-container {
+  max-height: 240px;
+  overflow-y: scroll;
+}
+.messages-container ul {
+  padding: 0;
+}
