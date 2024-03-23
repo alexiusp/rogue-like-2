@@ -32,7 +32,6 @@
 - AoE attacks/spells in battle
 - charming of monsters
 - add more races: dwarf, ork, troll, lizardmen etc.
-- bank items storage (stash)
 - create character form validation
 - character stats generation must be greedy + free points validation
 - add more item types (see TItemKind)
@@ -41,14 +40,16 @@
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
 - leveling: generate guild quest - depends on quest implementation
-- Mage tower: part of main quest, collect lore scrolls and books, uncurses items
+- Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
+- character screen: show permanent effects from items (invisible, see invisible etc.)
 
 # Bugs to fix:
 
-- when selling an item with other identical items in inventory first item in list will be sold instead of selected one
-- when identifying items it is possible to have a "-x" amount of money after that - need to disable button if not enough money
 - respawn counter does not increase for levels other than current
 
 # Next tasks (sorted):
 
+- when selling an item with other identical items in inventory first item in list will be sold instead of selected one
+- when identifying items it is possible to have a "-x" amount of money after that - need to disable button if not enough money
+- bank items storage (stash)
 - chests: opened, locked, magically locked
