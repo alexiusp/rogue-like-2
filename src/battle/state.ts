@@ -26,6 +26,7 @@ import {
   IMonsterMapTile,
 } from "../dungeon/types";
 import { TGameItem, itemsAreSame } from "../items/models";
+import { messageAdded } from "../messages/state";
 import {
   EAggroMode,
   IGameMonster,
@@ -84,6 +85,7 @@ export const characterAttacksMonsterFx = createEffect<
       const attackRoll = rollAttack(attack, defense);
       console.log("attackRoll:", attackRoll);
       if (!attackRoll) {
+        messageAdded(`You missed ${monster.monster}`);
         reject(monsters);
         return;
       }
@@ -93,6 +95,7 @@ export const characterAttacksMonsterFx = createEffect<
       console.log("damageDone", damageDone);
       monster.hp = Math.max(monster.hp - damageDone, 0);
       monsters[index] = monster;
+      messageAdded(`You hit ${monster.monster} for ${damageDone}`);
       resolve(monsters);
     }),
 );
@@ -115,6 +118,7 @@ const characterToMonsterTransition = createEvent();
 characterToMonsterTransition.watch(() =>
   console.info("characterToMonsterTransition"),
 );
+// stop rounds rotation when all monsters are dead
 sample({
   clock: characterAttacksMonsterFx.finally,
   filter: (clock) => {
@@ -135,11 +139,9 @@ sample({
   source: { state: $dungeonState, level: $currentLevel },
   target: $dungeonState,
   fn: (source, clock) => {
-    console.log("update dungeon state", clock.status);
     const params = clock.params;
     const result = clock.status === "done" ? clock.result : clock.error;
     const { state, level } = source;
-    console.log("update dungeon state", result);
     const updatedMonsters = [...result];
     const levelMap = [...state[level]];
     const updatedMapTile = { ...params.mapTile };
@@ -199,8 +201,22 @@ sample({
   },
 });
 
-// set cursor to the first monster when round starts
-$monstersCursor.on(startMonstersRound, () => 0);
+// set cursor to the first alive monster when round starts
+sample({
+  clock: startMonstersRound,
+  source: $encounter,
+  target: $monstersCursor,
+  fn: (encounter) => {
+    if (!encounter || encounter.type !== EEncounterType.Monster) {
+      throw Error("Wrong encounter");
+    }
+    let cursor = 0;
+    while (encounter.monsters[cursor].hp === 0) {
+      cursor += 1;
+    }
+    return cursor;
+  },
+});
 
 // event to fire when monster attacks character
 // parameter - monster index in the monsters list of an encounter
