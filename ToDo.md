@@ -17,7 +17,7 @@
   - map: differentiate between tiles with alive monsters and dead monsters (finished encounter)
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
   - monster: size for monster - depends on character races (trolls and halflings) implementation
-  - chests: opened, locked, magically locked
+  - monster generate different monsters in one group (rules to combine them? by type?)
   - lair
   - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character, monster ambush
 - other terrains and effects
@@ -46,9 +46,12 @@
 # Bugs to fix:
 
 - when selling an item with other identical items in inventory first item in list will be sold instead of selected one
-- when identifying items it is possible to have a - amount of money after that
+- when identifying items it is possible to have a "-x" amount of money after that - need to disable button if not enough money
 
 # Next tasks (sorted):
 
-- Messages buffer - to describe events or battle log to use
+- add stats display to character screen (show stats increased by items or magic in bold)
+- start monster round from alive monster (initialize cursor with first alive monster) to avoid unnecessary delay
+- second level specifications to test deeper levels of dungeon and navigation
 - health badge/progress color change and/or animation when health is low/critical
+- chests: opened, locked, magically locked
