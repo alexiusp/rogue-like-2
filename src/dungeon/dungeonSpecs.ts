@@ -6,6 +6,9 @@ import {
   IDungeonLevelSpec,
 } from "./types";
 
+// for testing purposes pretty low. should be more than 50, may be even 100-200
+export const MAX_RESPAWN_TIMEOUT = 100;
+
 const FirstLevel: IDungeonLevelSpec = {
   level: 1,
   width: 10,
@@ -25,5 +28,34 @@ const FirstLevel: IDungeonLevelSpec = {
   maxEncounters: 20,
 };
 
-const DungeonSpec: Array<IDungeonLevelSpec> = [FirstLevel, FirstLevel];
+const SecondLevel: IDungeonLevelSpec = {
+  level: 2,
+  width: 12,
+  height: 12,
+  stairsUp: { x: 1, y: 3 },
+  stairsDown: { x: 11, y: 3 },
+  terrains: [...getNullBag(18), ETerrain.Pit, ETerrain.Pit],
+  maxTerrain: 6,
+  effects: [
+    ...getNullBag(17),
+    ETerrainEffect.Fog,
+    ETerrainEffect.Fog,
+    ETerrainEffect.Darkness,
+  ],
+  maxEffects: 8,
+  encounters: [
+    ...getNullBag(8),
+    EEncounterType.Monster,
+    EEncounterType.Monster,
+    EEncounterType.Monster,
+    EEncounterType.Monster,
+  ],
+  maxEncounters: 40,
+};
+
+const DungeonSpec: Array<IDungeonLevelSpec> = [
+  FirstLevel,
+  FirstLevel,
+  SecondLevel,
+];
 export default DungeonSpec;

@@ -6,7 +6,8 @@ import ladder from "../assets/tiles/ladder1.png";
 import pit from "../assets/tiles/pit.png";
 import skull from "../assets/tiles/skull.png";
 import water from "../assets/tiles/water.webp";
-import { MAX_RESPAWN_TIMEOUT, isTileStairs } from "./model";
+import { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
+import { isTileStairs } from "./model";
 import {
   EEncounterType,
   ETerrain,

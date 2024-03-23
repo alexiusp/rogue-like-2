@@ -1,6 +1,6 @@
 import { RandomBag } from "../common/random";
 import { generateNewMonsterByName } from "../monsters/model";
-import DungeonSpec from "./dungeonSpecs";
+import DungeonSpec, { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
 import {
   getAmountOfMonsters,
   getMonstersForLevelAndTerrain,
@@ -215,9 +215,6 @@ export function isMonsterEncounterTile(
   }
   return !!tile.encounter && tile.encounter.type === EEncounterType.Monster;
 }
-
-// for testing purposes pretty low. should be more than 50, may be even 100-200
-export const MAX_RESPAWN_TIMEOUT = 20;
 
 function countSpecialTerrains(levelMap: TMapTile[]) {
   return levelMap.reduce(

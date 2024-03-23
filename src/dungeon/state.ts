@@ -39,9 +39,11 @@ const startState: TDungeonState = (() => {
   if (cachedData !== null) {
     return cachedData;
   }
-  return {
-    [1]: generateDungeonLevel(1),
-  };
+  const dungeon: TDungeonState = {};
+  for (let level = 1; level < DungeonSpec.length; level++) {
+    dungeon[level] = generateDungeonLevel(level);
+  }
+  return dungeon;
 })();
 
 export const $dungeonState = createStore<TDungeonState>(startState);
