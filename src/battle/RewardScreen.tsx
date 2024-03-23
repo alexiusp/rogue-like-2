@@ -53,7 +53,15 @@ export default function RewardScreen() {
       }}
       paperSx={{ height: "30%" }}
     >
-      <Stack direction="column" spacing={2} sx={{ alignItems: "center" }}>
+      <Stack
+        direction="column"
+        spacing={2}
+        sx={{
+          alignItems: "center",
+          height: "100%",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography variant="h4" component="h2">
           Your rewards:
         </Typography>
@@ -72,7 +80,7 @@ export default function RewardScreen() {
             </Button>
           ))}
         </Stack>
-        <Button title="OK" onClick={collectRewards}>
+        <Button variant="contained" title="OK" onClick={collectRewards}>
           OK
         </Button>
       </Stack>

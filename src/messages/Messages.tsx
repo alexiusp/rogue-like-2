@@ -16,13 +16,13 @@ import { $messages } from "./state";
 
 export default function Messages() {
   const messages = useUnit($messages);
-  const list = [...messages].reverse();
+  const list = messages.slice(-50).reverse();
   return (
     <Paper sx={{ mt: 2 }}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>
-            Messages: <Chip component="span" label={messages.length} />
+            Messages: <Chip component="span" label={list.length} />
           </Typography>
         </AccordionSummary>
         <AccordionDetails className="messages-container">

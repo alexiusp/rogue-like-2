@@ -422,28 +422,42 @@ $encounterItemsReward.watch((_) => console.log("$encounterItemsReward:", _));
 export const $encounterXpReward = createStore(0);
 $encounterXpReward.watch((_) => console.log("$encounterXpReward:", _));
 
-const encounterEndedWithReward = createEvent<IEncounterReward>();
+//const encounterEndedWithReward = createEvent<IEncounterReward>();
+const rewardCalculationFx = createEffect<
+  { character: ICharacterState; monsters: IGameMonster[] },
+  IEncounterReward
+>(({ character, monsters }) => {
+  const money = generateMonstersMoneyReward(monsters);
+  const xp = generateMonstersXpReward(monsters);
+  const items = generateMonstersItemsReward(monsters, character);
+  const pluralSuffix = items.length > 1 ? "s" : "";
+  messageAdded(
+    `You've got ${money} gold, ${xp} experience and ${items.length} item${pluralSuffix} as a reward for this victory!`,
+  );
+  const reward: IEncounterReward = {
+    money,
+    xp,
+    items,
+  };
+  return reward;
+});
 
 sample({
   clock: battleEnded,
   source: $character,
-  target: encounterEndedWithReward,
-  fn(character, monsters) {
-    const money = generateMonstersMoneyReward(monsters);
-    const xp = generateMonstersXpReward(monsters);
-    const items = generateMonstersItemsReward(monsters, character);
-    const reward: IEncounterReward = {
-      money,
-      xp,
-      items,
-    };
-    return reward;
-  },
+  target: rewardCalculationFx,
+  fn: (character, monsters) => ({ character, monsters }),
 });
 
-$encounterMoneyReward.on(encounterEndedWithReward, (_, reward) => reward.money);
-$encounterItemsReward.on(encounterEndedWithReward, (_, reward) => reward.items);
-$encounterXpReward.on(encounterEndedWithReward, (_, reward) => reward.xp);
+$encounterMoneyReward.on(
+  rewardCalculationFx.doneData,
+  (_, reward) => reward.money,
+);
+$encounterItemsReward.on(
+  rewardCalculationFx.doneData,
+  (_, reward) => reward.items,
+);
+$encounterXpReward.on(rewardCalculationFx.doneData, (_, reward) => reward.xp);
 
 export const itemDropped = createEvent<TGameItem>();
 $encounterItemsReward.on(itemDropped, (items, item) => {

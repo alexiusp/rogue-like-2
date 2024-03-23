@@ -50,6 +50,5 @@
 
 # Next tasks (sorted):
 
-- second level specifications to test deeper levels of dungeon and navigation
 - health badge/progress color change and/or animation when health is low/critical
 - chests: opened, locked, magically locked
