@@ -20,7 +20,12 @@ import {
   getGuildXpRequirementsForLevel,
 } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
-import { IdLevel, TGameItem, itemsAreSame } from "../items/models";
+import {
+  IdLevel,
+  TGameItem,
+  getItemsStatsBonuses,
+  itemsAreSame,
+} from "../items/models";
 import { messageAdded } from "../messages/state";
 import { forward } from "../navigation";
 import {
@@ -396,6 +401,10 @@ $character.on(characterLevelsUp, (character) => {
 
 export const $characterInventory = $character.map(
   (character) => character.items,
+);
+
+export const $characterItemsStatsBonuses = $characterInventory.map((items) =>
+  getItemsStatsBonuses(items),
 );
 
 export const characterBoughtAnItem = createEvent<{

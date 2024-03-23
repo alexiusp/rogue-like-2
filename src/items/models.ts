@@ -1,11 +1,6 @@
-import { ICharacterState } from "../character/models";
 import { EAlignment, generateRandomAlignment } from "../common/alignment";
 import { rollDiceCheck } from "../common/random";
-import { TStatsValues, getStatBonus } from "../common/stats";
-import {
-  getMaxSkillFromGuilds,
-  getTotalSkillFromGuilds,
-} from "../guilds/models";
+import { TStatsValues, ZeroStats, getStatBonus } from "../common/stats";
 import { TGuildValues } from "../guilds/types";
 import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
 
@@ -286,29 +281,8 @@ export function getEquippedItemsProtection(items: TGameItem[]) {
 
 export function generateRandomItem(
   itemName: string,
-  character: ICharacterState,
+  idLevel: IdLevel = 0,
 ): TGameItem {
-  let idLevel: IdLevel = 0;
-  const intBonus = getStatBonus(character.stats.intelligence);
-  const wisBonus = getStatBonus(character.stats.wisdom);
-  const perceptionSkill = getMaxSkillFromGuilds("perception", character.guilds);
-  const thiefSkill = getTotalSkillFromGuilds("thief", character.guilds);
-  const skillBonus = 2 * perceptionSkill.max + thiefSkill;
-  // two dice checks one for each id level
-  const diceCheck1 = rollDiceCheck(
-    20 - intBonus - wisBonus - skillBonus,
-    "1D20",
-  );
-  if (diceCheck1) {
-    idLevel = 1;
-  }
-  const diceCheck2 = rollDiceCheck(
-    20 - intBonus - wisBonus - skillBonus,
-    "1D20",
-  );
-  if (diceCheck2) {
-    idLevel = 2;
-  }
   const baseItem = GlobalItemsCatalogue[itemName];
   const common: IGameItem = {
     idLevel,
@@ -357,4 +331,25 @@ export function getItemSpellStatusLabel(baseItem: TBaseItem) {
     suffix = "when equipped";
   }
   return `Casts spell "${spell}" ${suffix}`;
+}
+
+export function getItemStatsBonuses(itemName: string) {
+  const baseItem = GlobalItemsCatalogue[itemName];
+  return baseItem.statsBonuses;
+}
+
+export function getItemsStatsBonuses(items: TGameItem[]) {
+  const bonuses: TStatsValues = {
+    ...ZeroStats,
+  };
+  for (const item of items) {
+    const itemBonuses = getItemStatsBonuses(item.item);
+    bonuses.strength += itemBonuses.strength;
+    bonuses.intelligence += itemBonuses.intelligence;
+    bonuses.wisdom += itemBonuses.wisdom;
+    bonuses.endurance += itemBonuses.endurance;
+    bonuses.charisma += itemBonuses.charisma;
+    bonuses.dexterity += itemBonuses.dexterity;
+  }
+  return bonuses;
 }

@@ -50,7 +50,6 @@
 
 # Next tasks (sorted):
 
-- add stats display to character screen (show stats increased by items or magic in bold)
 - start monster round from alive monster (initialize cursor with first alive monster) to avoid unnecessary delay
 - second level specifications to test deeper levels of dungeon and navigation
 - health badge/progress color change and/or animation when health is low/critical

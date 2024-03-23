@@ -14,9 +14,12 @@ import {
   getGuildsDamageModifier,
   getGuildsDefenseModifier,
   getGuildsProtectionModifier,
+  getMaxSkillFromGuilds,
+  getTotalSkillFromGuilds,
 } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
 import {
+  IdLevel,
   TGameItem,
   getEquippedItemsAttack,
   getEquippedItemsDamage,
@@ -210,4 +213,29 @@ export function rollAggro(character: ICharacterState, monster: IGameMonster) {
   const alignmentBonus = alignment !== monsterAlignment ? -2 : 2;
   const rollValue = 50 + levelBonus + statBonus + alignmentBonus;
   return rollDiceCheck(rollValue, "1D100");
+}
+
+export function rollCharacterIdSkill(character: ICharacterState) {
+  let idLevel: IdLevel = 0;
+  const intBonus = getStatBonus(character.stats.intelligence);
+  const wisBonus = getStatBonus(character.stats.wisdom);
+  const perceptionSkill = getMaxSkillFromGuilds("perception", character.guilds);
+  const thiefSkill = getTotalSkillFromGuilds("thief", character.guilds);
+  const skillBonus = 2 * perceptionSkill.max + thiefSkill;
+  // two dice checks one for each id level
+  const diceCheck1 = rollDiceCheck(
+    20 - intBonus - wisBonus - skillBonus,
+    "1D20",
+  );
+  if (diceCheck1) {
+    idLevel = 1;
+  }
+  const diceCheck2 = rollDiceCheck(
+    20 - intBonus - wisBonus - skillBonus,
+    "1D20",
+  );
+  if (diceCheck2) {
+    idLevel = 2;
+  }
+  return idLevel;
 }

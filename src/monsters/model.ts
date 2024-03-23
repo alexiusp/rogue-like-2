@@ -1,4 +1,4 @@
-import { ICharacterState } from "../character/models";
+import { ICharacterState, rollCharacterIdSkill } from "../character/models";
 import { EAlignment } from "../common/alignment";
 import { RandomBag, TRandomBag, getRandomInt } from "../common/random";
 import {
@@ -181,7 +181,8 @@ export function generateMonstersItemsReward(
     const moneyBag = new RandomBag(monsterData.items);
     const reward = moneyBag.getRandomItem();
     if (reward !== null) {
-      const item = generateRandomItem(reward, character);
+      const idLevel = rollCharacterIdSkill(character);
+      const item = generateRandomItem(reward, idLevel);
       items.push(item);
     }
   });

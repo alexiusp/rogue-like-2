@@ -1,5 +1,6 @@
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import {
+  Box,
   Divider,
   IconButton,
   List,
@@ -17,6 +18,7 @@ import { EGuild } from "../guilds/types";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
 import CharacterAgeLabel from "./CharacterAgeLabel";
+import StatsList from "./StatsList";
 import GuildsTab from "./characterTabs/GuildsTab";
 import InventoryTab from "./characterTabs/InventoryTab";
 import ResistansesTab from "./characterTabs/ResistansesTab";
@@ -86,57 +88,59 @@ export default function CharacterScreen() {
           <Tab value="guilds" label="Guilds & skills" />
           <Tab value="res" label="Resistances" />
         </Tabs>
-        <List
-          dense={true}
-          sx={{ display: activeMainTab === "char" ? "block" : "none" }}
-        >
-          <ListItem>
-            <ListItemText>Age</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              <CharacterAgeLabel age={character.age} />
-            </ListItemText>
-          </ListItem>
-          <Divider component="li" />
-          <ListItem>
-            <ListItemText>Mana</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {character.mp}/{character.mpMax}
-            </ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText>Health</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {character.hp}/{character.hpMax}
-            </ListItemText>
-          </ListItem>
-          <Divider component="li" />
-          <ListItem>
-            <ListItemText>Attack/Damage</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {getCharacterAttack(character)} / {getCharacterDamage(character)}
-            </ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText>Defense/Protection</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {getCharacterDefense(character)} /{" "}
-              {getCharacterProtection(character)}
-            </ListItemText>
-          </ListItem>
-          <Divider component="li" />
-          <ListItem>
-            <ListItemText>Exp</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {getCharacterTotalXp(character)}
-            </ListItemText>
-          </ListItem>
-          <ListItem>
-            <ListItemText>Gold</ListItemText>
-            <ListItemText primaryTypographyProps={{ align: "right" }}>
-              {character.money}
-            </ListItemText>
-          </ListItem>
-        </List>
+        <Box sx={{ display: activeMainTab === "char" ? "block" : "none" }}>
+          <List dense={true}>
+            <ListItem>
+              <ListItemText>Age</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                <CharacterAgeLabel age={character.age} />
+              </ListItemText>
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemText>Mana</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {character.mp}/{character.mpMax}
+              </ListItemText>
+            </ListItem>
+            <ListItem>
+              <ListItemText>Health</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {character.hp}/{character.hpMax}
+              </ListItemText>
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemText>Attack/Damage</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {getCharacterAttack(character)} /{" "}
+                {getCharacterDamage(character)}
+              </ListItemText>
+            </ListItem>
+            <ListItem>
+              <ListItemText>Defense/Protection</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {getCharacterDefense(character)} /{" "}
+                {getCharacterProtection(character)}
+              </ListItemText>
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemText>Exp</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {getCharacterTotalXp(character)}
+              </ListItemText>
+            </ListItem>
+            <ListItem>
+              <ListItemText>Gold</ListItemText>
+              <ListItemText primaryTypographyProps={{ align: "right" }}>
+                {character.money}
+              </ListItemText>
+            </ListItem>
+          </List>
+          <Divider />
+          <StatsList />
+        </Box>
         <GuildsTab show={activeMainTab === "guilds"} />
         <ResistansesTab show={activeMainTab === "res"} />
         <Tabs value={activeSecondaryTab} onChange={handleSecondaryTabChange}>
