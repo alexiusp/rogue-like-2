@@ -7,10 +7,11 @@ export default function HealthStatusBadge() {
   const hp = useUnit($characterHealth);
   const hpMax = useUnit($characterMaxHp);
   const label = `${hp} / ${hpMax}`;
+  const color = hp < 5 ? "error" : hp < hpMax / 2 ? "warning" : "success";
   return (
     <Tooltip title="Health" arrow placement="top">
       <Chip
-        color="success"
+        color={color}
         variant="outlined"
         label={label}
         icon={<FavoriteIcon />}

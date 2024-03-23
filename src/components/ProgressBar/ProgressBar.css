@@ -1,9 +1,15 @@
 .progress {
   position: relative;
 }
+
 .progress .progress-bar {
   height: 16px;
 }
+
+.progress .progress-bar.pulsate {
+  animation: pulsate 2s ease 0s infinite normal forwards;
+}
+
 .progress .progress-label {
   position: absolute;
   top: 0;
@@ -12,4 +18,31 @@
   text-align: center;
   font-size: 16px;
   line-height: 16px;
+}
+
+@keyframes pulsate {
+  0% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
+
+  10% {
+    animation-timing-function: ease-in;
+    opacity: 0.8;
+  }
+
+  17% {
+    animation-timing-function: ease-out;
+    opacity: 0.9;
+  }
+
+  33% {
+    animation-timing-function: ease-in;
+    opacity: 0.7;
+  }
+
+  45% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
 }
