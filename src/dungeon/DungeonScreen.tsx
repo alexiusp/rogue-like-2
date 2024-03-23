@@ -25,9 +25,10 @@ import {
   $dungeonLevelMap,
   $isOnStairsDown,
   $isOnStairsUp,
+  ascendToDungeonLevel,
+  descendToDungeonLevel,
   dungeonSaved,
   moveCharacter,
-  startDungeonLevel,
 } from "./state";
 import { IMapCoordinates } from "./types";
 
@@ -54,14 +55,15 @@ export default function DungeonScreen() {
     dungeonSaved();
     characterSaved();
     if (ladderDown) {
-      startDungeonLevel(currentLevel + 1);
+      descendToDungeonLevel(currentLevel + 1);
     } else {
       if (currentLevel > 1) {
-        startDungeonLevel(currentLevel - 1);
+        ascendToDungeonLevel(currentLevel - 1);
       } else {
         forward("city");
       }
     }
+    toggleConfirmation(false);
   };
 
   const cells = dungeonMap.map.map((tile, index) => (

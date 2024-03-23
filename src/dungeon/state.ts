@@ -115,24 +115,53 @@ $currentMapTile.watch((currentMapTile) =>
   console.log("$currentMapTile updated", currentMapTile),
 );
 
-export const startDungeonLevel = createEvent<number>();
-$currentLevel.on(startDungeonLevel, (_, level) => level);
+export const descendToDungeonLevel = createEvent<number>();
+export const ascendToDungeonLevel = createEvent<number>();
+$currentLevel.on(descendToDungeonLevel, (_, level) => level);
+$currentLevel.on(ascendToDungeonLevel, (_, level) => level);
 
 sample({
-  clock: startDungeonLevel,
+  clock: descendToDungeonLevel,
   target: messageAdded,
-  fn: (level) => `Entering dungeon level ${level}`,
+  fn: (level) => `Descending to dungeon level ${level}`,
+});
+
+sample({
+  clock: ascendToDungeonLevel,
+  target: messageAdded,
+  fn: (level) => `Returning back to dungeon level ${level}`,
 });
 
 // position character on the map when starting a level
 sample({
-  clock: startDungeonLevel,
+  clock: descendToDungeonLevel,
   source: $dungeonState,
   target: characterPositionChanged,
   fn: (dungeonState, level) => {
     const levelMap = dungeonState[level];
     const ladderIndex = levelMap.findIndex(
       (tile) => (tile as IStairsMapTile).direction === "up",
+    );
+    if (ladderIndex < 0) {
+      console.error(levelMap, ladderIndex);
+      throw new Error("Invalid map! Ladder not found!");
+    }
+    const ladderTile = levelMap[ladderIndex];
+    return {
+      x: ladderTile.x,
+      y: ladderTile.y,
+    };
+  },
+});
+// position character on the map when starting a level
+sample({
+  clock: ascendToDungeonLevel,
+  source: $dungeonState,
+  target: characterPositionChanged,
+  fn: (dungeonState, level) => {
+    const levelMap = dungeonState[level];
+    const ladderIndex = levelMap.findIndex(
+      (tile) => (tile as IStairsMapTile).direction === "down",
     );
     if (ladderIndex < 0) {
       console.error(levelMap, ladderIndex);

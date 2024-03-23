@@ -9,7 +9,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
 import bg from "../assets/castle.webp";
 import { characterLoaded, characterSaved } from "../character/state";
-import { dungeonLoaded, startDungeonLevel } from "../dungeon/state";
+import { descendToDungeonLevel, dungeonLoaded } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";
 import CityStatusBar from "./CityStatusBar";
@@ -33,7 +33,7 @@ export default function CityScreen() {
     bankStateSaved();
     storeStateSaved();
     navigate("dungeon");
-    startDungeonLevel(1);
+    descendToDungeonLevel(1);
   };
   return (
     <Screen
