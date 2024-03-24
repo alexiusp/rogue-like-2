@@ -53,5 +53,6 @@
 
 # Next tasks (sorted):
 
+- defend and flee battle modes
 - bank items storage (stash)
 - chests: opened, locked, magically locked
