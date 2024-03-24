@@ -5,12 +5,10 @@ import {
   CardHeader,
   Chip,
   List,
-  Stack,
-  Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import { characterBoughtAnItem } from "../../character/state";
+import { $characterMoney, characterBoughtAnItem } from "../../character/state";
 import ItemDetailsDialog from "../../items/ItemDetailsDialog";
 import { TGameItem } from "../../items/models";
 import StoreListItem from "./StoreListItem";
@@ -20,6 +18,7 @@ import { TShopItem } from "./types";
 export default function StoreStockPanel() {
   const storeItems = useUnit($generalStore);
   const [selectedItem, selectItem] = useState<TShopItem | undefined>(undefined);
+  const money = useUnit($characterMoney);
   const listStyle = {
     p: 0,
     width: "100%",
@@ -82,15 +81,15 @@ export default function StoreStockPanel() {
         onClose={() => selectItem(undefined)}
         footer={
           <>
-            <Chip
-              label={<Typography>Price: {selectedItem?.price}</Typography>}
-            />
-            <Stack spacing={1} direction="row">
-              <Button variant="contained" onClick={handleItemBuy}>
-                buy
-              </Button>
-              <Button onClick={() => selectItem(undefined)}>cancel</Button>
-            </Stack>
+            <Button
+              variant="contained"
+              onClick={handleItemBuy}
+              disabled={money < (selectedItem?.price ?? 0)}
+              startIcon={<Chip label={selectedItem?.price} />}
+            >
+              buy
+            </Button>
+            <Button onClick={() => selectItem(undefined)}>cancel</Button>
           </>
         }
       />

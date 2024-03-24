@@ -16,43 +16,43 @@ interface IInventoryTabProps {
 
 export default function InventoryTab({ show }: IInventoryTabProps) {
   const inventory = useUnit($characterInventory);
-  const [selectedItemIndex, selectIndex] = useState<number>();
+  const [selectedItemIndex, selectIndex] = useState<number>(-1);
   const selectedItem = useMemo(() => {
-    if (typeof selectedItemIndex === "undefined") {
+    if (selectedItemIndex < 0) {
       return;
     }
     return inventory[selectedItemIndex];
   }, [inventory, selectedItemIndex]);
   const equipSelectedItem = () => {
     if (
-      typeof selectedItemIndex === "undefined" ||
+      selectedItemIndex < 0 ||
       !selectedItem ||
       selectedItem.kind !== "equipable" ||
       selectedItem.isEquipped
     ) {
       return;
     }
-    selectIndex(undefined);
     characterEquippedAnItem(selectedItemIndex);
+    selectIndex(-1);
   };
   const unequipSelectedItem = () => {
     if (
-      typeof selectedItemIndex === "undefined" ||
+      selectedItemIndex < 0 ||
       !selectedItem ||
       selectedItem.kind !== "equipable" ||
       !selectedItem.isEquipped
     ) {
       return;
     }
-    selectIndex(undefined);
     characterUnequippedAnItem(selectedItemIndex);
+    selectIndex(-1);
   };
   const dropSelectedItem = () => {
-    if (!selectedItem || typeof selectedItemIndex === "undefined") {
+    if (selectedItemIndex < 0) {
       return;
     }
-    selectIndex(undefined);
     characterDroppedAnItem(selectedItemIndex);
+    selectIndex(-1);
   };
 
   if (!show) {
@@ -66,7 +66,7 @@ export default function InventoryTab({ show }: IInventoryTabProps) {
       />
       <ItemDetailsDialog
         item={selectedItem}
-        onClose={() => selectIndex(undefined)}
+        onClose={() => selectIndex(-1)}
         footer={
           <>
             {selectedItem &&

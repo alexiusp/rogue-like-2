@@ -6,6 +6,7 @@ import MoneyStatusBadge from "../../character/MoneyStatusBadge";
 import {
   $characterCharisma,
   $characterInventory,
+  $characterMoney,
   characterDroppedAnItem,
   characterIdentifiedAnItem,
   characterSoldAnItem,
@@ -22,6 +23,7 @@ export default function CharacterInventoryStoreList() {
   const storeStock = useUnit($generalStore);
   const charisma = useUnit($characterCharisma);
   const inventory = useUnit($characterInventory);
+  const money = useUnit($characterMoney);
   const [selectedItemIndex, selectIndex] = useState(-1);
   const deselectItemHandler = () => selectIndex(-1);
   const [selectedItemPrice, setPrice] = useState(0);
@@ -102,6 +104,7 @@ export default function CharacterInventoryStoreList() {
                 variant="outlined"
                 color="warning"
                 onClick={handleId}
+                disabled={money < selectedItemIdCost}
                 startIcon={<Chip label={selectedItemIdCost} />}
               >
                 id

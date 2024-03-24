@@ -49,6 +49,5 @@
 
 # Next tasks (sorted):
 
-- when identifying items it is possible to have a "-x" amount of money after that - need to disable button if not enough money
 - bank items storage (stash)
 - chests: opened, locked, magically locked
