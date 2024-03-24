@@ -399,7 +399,7 @@ sample({
 });
 
 export const battleEnded = createEvent<IGameMonster[]>();
-battleEnded.watch(() => console.info("battleEnded"));
+
 // detect end of the battle after character round
 sample({
   clock: characterAttacksMonsterFx.finally,
@@ -416,11 +416,8 @@ sample({
 sample({ clock: battleEnded, target: forward, fn: () => "reward" });
 
 export const $encounterMoneyReward = createStore(0);
-$encounterMoneyReward.watch((_) => console.log("$encounterMoneyReward:", _));
 export const $encounterItemsReward = createStore<TGameItem[]>([]);
-$encounterItemsReward.watch((_) => console.log("$encounterItemsReward:", _));
 export const $encounterXpReward = createStore(0);
-$encounterXpReward.watch((_) => console.log("$encounterXpReward:", _));
 
 //const encounterEndedWithReward = createEvent<IEncounterReward>();
 const rewardCalculationFx = createEffect<
@@ -471,7 +468,6 @@ $encounterItemsReward.on(itemDropped, (items, item) => {
 });
 
 export const waitForRescueTeam = createEvent();
-
 sample({
   clock: waitForRescueTeam,
   source: $currentLevel,

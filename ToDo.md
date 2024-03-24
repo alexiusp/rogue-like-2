@@ -46,7 +46,6 @@
 # Bugs to fix:
 
 - respawn counter does not increase for levels other than current
-- resurrect stopped working - character data not udpated
 
 # Next tasks (sorted):
 
