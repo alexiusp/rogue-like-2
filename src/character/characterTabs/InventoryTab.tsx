@@ -1,9 +1,10 @@
 import { Box, Button } from "@mui/material";
-import { useState } from "react";
+import { useUnit } from "effector-react";
+import { useMemo, useState } from "react";
 import ItemDetailsDialog from "../../items/ItemDetailsDialog";
-import { TGameItem } from "../../items/models";
 import InventoryList from "../InventoryList";
 import {
+  $characterInventory,
   characterDroppedAnItem,
   characterEquippedAnItem,
   characterUnequippedAnItem,
@@ -14,35 +15,44 @@ interface IInventoryTabProps {
 }
 
 export default function InventoryTab({ show }: IInventoryTabProps) {
-  const [selectedItem, selectItem] = useState<TGameItem>();
+  const inventory = useUnit($characterInventory);
+  const [selectedItemIndex, selectIndex] = useState<number>();
+  const selectedItem = useMemo(() => {
+    if (typeof selectedItemIndex === "undefined") {
+      return;
+    }
+    return inventory[selectedItemIndex];
+  }, [inventory, selectedItemIndex]);
   const equipSelectedItem = () => {
     if (
+      typeof selectedItemIndex === "undefined" ||
       !selectedItem ||
       selectedItem.kind !== "equipable" ||
       selectedItem.isEquipped
     ) {
       return;
     }
-    selectItem(undefined);
-    characterEquippedAnItem(selectedItem);
+    selectIndex(undefined);
+    characterEquippedAnItem(selectedItemIndex);
   };
   const unequipSelectedItem = () => {
     if (
+      typeof selectedItemIndex === "undefined" ||
       !selectedItem ||
       selectedItem.kind !== "equipable" ||
       !selectedItem.isEquipped
     ) {
       return;
     }
-    selectItem(undefined);
-    characterUnequippedAnItem(selectedItem);
+    selectIndex(undefined);
+    characterUnequippedAnItem(selectedItemIndex);
   };
   const dropSelectedItem = () => {
-    if (!selectedItem) {
+    if (!selectedItem || typeof selectedItemIndex === "undefined") {
       return;
     }
-    selectItem(undefined);
-    characterDroppedAnItem(selectedItem);
+    selectIndex(undefined);
+    characterDroppedAnItem(selectedItemIndex);
   };
 
   if (!show) {
@@ -50,10 +60,13 @@ export default function InventoryTab({ show }: IInventoryTabProps) {
   }
   return (
     <Box>
-      <InventoryList selectedItem={selectedItem} onItemSelect={selectItem} />
+      <InventoryList
+        selectedIndex={selectedItemIndex}
+        onIndexSelect={selectIndex}
+      />
       <ItemDetailsDialog
         item={selectedItem}
-        onClose={() => selectItem(undefined)}
+        onClose={() => selectIndex(undefined)}
         footer={
           <>
             {selectedItem &&

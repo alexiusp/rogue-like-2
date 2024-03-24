@@ -20,12 +20,7 @@ import {
   getGuildXpRequirementsForLevel,
 } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
-import {
-  IdLevel,
-  TGameItem,
-  getItemsStatsBonuses,
-  itemsAreSame,
-} from "../items/models";
+import { IdLevel, TGameItem, getItemsStatsBonuses } from "../items/models";
 import { messageAdded } from "../messages/state";
 import { forward } from "../navigation";
 import {
@@ -423,15 +418,11 @@ $character.on(characterBoughtAnItem, (state, transaction) => {
 });
 
 export const characterSoldAnItem = createEvent<{
-  item: TGameItem;
+  itemIndex: number;
   price: number;
 }>();
 $character.on(characterSoldAnItem, (state, transaction) => {
-  const { item, price } = transaction;
-  const itemIndex = state.items.findIndex(itemsAreSame(item));
-  if (itemIndex < 0) {
-    throw new Error("Item to sold not found in inventory!");
-  }
+  const { itemIndex, price } = transaction;
   const udpatedInventory = [...state.items];
   udpatedInventory.splice(itemIndex, 1);
   return {
@@ -441,12 +432,9 @@ $character.on(characterSoldAnItem, (state, transaction) => {
   };
 });
 
-export const characterEquippedAnItem = createEvent<TGameItem>();
-$character.on(characterEquippedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreSame(item));
-  if (itemIndex < 0) {
-    throw new Error("Item to equip not found in inventory!");
-  }
+export const characterEquippedAnItem = createEvent<number>();
+$character.on(characterEquippedAnItem, (state, itemIndex) => {
+  const item = state.items[itemIndex];
   if (item.kind !== "equipable") {
     throw new Error("Item is not equippable!");
   }
@@ -458,12 +446,9 @@ $character.on(characterEquippedAnItem, (state, item) => {
   };
 });
 
-export const characterUnequippedAnItem = createEvent<TGameItem>();
-$character.on(characterUnequippedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreSame(item));
-  if (itemIndex < 0) {
-    throw new Error("Item to unequip not found in inventory!");
-  }
+export const characterUnequippedAnItem = createEvent<number>();
+$character.on(characterUnequippedAnItem, (state, itemIndex) => {
+  const item = state.items[itemIndex];
   if (item.kind !== "equipable" || !item.isEquipped) {
     // cursed status can be also handled here
     throw new Error("Item can not be unequipped!");
@@ -476,12 +461,8 @@ $character.on(characterUnequippedAnItem, (state, item) => {
   };
 });
 
-export const characterDroppedAnItem = createEvent<TGameItem>();
-$character.on(characterDroppedAnItem, (state, item) => {
-  const itemIndex = state.items.findIndex(itemsAreSame(item));
-  if (itemIndex < 0) {
-    throw new Error("Item to drop not found in inventory!");
-  }
+export const characterDroppedAnItem = createEvent<number>();
+$character.on(characterDroppedAnItem, (state, itemIndex) => {
   const udpatedInventory = [...state.items];
   udpatedInventory.splice(itemIndex, 1);
   return {
@@ -500,18 +481,15 @@ $character.on(characterReceivedItems, (character, receivedItems) => {
 });
 
 export const characterIdentifiedAnItem = createEvent<{
-  item: TGameItem;
+  itemIndex: number;
   price: number;
 }>();
-$character.on(characterIdentifiedAnItem, (character, { item, price }) => {
+$character.on(characterIdentifiedAnItem, (character, { itemIndex, price }) => {
+  const item = character.items[itemIndex];
   if (item.idLevel === 2) {
     return character;
   }
   const newIdLevel: IdLevel = item.idLevel >= 1 ? 2 : 1;
-  const itemIndex = character.items.findIndex(itemsAreSame(item));
-  if (itemIndex < 0) {
-    throw new Error("Item to identify not found in inventory!");
-  }
   const udpatedInventory = [...character.items];
   const identifiedItem: TGameItem = {
     ...item,

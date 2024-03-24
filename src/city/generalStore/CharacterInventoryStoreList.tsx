@@ -1,12 +1,4 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Card, CardContent, CardHeader, Chip } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useCallback, useEffect, useState } from "react";
 import InventoryList from "../../character/InventoryList";
@@ -60,7 +52,7 @@ export default function CharacterInventoryStoreList() {
     }
     shopBoughtAnItem(inventory[selectedItemIndex]);
     characterSoldAnItem({
-      item: inventory[selectedItemIndex],
+      itemIndex: selectedItemIndex,
       price: selectedItemPrice,
     });
     deselectItemHandler();
@@ -69,7 +61,7 @@ export default function CharacterInventoryStoreList() {
     if (selectedItemIndex < 0) {
       return;
     }
-    characterDroppedAnItem(inventory[selectedItemIndex]);
+    characterDroppedAnItem(selectedItemIndex);
     deselectItemHandler();
   };
   const handleId = () => {
@@ -77,7 +69,7 @@ export default function CharacterInventoryStoreList() {
       return;
     }
     characterIdentifiedAnItem({
-      item: inventory[selectedItemIndex],
+      itemIndex: selectedItemIndex,
       price: selectedItemIdCost,
     });
     recalculatePrices(selectedItemIndex);
@@ -95,7 +87,7 @@ export default function CharacterInventoryStoreList() {
       <CardContent>
         <InventoryList
           onIndexSelect={selectIndex}
-          selectedItem={inventory[selectedItemIndex]}
+          selectedIndex={selectedItemIndex}
         />
       </CardContent>
       <ItemDetailsDialog
@@ -103,26 +95,27 @@ export default function CharacterInventoryStoreList() {
         onClose={deselectItemHandler}
         footer={
           <>
-            <Chip label={<Typography>Price: {selectedItemPrice}</Typography>} />
-            <Stack spacing={1} direction="row">
-              {selectedItemIndex >= 0 &&
-              selectedItemIdCost > 0 &&
-              inventory[selectedItemIndex].idLevel < 2 ? (
-                <Button
-                  variant="outlined"
-                  color="warning"
-                  onClick={handleId}
-                  startIcon={<Chip label={selectedItemIdCost} />}
-                >
-                  id
-                </Button>
-              ) : null}
-              <Button variant="contained" onClick={handleItemSell}>
-                sell
+            {selectedItemIndex >= 0 &&
+            selectedItemIdCost > 0 &&
+            inventory[selectedItemIndex].idLevel < 2 ? (
+              <Button
+                variant="outlined"
+                color="warning"
+                onClick={handleId}
+                startIcon={<Chip label={selectedItemIdCost} />}
+              >
+                id
               </Button>
-              <Button onClick={handleItemDrop}>drop</Button>
-              <Button onClick={deselectItemHandler}>cancel</Button>
-            </Stack>
+            ) : null}
+            <Button
+              variant="contained"
+              onClick={handleItemSell}
+              startIcon={<Chip label={selectedItemPrice} />}
+            >
+              sell
+            </Button>
+            <Button onClick={handleItemDrop}>drop</Button>
+            <Button onClick={deselectItemHandler}>cancel</Button>
           </>
         }
       />

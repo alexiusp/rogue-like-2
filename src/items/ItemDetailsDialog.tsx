@@ -178,9 +178,7 @@ export default function ItemDetailsDialog({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "space-between" }}>
-        {footer}
-      </DialogActions>
+      <DialogActions>{footer}</DialogActions>
     </Dialog>
   );
 }

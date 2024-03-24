@@ -49,7 +49,6 @@
 
 # Next tasks (sorted):
 
-- when selling an item with other identical items in inventory first item in list will be sold instead of selected one
 - when identifying items it is possible to have a "-x" amount of money after that - need to disable button if not enough money
 - bank items storage (stash)
 - chests: opened, locked, magically locked
