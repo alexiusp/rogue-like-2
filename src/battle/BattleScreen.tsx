@@ -92,31 +92,31 @@ export default function BattleScreen({
       <ManaStatusProgress />
       <Stack direction="row" spacing={1}>
         <ActionButton
-          disabled={battleRound === "monster"}
+          disabled={battleRound !== "character"}
           action="fight"
           selected={mode === "fight"}
           onClick={() => setMode("fight")}
         />
         <ActionButton
-          disabled={battleRound === "monster"}
+          disabled={battleRound !== "character"}
           action="spells"
           selected={mode === "spells"}
           onClick={() => setMode("spells")}
         />
         <ActionButton
-          disabled={battleRound === "monster"}
+          disabled={battleRound !== "character"}
           action="items"
           selected={mode === "items"}
           onClick={() => setMode("items")}
         />
         <ActionButton
-          disabled={battleRound === "monster"}
+          disabled={battleRound !== "character"}
           action="defend"
           selected={mode === "defend"}
           onClick={() => setMode("defend")}
         />
         <ActionButton
-          disabled={battleRound === "monster"}
+          disabled={battleRound !== "character"}
           action="flee"
           selected={mode === "flee"}
           onClick={() => setMode("flee")}

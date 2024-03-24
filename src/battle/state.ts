@@ -350,13 +350,30 @@ sample({
     index: $monstersCursor,
     length: $monstersLength,
     characterIsDead: $characterIsDead,
+    encounter: $encounter,
   },
   fn: (src) => {
-    const { index, length, characterIsDead } = src;
+    const { index, length, characterIsDead, encounter } = src;
+    // check if round ended
     const check = index !== null && index < length - 1 && !characterIsDead;
-    console.log("switch to next monster", index, length, check);
-    // set cursor to null if last monster
-    return check ? (index ?? 0) + 1 : null;
+    if (!check) {
+      console.log("round ended");
+      // set cursor to null if last alive monster
+      return null;
+    }
+    const monsters = (encounter as IMonsterEncounter).monsters;
+    let cursor = index + 1;
+    // find next alive and angry monster
+    while (
+      index < length - 1 ||
+      !monsters[cursor].hp ||
+      monsters[cursor].aggro !== EAggroMode.Angry
+    ) {
+      cursor += 1;
+    }
+    console.log("switch to next monster", cursor);
+    // if no alive monsters left set cursor to null
+    return monsters[cursor].hp ? cursor : null;
   },
 });
 
