@@ -49,7 +49,7 @@ const fallbackState: ICharacterState = {
   },
   age: 0,
   guild: EGuild.Adventurer,
-  guilds: [],
+  guilds: [{ guild: EGuild.Adventurer, level: 1, xp: 0 }],
   hp: 0,
   hpMax: 0,
   items: [],

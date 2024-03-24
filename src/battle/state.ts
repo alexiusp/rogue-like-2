@@ -362,18 +362,18 @@ sample({
       return null;
     }
     const monsters = (encounter as IMonsterEncounter).monsters;
-    let cursor = index + 1;
+    let cursor = null;
     // find next alive and angry monster
-    while (
-      index < length - 1 ||
-      !monsters[cursor].hp ||
-      monsters[cursor].aggro !== EAggroMode.Angry
-    ) {
-      cursor += 1;
+    for (let i = index + 1; i < monsters.length; i++) {
+      const monster = monsters[i];
+      if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
+        continue;
+      }
+      cursor = i;
+      break;
     }
-    console.log("switch to next monster", cursor);
     // if no alive monsters left set cursor to null
-    return monsters[cursor].hp ? cursor : null;
+    return cursor;
   },
 });
 
