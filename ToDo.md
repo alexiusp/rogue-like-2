@@ -6,7 +6,7 @@
   - improve save slots to include avatar as menu item icon
   - create character form validation
   - add more races: dwarf, ork, troll, lizardmen etc.
-  - character stats generation must be greedy + free points validation
+  - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
   - character screen: show permanent effects from items (invisible, see invisible etc.)
 - Buffers or hotkeys - panel with quick access to spells/items
 - magic/spells: need to design how to structure the data in a best way
@@ -33,10 +33,10 @@
   - guild log - list of "events" happened with guild members, initialized with guild master takes the position
   - guild masters list save on update instead of manual saving
   - guild level titles for character
-  - guild skills must be generated for levels by function to avoid creating them for every possible character level
   - leveling: generate guild quest - depends on quest implementation
-- global quest (story) - need to design how and when it should be triggered
-- tavern quests (should be similar to quests from the guild)
+- quests
+  - global quest (story) - need to design how and when it should be triggered
+  - tavern quests (should be similar to quests from the guild)
 - tavern gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
 - item use in battle/dungeon/city - depends on spells implementation
 - multiple attacks (swings) handling
@@ -46,6 +46,7 @@
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
 - Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
+- respawn: respawn only possible encounter, not terraing and effects?
 
 # Bugs to fix:
 
@@ -55,4 +56,5 @@
 
 - defend and flee battle modes
 - bank items storage (stash)
+- guild skills must be generated for levels by function to avoid creating them for every possible character level
 - chests: opened, locked, magically locked
