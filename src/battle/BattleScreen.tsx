@@ -23,6 +23,7 @@ import HitAnimation from "./HitAnimation";
 import {
   $battleRound,
   $monstersCursor,
+  characterDefends,
   monsterAttacked,
   waitForRescueTeam,
 } from "./state";
@@ -113,7 +114,7 @@ export default function BattleScreen({
           disabled={battleRound !== "character"}
           action="defend"
           selected={mode === "defend"}
-          onClick={() => setMode("defend")}
+          onClick={() => characterDefends()}
         />
         <ActionButton
           disabled={battleRound !== "character"}

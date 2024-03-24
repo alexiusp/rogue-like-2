@@ -190,6 +190,18 @@ export const $monstersCursor = createStore<number | null>(null);
 $monstersCursor.watch((cursor) => console.info("$monstersCursor:", cursor));
 $monstersCursor.reset(startCharacterRound);
 
+// defend mode
+export const characterDefends = createEvent();
+const $isDefending = createStore(false);
+$isDefending.on(characterDefends, () => true);
+$isDefending.reset(startCharacterRound);
+
+// start monsters round right after defend mode is set
+sample({
+  clock: characterDefends,
+  target: startMonstersRound,
+});
+
 // calculate monsters length
 sample({
   clock: startMonsterBattle,
@@ -237,6 +249,7 @@ sample({
 type TCharacterAttackedParams = {
   monster: IGameMonster;
   character: ICharacterState;
+  isDefending: boolean;
 };
 export const monsterAttackCharacterFx = createEffect<
   TCharacterAttackedParams,
@@ -244,9 +257,9 @@ export const monsterAttackCharacterFx = createEffect<
 >(
   (params) =>
     new Promise((resolve, reject) => {
-      const { character, monster } = params;
+      const { character, monster, isDefending } = params;
       const attack = getMonsterAttack(monster);
-      const defense = getCharacterDefense(character);
+      const defense = getCharacterDefense(character, isDefending);
       const attackRoll = rollAttack(attack, defense);
       console.log("attack roll:", attackRoll);
       if (!attackRoll) {
@@ -266,7 +279,11 @@ export const monsterAttackCharacterFx = createEffect<
 // trigger monster attack calculation
 sample({
   clock: characterAttackedByMonster,
-  source: { character: $character, encounter: $encounter },
+  source: {
+    character: $character,
+    encounter: $encounter,
+    isDefending: $isDefending,
+  },
   target: monsterAttackCharacterFx,
   filter: (src, clock) => {
     console.log("characterAttackedByMonster monster attack start check", clock);
@@ -289,9 +306,11 @@ sample({
   fn(src, clock) {
     const monster = (src.encounter as IMonsterEncounter).monsters[clock!];
     const character = src.character;
+    const isDefending = src.isDefending;
     return {
       character,
       monster,
+      isDefending,
     };
   },
 });

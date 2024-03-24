@@ -173,7 +173,10 @@ export function getCharacterDamage(character: ICharacterState) {
   );
 }
 
-export function getCharacterDefense(character: ICharacterState) {
+export function getCharacterDefense(
+  character: ICharacterState,
+  defending: boolean = false,
+) {
   const baseValue = 0;
   // get base defense value from item
   const itemValue = getEquippedItemsDefense(character.items);
@@ -183,8 +186,14 @@ export function getCharacterDefense(character: ICharacterState) {
   const statsModifier = getStatsDefenseModifier(character.stats);
   // modifier by guild skills
   const skillsModifier = getGuildsDefenseModifier(character.guilds);
+  // modifier by denfend mode
+  const defendModifier = defending ? 2 : 1;
   return Math.round(
-    (baseValue + itemValue) * raceModifier * statsModifier * skillsModifier,
+    (baseValue + itemValue) *
+      raceModifier *
+      statsModifier *
+      skillsModifier *
+      defendModifier,
   );
 }
 
