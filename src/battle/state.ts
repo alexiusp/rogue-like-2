@@ -5,6 +5,7 @@ import {
   getCharacterDamage,
   getCharacterDefense,
   getCharacterProtection,
+  rollCharacterFleeChance,
 } from "../character/models";
 import {
   $character,
@@ -12,18 +13,26 @@ import {
   characterResurrected,
 } from "../character/state";
 import { createDelayEffect } from "../common/delay";
-import { getTileIndexByCoordinates } from "../dungeon/model";
+import { RandomBag } from "../common/random";
+import {
+  getMapTileByCoordinates,
+  getTileIndexByCoordinates,
+} from "../dungeon/model";
 import {
   $currentLevel,
   $currentMapTile,
+  $dungeonLevelMap,
   $dungeonState,
   $encounter,
+  moveCharacter,
   startMonsterBattle,
 } from "../dungeon/state";
 import {
   EEncounterType,
+  IMapCoordinates,
   IMonsterEncounter,
   IMonsterMapTile,
+  TDungeonLevelMap,
 } from "../dungeon/types";
 import { TGameItem, itemsAreSame } from "../items/models";
 import { messageAdded } from "../messages/state";
@@ -190,15 +199,30 @@ export const $monstersCursor = createStore<number | null>(null);
 $monstersCursor.watch((cursor) => console.info("$monstersCursor:", cursor));
 $monstersCursor.reset(startCharacterRound);
 
-// defend mode
+// defend mode - increase (double) defense for the next round
+// in future we can consider to keep defense boost for several rounds
+// to make it more useful for current single-character mode
 export const characterDefends = createEvent();
 const $isDefending = createStore(false);
 $isDefending.on(characterDefends, () => true);
 $isDefending.reset(startCharacterRound);
 
+// flee mode - monsters are making a round
+// and at end we roll if character can exit the battle
+export const characterTriesToFlee = createEvent();
+const $isFleeing = createStore(false);
+$isFleeing.on(characterTriesToFlee, () => true);
+$isFleeing.reset(startCharacterRound);
+
 // start monsters round right after defend mode is set
 sample({
   clock: characterDefends,
+  target: startMonstersRound,
+});
+
+// start monsters round right after flee mode is set
+sample({
+  clock: characterTriesToFlee,
   target: startMonstersRound,
 });
 
@@ -420,18 +444,112 @@ sample({
 // switch round stage after attack is done
 $battleRound.on(monsterToCharacterTransition, () => "monster-to-character");
 
-const monsterToCharacterTransitionFx = createEffect(delay);
+type TFleeDetectionParams = {
+  character: ICharacterState;
+  isFleeing: boolean;
+};
+const monsterToCharacterTransitionFx = createEffect<
+  TFleeDetectionParams,
+  void,
+  void
+>(
+  ({ character, isFleeing }) =>
+    new Promise((resolve, reject) => {
+      if (!isFleeing) {
+        // if not fleeing then just continue as usual
+        resolve();
+      }
+      // check if character managed to flee
+      // if succeed we should reject the promise to prevent switching to character round
+      const check = rollCharacterFleeChance(character);
+      if (check) {
+        reject();
+        return;
+      }
+      resolve();
+      return;
+    }),
+);
 
 // trigger monster to character transition effect when round triggered
 sample({
   clock: monsterToCharacterTransition,
+  source: { character: $character, isFleeing: $isFleeing },
   target: monsterToCharacterTransitionFx,
 });
 
-// start new character round when transition finished
+// start new character round when transition successfull
 sample({
   clock: monsterToCharacterTransitionFx.done,
   target: startCharacterRound,
+});
+
+type TFleeProcessingParams = {
+  dungeon: TDungeonLevelMap;
+};
+export const characterFledFx = createEffect<
+  TFleeProcessingParams,
+  IMapCoordinates,
+  void
+>(
+  ({ dungeon }) =>
+    new Promise((resolve) => {
+      // we need to find a tile on the map around the character
+      // where s/he can flee - it must be open
+      const {
+        character: { x, y },
+        map,
+        height,
+        width,
+      } = dungeon;
+      const possibleCoordinates: IMapCoordinates[] = [];
+      if (x > 0) {
+        const leftTile = getMapTileByCoordinates({ x: x - 1, y }, map);
+        if (leftTile.open) {
+          possibleCoordinates.push({ x: x - 1, y });
+        }
+      }
+      if (y > 0) {
+        const topTile = getMapTileByCoordinates({ x, y: y - 1 }, map);
+        if (topTile.open) {
+          possibleCoordinates.push({ x, y: y - 1 });
+        }
+      }
+      if (x < width - 1) {
+        const rightTile = getMapTileByCoordinates({ x: x + 1, y }, map);
+        if (rightTile.open) {
+          possibleCoordinates.push({ x: x + 1, y });
+        }
+      }
+      if (y < height - 1) {
+        const bottomTile = getMapTileByCoordinates({ x, y: y + 1 }, map);
+        if (bottomTile.open) {
+          possibleCoordinates.push({ x, y: y + 1 });
+        }
+      }
+      // choose one of possible coordinates randomly
+      const randomBag = new RandomBag(possibleCoordinates);
+      const fleeCoordinates = randomBag.getRandomItem();
+      resolve(fleeCoordinates);
+    }),
+);
+
+// find appropriate cell and redirect to dungeon when transition failed
+sample({
+  clock: monsterToCharacterTransitionFx.fail,
+  source: { dungeon: $dungeonLevelMap },
+  target: characterFledFx,
+});
+
+sample({
+  clock: characterFledFx.doneData,
+  target: moveCharacter,
+});
+
+sample({
+  clock: characterFledFx.finally,
+  target: forward,
+  fn: () => "dungeon",
 });
 
 export const battleEnded = createEvent<IGameMonster[]>();

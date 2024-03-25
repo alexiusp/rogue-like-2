@@ -148,3 +148,10 @@ export type TMapTile =
   | IMonsterMapTile
   | ILairMapTile
   | IChestMapTile;
+
+export type TDungeonLevelMap = {
+  width: number;
+  height: number;
+  map: TMapTile[];
+  character: IMapCoordinates;
+};

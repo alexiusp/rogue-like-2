@@ -248,3 +248,12 @@ export function rollCharacterIdSkill(character: ICharacterState) {
   }
   return idLevel;
 }
+
+export function rollCharacterFleeChance(character: ICharacterState) {
+  const baseValue = 50;
+  const dexBonus = getStatBonus(character.stats.dexterity);
+  const wisBonus = getStatBonus(character.stats.wisdom);
+  const thiefSkill = getTotalSkillFromGuilds("thief", character.guilds);
+  const rollValue = baseValue + 2 * (dexBonus + thiefSkill) + wisBonus;
+  return rollDiceCheck(rollValue, "1D100");
+}
