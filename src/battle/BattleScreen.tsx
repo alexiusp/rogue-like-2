@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { blueGrey, deepPurple } from "@mui/material/colors";
@@ -24,6 +25,7 @@ import {
   $battleRound,
   $monstersCursor,
   characterDefends,
+  characterTriesToFlee,
   monsterAttacked,
   waitForRescueTeam,
 } from "./state";
@@ -60,6 +62,14 @@ export default function BattleScreen({
     }
   };
   const waitForRescue = useUnit(waitForRescueTeam);
+  const setDefend = () => {
+    setMode("defend");
+    characterDefends();
+  };
+  const setFlee = () => {
+    setMode("flee");
+    characterTriesToFlee();
+  };
   return (
     <Stack direction="column" spacing={0.5} className="battle-screen">
       <Stack
@@ -91,38 +101,33 @@ export default function BattleScreen({
       </Stack>
       <HealthStatusProgress />
       <ManaStatusProgress />
-      <Stack direction="row" spacing={1}>
+      <ToggleButtonGroup size="large" value={mode}>
         <ActionButton
           disabled={battleRound !== "character"}
           action="fight"
-          selected={mode === "fight"}
           onClick={() => setMode("fight")}
         />
         <ActionButton
           disabled={battleRound !== "character"}
           action="spells"
-          selected={mode === "spells"}
           onClick={() => setMode("spells")}
         />
         <ActionButton
           disabled={battleRound !== "character"}
           action="items"
-          selected={mode === "items"}
           onClick={() => setMode("items")}
         />
         <ActionButton
           disabled={battleRound !== "character"}
           action="defend"
-          selected={mode === "defend"}
-          onClick={() => characterDefends()}
+          onClick={setDefend}
         />
         <ActionButton
           disabled={battleRound !== "character"}
           action="flee"
-          selected={mode === "flee"}
-          onClick={() => setMode("flee")}
+          onClick={setFlee}
         />
-      </Stack>
+      </ToggleButtonGroup>
       <Box sx={{ backgroundColor: deepPurple[500] }}>
         <Typography>saved actions/spells/items</Typography>
       </Box>

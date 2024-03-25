@@ -1,5 +1,5 @@
 button.action-button {
-  border: 1px solid;
+  padding: 0;
 }
 button.action-button img {
   width: 64px;

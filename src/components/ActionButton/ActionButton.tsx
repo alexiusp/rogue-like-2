@@ -1,29 +1,27 @@
-import { IconButton } from "@mui/material";
-import { TBattleMode } from "../../dungeon/model";
+import { ToggleButton } from "@mui/material";
+import { TBattleMode } from "../../battle/types";
 import "./ActionButton.css";
 
 interface IActionButtonProps {
   action: TBattleMode;
   disabled: boolean;
-  selected?: boolean;
   onClick?: () => void;
 }
 
 export default function ActionButton({
   action,
   disabled,
-  selected,
   onClick,
 }: IActionButtonProps) {
-  const color = selected ? "success" : "default";
   return (
-    <IconButton
-      disabled={disabled}
+    <ToggleButton
+      value={action}
       className="action-button"
-      color={color}
+      disabled={disabled}
+      size="large"
       onClick={onClick}
     >
-      <img src={`/src/assets/actions/${action}.png`} />
-    </IconButton>
+      <img src={`/src/assets/actions/${action}.svg`} />
+    </ToggleButton>
   );
 }
