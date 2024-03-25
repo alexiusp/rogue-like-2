@@ -53,5 +53,4 @@
 # Next tasks (sorted):
 
 - bank items storage (stash)
-- guild skills must be generated for levels by function to avoid creating them for every possible character level
 - chests: opened, locked, magically locked

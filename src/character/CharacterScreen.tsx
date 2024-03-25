@@ -86,7 +86,7 @@ export default function CharacterScreen() {
         <Tabs value={activeMainTab} onChange={handleMainTabChange}>
           <Tab value="char" label="Character" />
           <Tab value="guilds" label="Guilds & skills" />
-          <Tab value="res" label="Resistances" />
+          <Tab value="res" label="Resistances" disabled={true} />
         </Tabs>
         <Box sx={{ display: activeMainTab === "char" ? "block" : "none" }}>
           <List dense={true}>

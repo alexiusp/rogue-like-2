@@ -71,24 +71,5 @@ export type TThievingSkills = "thief" | "perception" | "open" | "poison";
 export type TMagicalSkills = "magic" | "regen" | "resist" | "focus";
 export type TSkillName = TFightingSkills | TThievingSkills | TMagicalSkills;
 
-export interface ISkill {
-  kind: TSkillKind;
-  skill: TSkillName;
-}
-
-export interface IFightingSkill extends ISkill {
-  kind: "fight";
-  skill: TFightingSkills;
-}
-
-export interface IThievingSkill extends ISkill {
-  kind: "thief";
-  skill: TThievingSkills;
-}
-
-export interface IMagicSkill extends ISkill {
-  kind: "magic";
-  skill: TMagicalSkills;
-}
-
-export type TSkill = IFightingSkill | IThievingSkill | IMagicSkill;
+export type TGuildSkillRate = Record<TSkillName, number>;
+export type TGuildSkillProgressionMap = Record<EGuild, TGuildSkillRate>;

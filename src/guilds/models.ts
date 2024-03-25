@@ -6,8 +6,8 @@ import {
   IGuildMaster,
   IGuildMembership,
   IGuildSpec,
+  TGuildSkillProgressionMap,
   TGuildValues,
-  TSkill,
   TSkillName,
 } from "./types";
 
@@ -93,89 +93,85 @@ export function getInitialGuildMasters(): IGuildMaster[] {
   }));
 }
 
-export const GuildSkills: Record<EGuild, Array<TSkill | null>> = {
-  [EGuild.Adventurer]: [
-    null,
-    null,
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    null,
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-  ],
-  [EGuild.Warrior]: [
-    null,
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-  ],
-  [EGuild.Thief]: [
-    null,
-    null,
-    { kind: "fight", skill: "fight" },
-    { kind: "thief", skill: "thief" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-    { kind: "fight", skill: "fight" },
-  ],
+export const GuildSkillsProgressionMap: TGuildSkillProgressionMap = {
+  [EGuild.Adventurer]: {
+    fight: 11,
+    crit: 0,
+    backstab: 0,
+    swing: 0,
+    thief: 9,
+    perception: 8,
+    open: 0,
+    poison: 0,
+    magic: 0,
+    regen: 0,
+    resist: 0,
+    focus: 0,
+  },
+  [EGuild.Warrior]: {
+    fight: 20,
+    crit: 15,
+    backstab: 0,
+    swing: 9,
+    thief: 3,
+    perception: 3,
+    open: 0,
+    poison: 0,
+    magic: 0,
+    regen: 0,
+    resist: 0,
+    focus: 0,
+  },
+  [EGuild.Thief]: {
+    fight: 10,
+    crit: 0,
+    backstab: 15,
+    swing: 0,
+    thief: 15,
+    perception: 5,
+    open: 5,
+    poison: 3,
+    magic: 0,
+    regen: 0,
+    resist: 0,
+    focus: 0,
+  },
 };
 
-function getAllSkillsFromGuilds(guilds: IGuildMembership[]) {
-  const skills: TSkill[] = [];
-  for (const guildMembership of guilds) {
-    const { guild, level } = guildMembership;
-    const guildSkills = GuildSkills[guild];
-    for (let l = 1; l <= level; l++) {
-      const skill = guildSkills[l];
-      if (skill !== null) {
-        skills.push(skill);
-      }
-    }
-  }
-  return skills;
+function getSkillProgressionRate(skill: TSkillName, guild: EGuild) {
+  return GuildSkillsProgressionMap[guild][skill];
 }
 
-// general skills: fighting, thief and magic are calculated in total
+export function getSkillLevelForGuildLevel(
+  skill: TSkillName,
+  guild: EGuild,
+  guildLevel: number,
+) {
+  const ratio = getSkillProgressionRate(skill, guild);
+  if (!ratio) {
+    // if ratio = 0 no skill will be given by this guild
+    return 0;
+  }
+  const value = Math.floor((guildLevel + (20 - ratio)) / (20 - ratio));
+  /*
+  console.log(
+    `Guild ${EGuild[guild]} provides ${skill}*${value} on level ${guildLevel}`,
+  );
+  */
+  return value;
+}
+
+// general skills: fighting, thief and magic are calculated in total for all guilds
 export function getTotalSkillFromGuilds(
   name: TSkillName,
   guilds: IGuildMembership[],
 ) {
-  const skills = getAllSkillsFromGuilds(guilds);
-  return skills.reduce((acc, skill) => {
-    if (skill.skill === name) {
-      return acc + 1;
-    }
-    return acc;
-  }, 0);
+  let total = 0;
+  for (const guildMembership of guilds) {
+    const { guild, level } = guildMembership;
+    total += getSkillLevelForGuildLevel(name, guild, level);
+  }
+  return total;
 }
 
 // abilities are calculated by max value
@@ -186,17 +182,10 @@ export function getMaxSkillFromGuilds(
   let max = 0;
   let maxGuild = guilds[0].guild;
   for (const membership of guilds) {
-    let amount = 0;
     const { guild, level } = membership;
-    const guildSkills = GuildSkills[guild];
-    for (let l = 1; l <= level; l++) {
-      const skill = guildSkills[l];
-      if (skill !== null && skill.skill === name) {
-        amount += 1;
-      }
-    }
-    if (max < amount) {
-      max = amount;
+    const skill = getSkillLevelForGuildLevel(name, guild, level);
+    if (max < skill) {
+      max = skill;
       maxGuild = guild;
     }
   }
