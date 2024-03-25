@@ -19,8 +19,6 @@
   - refactor battle to propagate dealt damage as event payload to properly display it
   - special animation for hits with 0 damage
   - monster: generate optional chest
-  - monster: switch image of dead monster to skull or grave on battle screen
-  - map: differentiate between tiles with alive monsters and dead monsters (finished encounter)
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
   - monster: size for monster - depends on character races (trolls and halflings) implementation
   - monster generate different monsters in one group (rules to combine them? by type?)
@@ -54,7 +52,6 @@
 
 # Next tasks (sorted):
 
-- defend and flee battle modes
 - bank items storage (stash)
 - guild skills must be generated for levels by function to avoid creating them for every possible character level
 - chests: opened, locked, magically locked

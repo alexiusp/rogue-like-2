@@ -1,11 +1,14 @@
 import { Box, Button } from "@mui/material";
 import { ReactNode } from "react";
 import avatar from "../assets/avatar.png";
+import danger from "../assets/tiles/danger.svg";
+import down from "../assets/tiles/dungeon-down.svg";
+import up from "../assets/tiles/dungeon-up.svg";
 import fog from "../assets/tiles/fog.webp";
-import ladder from "../assets/tiles/ladder1.png";
 import pit from "../assets/tiles/pit.png";
-import skull from "../assets/tiles/skull.png";
+import tombstone from "../assets/tiles/tombstone.svg";
 import water from "../assets/tiles/water.webp";
+import { areAllMonstersDead } from "../monsters/model";
 import { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
 import { isTileStairs } from "./model";
 import {
@@ -53,7 +56,13 @@ export default function DungeonTile({
         break;
     }
     if (isTileStairs(tile)) {
-      tileLayers.push(<img src={ladder} alt={"ladder"} key={`ladder`} />);
+      if (tile.direction == "down") {
+        tileLayers.push(
+          <img src={down} alt={"ladder-down"} key={`ladder-down`} />,
+        );
+      } else {
+        tileLayers.push(<img src={up} alt={"ladder-up"} key={`ladder-up`} />);
+      }
     } else {
       const { effects, encounter, respawnTimer } = tile;
       if (effects) {
@@ -80,13 +89,23 @@ export default function DungeonTile({
         const { type } = encounter;
         switch (type) {
           case EEncounterType.Monster:
-            tileLayers.push(
-              <img
-                src={skull}
-                alt={EEncounterType[type]}
-                key={`encounter-${type}`}
-              />,
-            );
+            if (areAllMonstersDead(encounter.monsters)) {
+              tileLayers.push(
+                <img
+                  src={tombstone}
+                  alt={"dead monsters"}
+                  key={`encounter-${type}`}
+                />,
+              );
+            } else {
+              tileLayers.push(
+                <img
+                  src={danger}
+                  alt={"alive monsters"}
+                  key={`encounter-${type}`}
+                />,
+              );
+            }
             break;
 
           default:

@@ -1,4 +1,5 @@
 import { Card, CardMedia, Grow, Typography } from "@mui/material";
+import skulls from "../assets/tiles/skull-crossed-bones.svg";
 import ProgressBar from "../components/ProgressBar";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 import "./MonsterCard.css";
@@ -26,16 +27,15 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
     default:
       break;
   }
+  const picture =
+    hp <= 0 ? skulls : `/src/assets/monsters/${monsterData.picture}`;
   return (
     <Grow in={true}>
       <Card
         variant={active ? "elevation" : "outlined"}
         className={monsterCardClasses.join(" ")}
       >
-        <CardMedia
-          className="picture"
-          image={`/src/assets/monsters/${monsterData.picture}`}
-        />
+        <CardMedia className="picture" image={picture} />
         <div>
           <Typography className="monster-name">{monsterName}</Typography>
           <ProgressBar current={hp} max={hpMax} color="error" />
