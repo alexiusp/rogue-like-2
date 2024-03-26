@@ -41,7 +41,7 @@ export default function ItemDetailsDialog({
   if (!item) {
     return null;
   }
-  const { item: itemName, idLevel } = item;
+  const { item: itemName, idLevel, kind } = item;
   const baseItem = GlobalItemsCatalogue[itemName];
   let attack: number | string = "?";
   let damage: number | string = "?";
@@ -60,6 +60,8 @@ export default function ItemDetailsDialog({
   const isNotRestricted = isNotGuildRestricted(baseItem.guildRequired);
   const handsStatus = idLevel > 0 ? getHandsStatusLabel(baseItem) : "";
   const spellStatus = idLevel > 1 ? getItemSpellStatusLabel(baseItem) : "";
+  const usesStatus =
+    idLevel > 1 && kind === "usable" ? `Uses left: ${item.usesLeft}` : "";
   return (
     <Dialog onClose={onClose} open={true}>
       <DialogTitle>
@@ -169,6 +171,7 @@ export default function ItemDetailsDialog({
           <Grid xs={6}>
             <Typography>{handsStatus}</Typography>
             <Typography>{spellStatus}</Typography>
+            <Typography>{usesStatus}</Typography>
           </Grid>
           <Grid xs={6}>
             <ItemGuildRequirements

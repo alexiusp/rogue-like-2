@@ -32,6 +32,7 @@
   - guild masters list save on update instead of manual saving
   - guild level titles for character
   - leveling: generate guild quest - depends on quest implementation
+  - all skills must work at proper moments (todo when magic, chests, monster special attacts etc. are implemented)
 - quests
   - global quest (story) - need to design how and when it should be triggered
   - tavern quests (should be similar to quests from the guild)

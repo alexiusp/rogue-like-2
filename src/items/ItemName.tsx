@@ -7,17 +7,20 @@ interface IItemNameProps {
 }
 
 export default function ItemName({ item }: IItemNameProps) {
-  const { item: itemName, idLevel, alignment } = item;
-  if (idLevel === 0) return "<Unknown>";
+  const { item: itemName, kind: itemKind, idLevel, alignment } = item;
   const baseItem = GlobalItemsCatalogue[itemName];
   const { aligned, name, kind, material = "" } = baseItem;
-  const itemNameToDisplay = idLevel > 0 ? name : `${material} ${kind}`;
+  if (idLevel === 0) return `<Unknown ${kind}>`;
+  const itemNameToDisplay = idLevel > 1 ? name : `${material} ${kind}`;
   const alignmentLabel =
     idLevel === 2 && aligned ? ` [${getAlignmentShort(alignment)}]` : "";
+  const usableSuffix =
+    idLevel === 2 && itemKind === "usable" ? ` [${item.usesLeft}]` : "";
   return (
     <span>
       {itemNameToDisplay}
       {alignmentLabel}
+      {usableSuffix}
     </span>
   );
 }

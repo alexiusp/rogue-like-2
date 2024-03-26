@@ -1,11 +1,11 @@
-import BackHandIcon from "@mui/icons-material/BackHand";
+import AttributionIcon from "@mui/icons-material/Attribution";
 import {
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { getAlignmentShort } from "../common/alignment";
+import ItemName from "../items/ItemName";
 import { TGameItem } from "../items/models";
 
 interface IInventoryItemProps {
@@ -21,15 +21,12 @@ export default function InventoryItem({
   divider,
   onSelect,
 }: IInventoryItemProps) {
-  const { idLevel, item: itemName, alignment, kind } = item;
-  const alignmentSuffix = alignment ? ` (${getAlignmentShort(alignment)})` : "";
-  const usableSuffix = kind === "usable" ? ` [${item.usesLeft}]` : "";
-  const itemLabel = `${itemName}${alignmentSuffix}${usableSuffix}`;
+  const { idLevel, kind } = item;
   const sx = idLevel === 2 ? { sx: { fontWeight: 700 } } : undefined;
   const eqIcon =
     kind === "equipable" && item.isEquipped ? (
-      <ListItemIcon>
-        <BackHandIcon />
+      <ListItemIcon title="equipped">
+        <AttributionIcon />
       </ListItemIcon>
     ) : null;
   return (
@@ -40,7 +37,7 @@ export default function InventoryItem({
       >
         {eqIcon}
         <ListItemText
-          primary={itemLabel}
+          primary={<ItemName item={item} />}
           primaryTypographyProps={sx}
           prefix="*"
         />
