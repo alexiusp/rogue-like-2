@@ -13,7 +13,6 @@ import { descendToDungeonLevel, dungeonLoaded } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";
 import CityStatusBar from "./CityStatusBar";
-import { bankStateLoaded, bankStateSaved } from "./bank/state";
 import { storeStateLoaded, storeStateSaved } from "./generalStore/state";
 
 export default function CityScreen() {
@@ -23,14 +22,12 @@ export default function CityScreen() {
       return;
     }
     characterLoaded();
-    bankStateLoaded();
     storeStateLoaded();
     dungeonLoaded();
     setDataLoaded(true);
   }, [dataLoaded, setDataLoaded]);
   const openDungeon = () => {
     characterSaved();
-    bankStateSaved();
     storeStateSaved();
     navigate("dungeon");
     descendToDungeonLevel(1);

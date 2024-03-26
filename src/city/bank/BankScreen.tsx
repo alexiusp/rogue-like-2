@@ -22,12 +22,7 @@ import {
 } from "../../character/state";
 import Screen from "../../layout/Screen";
 import { back } from "../../navigation";
-import {
-  $bankMoney,
-  bankStateSaved,
-  depositMoney,
-  withdrawMoney,
-} from "./state";
+import { $bankMoney, depositMoney, withdrawMoney } from "./state";
 
 export default function BankScreen() {
   const personalMoney = useUnit($characterMoney);
@@ -84,7 +79,6 @@ export default function BankScreen() {
   };
   const goBackToCity = () => {
     characterSaved();
-    bankStateSaved();
     back();
   };
 

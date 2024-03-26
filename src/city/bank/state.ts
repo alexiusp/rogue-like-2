@@ -1,30 +1,26 @@
-import { createEvent, createStore } from "effector";
+import { StoreValue, createDomain } from "effector";
 import { loadCharacterData, saveCharacterData } from "../../common/db";
 
-const fallbackMoneyState = 0;
-const startState = (() => {
-  const cachedData = loadCharacterData<number>("bank-money");
-  return cachedData !== null ? cachedData : fallbackMoneyState;
-})();
+const bankDomain = createDomain("bank");
 
-export const $bankMoney = createStore<number>(startState);
-
-export const bankStateSaved = createEvent();
-$bankMoney.on(bankStateSaved, (state) => {
-  saveCharacterData("bank-money", state);
-  return state;
-});
-export const bankStateLoaded = createEvent();
-$bankMoney.on(bankStateLoaded, (state) => {
-  const bankState = loadCharacterData<number>("bank-money");
-  if (!bankState) {
-    return state;
+bankDomain.onCreateStore((store) => {
+  const key = `${bankDomain.shortName}-${store.shortName}`;
+  const value = loadCharacterData<StoreValue<typeof store>>(key);
+  if (value !== null) {
+    store.setState(value);
   }
-  return bankState;
+});
+bankDomain.onCreateStore((store) => {
+  const key = `${bankDomain.shortName}-${store.shortName}`;
+  store.watch((value) => {
+    saveCharacterData(key, value);
+  });
 });
 
-export const depositMoney = createEvent<number>();
+export const $bankMoney = bankDomain.createStore<number>(0, { name: "money" });
+
+export const depositMoney = bankDomain.createEvent<number>();
 $bankMoney.on(depositMoney, (account, money) => account + money);
 
-export const withdrawMoney = createEvent<number>();
+export const withdrawMoney = bankDomain.createEvent<number>();
 $bankMoney.on(withdrawMoney, (account, money) => account - money);
