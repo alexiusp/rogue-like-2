@@ -9,10 +9,12 @@ import {
   EEncounterType,
   ETerrain,
   ETerrainEffect,
+  ICommonMapTile,
   IMapCoordinates,
   IMonsterEncounter,
   IMonsterMapTile,
   IStairsMapTile,
+  TDungeonState,
   TGameTileEncounter,
   TMapTile,
 } from "./types";
@@ -186,6 +188,9 @@ export function getTileIndexByCoordinates(
   coordinates: IMapCoordinates,
   levelMap: TMapTile[],
 ) {
+  if (!levelMap) {
+    throw new Error("Invalid map of the level!");
+  }
   const tileIndex = levelMap.findIndex(
     (tile) => tile.x === coordinates.x && tile.y === coordinates.y,
   );
@@ -258,4 +263,42 @@ export function respawnTiles(level: number, levelMap: TMapTile[]) {
     return generator(tile.x, tile.y);
   });
   return udpatedMap;
+}
+
+export function updateRespawnCounter(
+  map: TMapTile[],
+  characterPos?: IMapCoordinates,
+) {
+  return map.map((tile) => {
+    if (!tile.open || isTileStairs(tile)) {
+      return tile;
+    }
+    let respawnTimer = tile.respawnTimer + 1;
+    if (characterPos) {
+      // reset timer when character visit the tile
+      if (areSameCoordinates(characterPos, { x: tile.x, y: tile.y })) {
+        respawnTimer = 0;
+      }
+    }
+    // and we need to regenerate (respawn) this tile
+    const updatedTile: ICommonMapTile = {
+      ...tile,
+      respawnTimer,
+    };
+    return updatedTile;
+  });
+}
+
+export function updateDungeonRespawnCounters(
+  dungeon: TDungeonState,
+  level: number,
+  characterPos: IMapCoordinates,
+) {
+  const updatedDungeon: TDungeonState = dungeon.map((levelMap, index) => {
+    if (index === level) {
+      return updateRespawnCounter(levelMap, characterPos);
+    }
+    return updateRespawnCounter(levelMap);
+  });
+  return updatedDungeon;
 }

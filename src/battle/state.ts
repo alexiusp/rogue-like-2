@@ -163,10 +163,9 @@ sample({
       monsters: updatedMonsters,
     };
     levelMap[tileIndex] = updatedMapTile;
-    return {
-      ...state,
-      [level]: levelMap,
-    };
+    const updatedState = [...state];
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
   },
 });
 

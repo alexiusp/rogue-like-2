@@ -51,6 +51,5 @@
 
 # Next tasks (sorted):
 
-- bug: respawn counter does not increase for levels other than current
 - chests: opened, locked, magically locked
 - falling into a pit handling

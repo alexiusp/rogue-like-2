@@ -155,3 +155,5 @@ export type TDungeonLevelMap = {
   map: TMapTile[];
   character: IMapCoordinates;
 };
+
+export type TDungeonState = Array<Array<TMapTile>>;

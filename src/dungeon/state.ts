@@ -14,32 +14,29 @@ import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
-  areSameCoordinates,
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
   isMonsterEncounterTile,
   isTileStairs,
   respawnTiles,
+  updateDungeonRespawnCounters,
 } from "./model";
 import {
   EEncounterType,
   ICommonMapTile,
   IMapCoordinates,
   IStairsMapTile,
-  TMapTile,
+  TDungeonState,
 } from "./types";
-
-type TDungeonState = {
-  [level: number]: Array<TMapTile>;
-};
 
 const startState: TDungeonState = (() => {
   const cachedData = loadCharacterData<TDungeonState>("dungeon");
   if (cachedData !== null) {
     return cachedData;
   }
-  const dungeon: TDungeonState = {};
+  // initialize with empty array as "level 0"
+  const dungeon: TDungeonState = [[]];
   for (let level = 1; level < DungeonSpec.length; level++) {
     dungeon[level] = generateDungeonLevel(level);
   }
@@ -187,10 +184,9 @@ sample({
     mapTile.open = true;
     console.log("opening tile", mapTile);
     levelMap.splice(tileIndex, 1, mapTile);
-    return {
-      ...state,
-      [level]: levelMap,
-    };
+    const updatedState = [...state];
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
   },
 });
 
@@ -285,10 +281,9 @@ sample({
       monsters: updatedMonsters,
     };
     levelMap[tileIndex] = mapTile;
-    return {
-      ...state,
-      [level]: levelMap,
-    };
+    const updatedState = [...state];
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
   },
 });
 
@@ -300,31 +295,15 @@ sample({
   },
   target: $dungeonState,
   fn({ level, state }, pos) {
-    let levelMap = [...state[level]];
-    // increase all respawn timeouts
-    for (let index = 0; index < levelMap.length; index++) {
-      const tile = levelMap[index];
-      if (!tile.open || isTileStairs(tile)) {
-        continue;
-      }
-      let respawnTimer = tile.respawnTimer + 1;
-      // reset timer when character visit the tile
-      if (areSameCoordinates(pos, { x: tile.x, y: tile.y })) {
-        respawnTimer = 0;
-      }
-      // and we need to regenerate (respawn) this tile
-      const udpatedTile: ICommonMapTile = {
-        ...tile,
-        respawnTimer,
-      };
-      levelMap[index] = udpatedTile;
-    }
-    // check if respawn timer reached limit on any of the tiles
+    // udpate respawn timeouts on the whole dungeon map
+    const updatedState = updateDungeonRespawnCounters(state, level, pos);
+    // get current level
+    let levelMap = updatedState[level];
+    // check if respawn timer reached limit
+    // on any of the tiles of the current level
     // and regenerate tiles where it does
     levelMap = respawnTiles(level, levelMap);
-    return {
-      ...state,
-      [level]: levelMap,
-    };
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
   },
 });
