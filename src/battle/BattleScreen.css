@@ -8,6 +8,11 @@
   background-position: center;
   background-size: cover;
 }
+.battle-screen .encounter .chest {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 .battle-screen .encounter .monsters {
   flex-direction: row;
   height: 100%;

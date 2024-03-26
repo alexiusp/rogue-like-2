@@ -208,7 +208,12 @@ sample({
     }
     if (encounter.type === EEncounterType.Monster) {
       // check for alive monsters
-      return !areAllMonstersDead(encounter.monsters);
+      const aliveMonsters = !areAllMonstersDead(encounter.monsters);
+      const unopenedChest = !!encounter.chest && !encounter.chest.isOpened;
+      return aliveMonsters || unopenedChest;
+    }
+    if (encounter.type === EEncounterType.Chest) {
+      return !encounter.chest.isOpened;
     }
     return !!mapTile.encounter;
   },
@@ -227,6 +232,11 @@ export const $encounter = $currentMapTile.map(
 );
 $encounter.watch((encounter) => console.log("encounter udpated:", encounter));
 
+// if there is a chest
+export const $chest = $encounter.map((encounter) =>
+  encounter !== null && encounter.chest ? encounter.chest : null,
+);
+
 // see src/battle/model for further details about battle calculation
 export const startMonsterBattle = createEvent();
 startMonsterBattle.watch(() => console.info("startMonsterBattle"));
@@ -237,7 +247,9 @@ sample({
   target: startMonsterBattle,
   source: $encounter,
   filter: (encounter) =>
-    !!encounter && encounter.type === EEncounterType.Monster,
+    !!encounter &&
+    encounter.type === EEncounterType.Monster &&
+    !areAllMonstersDead(encounter.monsters),
 });
 
 export const $isOnStairsUp = $currentMapTile.map(

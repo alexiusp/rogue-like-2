@@ -1,6 +1,8 @@
 import { Box, Button } from "@mui/material";
 import { ReactNode } from "react";
 import avatar from "../assets/avatar.png";
+import chest from "../assets/tiles/chest.png";
+import openChest from "../assets/tiles/chest_open.png";
 import danger from "../assets/tiles/danger.svg";
 import down from "../assets/tiles/dungeon-down.svg";
 import up from "../assets/tiles/dungeon-up.svg";
@@ -90,13 +92,17 @@ export default function DungeonTile({
         switch (type) {
           case EEncounterType.Monster:
             if (areAllMonstersDead(encounter.monsters)) {
-              tileLayers.push(
-                <img
-                  src={tombstone}
-                  alt={"dead monsters"}
-                  key={`encounter-${type}`}
-                />,
-              );
+              if (encounter.chest && !encounter.chest.isOpened) {
+                tileLayers.push(<img src={chest} alt="chest" key={type} />);
+              } else {
+                tileLayers.push(
+                  <img
+                    src={tombstone}
+                    alt={"dead monsters"}
+                    key={`encounter-${type}`}
+                  />,
+                );
+              }
             } else {
               tileLayers.push(
                 <img
@@ -107,7 +113,13 @@ export default function DungeonTile({
               );
             }
             break;
-
+          case EEncounterType.Chest: {
+            const isOpen = encounter.chest.isOpened;
+            tileLayers.push(
+              <img src={isOpen ? openChest : chest} alt="chest" key={type} />,
+            );
+            break;
+          }
           default:
             break;
         }

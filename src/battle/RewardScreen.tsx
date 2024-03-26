@@ -7,6 +7,7 @@ import {
   moneyAddedToCharacter,
   xpGainedByCharacter,
 } from "../character/state";
+import { $chest } from "../dungeon/state";
 import ItemDetailsDialog from "../items/ItemDetailsDialog";
 import ItemIcon from "../items/ItemIcon";
 import MoneyLabel from "../items/MoneyLabel";
@@ -24,11 +25,16 @@ export default function RewardScreen() {
   const money = useUnit($encounterMoneyReward);
   const xp = useUnit($encounterXpReward);
   const items = useUnit($encounterItemsReward);
+  const chest = useUnit($chest);
   const [selectedItem, selectItem] = useState<TGameItem | undefined>(undefined);
   const collectRewards = () => {
     moneyAddedToCharacter(money);
     xpGainedByCharacter(xp);
     characterReceivedItems(items);
+    if (chest) {
+      forward("chest");
+      return;
+    }
     forward("dungeon");
   };
   const handleItemDrop = () => {

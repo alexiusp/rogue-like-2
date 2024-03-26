@@ -2,6 +2,8 @@ import { Box } from "@mui/material";
 import { useUnit } from "effector-react";
 import { ReactNode } from "react";
 import BattleScreen from "../battle/BattleScreen";
+import { areAllMonstersDead } from "../monsters/model";
+import ChestScreen from "./ChestScreen";
 import { $encounter } from "./state";
 import { EEncounterType } from "./types";
 
@@ -10,9 +12,17 @@ export default function EncounterScreen() {
   let subScreen: ReactNode;
   switch (encounter?.type) {
     case EEncounterType.Monster:
-      subScreen = <BattleScreen monsters={encounter.monsters} />;
+      if (!areAllMonstersDead(encounter.monsters)) {
+        subScreen = (
+          <BattleScreen monsters={encounter.monsters} chest={encounter.chest} />
+        );
+      } else {
+        subScreen = <ChestScreen />;
+      }
       break;
-
+    case EEncounterType.Chest:
+      subScreen = <ChestScreen />;
+      break;
     default:
       subScreen = null;
       break;

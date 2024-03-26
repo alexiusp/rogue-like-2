@@ -13,10 +13,12 @@ import { blueGrey, deepPurple } from "@mui/material/colors";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.webp";
+import chestImage from "../assets/tiles/chest.png";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
+import { IChest } from "../dungeon/types";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
@@ -32,14 +34,14 @@ import {
 import { TBattleMode } from "./types";
 
 interface IBattleScreenProps {
-  //  chest?: IChest;
+  chest?: IChest;
   //  effects: Array<ETerrainEffect>;
   monsters: Array<IGameMonster>;
   //  terrain: ETerrain;
 }
 
 export default function BattleScreen({
-  //chest,
+  chest,
   //effects,
   monsters,
   //terrain,
@@ -95,6 +97,7 @@ export default function BattleScreen({
           ))}
         </Stack>
         <HitAnimation />
+        {chest ? <img src={chestImage} alt="chest" className="chest" /> : null}
         <Box sx={{ backgroundColor: blueGrey[500] }}>
           <Typography>TODO: active effects, spells, etc. icons</Typography>
         </Box>

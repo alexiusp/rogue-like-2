@@ -6,6 +6,7 @@ import BankScreen from "./city/bank/BankScreen";
 import GeneralStoreScreen from "./city/generalStore/GeneralStoreScreen";
 import TowerScreen from "./city/mageTower/TowerScreen";
 import TavernScreen from "./city/tavern/TavernScreen";
+import ChestScreen from "./dungeon/ChestScreen";
 import DungeonScreen from "./dungeon/DungeonScreen";
 import EncounterScreen from "./dungeon/EncounterScreen";
 import GuildsScreen from "./guilds/GuildsScreen";
@@ -56,6 +57,9 @@ function App() {
       </Route>
       <Route route="tower">
         <TowerScreen />
+      </Route>
+      <Route route="chest">
+        <ChestScreen />
       </Route>
       <Messages />
     </Container>
