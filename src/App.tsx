@@ -4,6 +4,7 @@ import CharacterScreen from "./character/CharacterScreen";
 import CityScreen from "./city/CityScreen";
 import BankScreen from "./city/bank/BankScreen";
 import GeneralStoreScreen from "./city/generalStore/GeneralStoreScreen";
+import TowerScreen from "./city/mageTower/TowerScreen";
 import TavernScreen from "./city/tavern/TavernScreen";
 import DungeonScreen from "./dungeon/DungeonScreen";
 import EncounterScreen from "./dungeon/EncounterScreen";
@@ -52,6 +53,9 @@ function App() {
       </Route>
       <Route route="reward">
         <RewardScreen />
+      </Route>
+      <Route route="tower">
+        <TowerScreen />
       </Route>
       <Messages />
     </Container>

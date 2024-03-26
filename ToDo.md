@@ -53,3 +53,4 @@
 
 - chests: opened, locked, magically locked
 - falling into a pit handling
+- add water living monster to test how battle on water tile going

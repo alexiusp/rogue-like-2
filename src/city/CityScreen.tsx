@@ -1,6 +1,7 @@
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import BalanceIcon from "@mui/icons-material/Balance";
+import CastleIcon from "@mui/icons-material/Castle";
 import ExploreIcon from "@mui/icons-material/Explore";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import StoreIcon from "@mui/icons-material/Store";
@@ -85,6 +86,17 @@ export default function CityScreen() {
             startIcon={<AccountBalanceIcon />}
           >
             Bank
+          </Button>
+        </Grid>
+        <Grid xs={6}>
+          <Button
+            onClick={() => navigate("tower")}
+            size="large"
+            variant="outlined"
+            fullWidth={true}
+            startIcon={<CastleIcon />}
+          >
+            Tower of the Mage
           </Button>
         </Grid>
         <Grid xs={6}>
