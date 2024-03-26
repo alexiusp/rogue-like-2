@@ -1,3 +1,4 @@
+import { MoneyLootByLevel } from "../common/loot";
 import { RandomBag, rollDiceCheck } from "../common/random";
 import { generateItemsForChest } from "../items/models";
 import { generateNewMonsterByName } from "../monsters/model";
@@ -11,6 +12,7 @@ import {
   ETerrain,
   ETerrainEffect,
   IChest,
+  IChestEncounter,
   ICommonMapTile,
   IMapCoordinates,
   IMonsterEncounter,
@@ -27,13 +29,15 @@ function generateChest(level: number): IChest | undefined {
   if (!shouldHaveChest) {
     return;
   }
-  // TODO: generate random amount of money
-  // TODO: generate random locked status
+  // generate random amount of money
+  const moneyBag = new RandomBag(MoneyLootByLevel[level]);
+  // generate random locked status
+  const isLocked = rollDiceCheck(2, "1D10");
   return {
-    isLocked: true,
+    isLocked: isLocked,
     isOpened: false,
     items: generateItemsForChest(level),
-    money: 0,
+    money: moneyBag.getRandomItem() ?? 0,
     // no trap since no magic implemented yet
   };
 }
@@ -46,7 +50,15 @@ function generateEncounter(
 ): TGameTileEncounter | undefined {
   switch (type) {
     case EEncounterType.Chest: {
-      return;
+      const chest = generateChest(level);
+      if (!chest) {
+        return;
+      }
+      const encounter: IChestEncounter = {
+        type: EEncounterType.Chest,
+        chest,
+      };
+      return encounter;
     }
     case EEncounterType.Event: {
       return;
@@ -73,8 +85,11 @@ function generateEncounter(
       const encounter: IMonsterEncounter = {
         type: EEncounterType.Monster,
         monsters,
-        chest: generateChest(level),
       };
+      const chest = generateChest(level);
+      if (chest) {
+        encounter.chest = chest;
+      }
       return encounter;
     }
     case EEncounterType.Lair: {

@@ -49,6 +49,7 @@ const SecondLevel: IDungeonLevelSpec = {
     EEncounterType.Monster,
     EEncounterType.Monster,
     EEncounterType.Monster,
+    EEncounterType.Chest,
   ],
   maxEncounters: 40,
 };

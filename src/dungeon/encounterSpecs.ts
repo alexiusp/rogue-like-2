@@ -6,6 +6,11 @@ const MonstersByLevel = [
   [],
   ["Giant Rat", "Giant Spider", "Poisonous Snake"],
   ["Giant Rat", "Giant Spider", "Poisonous Snake"],
+  ["Giant Rat", "Giant Spider", "Poisonous Snake"],
+  ["Giant Rat", "Giant Spider", "Poisonous Snake"],
+  ["Giant Rat", "Giant Spider", "Poisonous Snake"],
+  ["Giant Rat", "Giant Spider", "Poisonous Snake"],
+  ["Giant Rat", "Giant Spider", "Poisonous Snake"],
 ];
 
 export function getMonstersForLevelAndTerrain(
@@ -13,13 +18,12 @@ export function getMonstersForLevelAndTerrain(
   terrain: ETerrain,
   effects: ETerrainEffect[],
 ) {
-  const levelMonsters = MonstersByLevel[level];
+  let levelMonsters = MonstersByLevel[level];
   // filter by terrain
-  if (terrain !== ETerrain.Floor) {
-    // currently we don't have any monsters for any other
-    // terraing than normal floor
-    return [];
-  }
+  levelMonsters = levelMonsters.filter((monsterName) => {
+    const baseMonster = GlobalMonsterCatalogue[monsterName];
+    return baseMonster.terrains.includes(terrain);
+  });
   // filter by effects
   return levelMonsters.filter((monsterName) => {
     const baseMonster = GlobalMonsterCatalogue[monsterName];

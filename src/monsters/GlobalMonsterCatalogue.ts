@@ -1,62 +1,8 @@
 import { EAlignment } from "../common/alignment";
-import { getNullBag, getNumberBag } from "../common/random";
-import { ETerrainEffect } from "../dungeon/types";
+import { ItemLootByLevel, MoneyLootByLevel } from "../common/loot";
+import { getNumberBag } from "../common/random";
+import { ETerrain, ETerrainEffect } from "../dungeon/types";
 import { IBaseMonster } from "./model";
-
-const BaseLevel1ItemLoot: (string | null)[] = [
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Wooden Shield",
-  "Wooden Shield",
-  "Leather Boots",
-  "Leather Belt",
-  "Healing Potion",
-  "Healing Potion",
-  ...getNullBag(30),
-];
-
-const BaseLevel2ItemLoot: (string | null)[] = [
-  "Bronze Dagger",
-  "Iron Dagger",
-  "Iron Dagger",
-  "Iron Dagger",
-  "Wooden Shield",
-  "Leather Boots",
-  "Leather Belt",
-  "Healing Potion",
-  "Healing Potion",
-  "Healing Potion",
-  ...getNullBag(30),
-];
-
-const BaseLevel1MoneyLoot: (number | null)[] = [
-  50,
-  50,
-  20,
-  20,
-  20,
-  10,
-  10,
-  10,
-  10,
-  null,
-];
-
-const BaseLevel2MoneyLoot: (number | null)[] = [
-  100,
-  100,
-  50,
-  50,
-  50,
-  20,
-  20,
-  20,
-  20,
-  20,
-  ...getNullBag(2),
-];
 
 const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
   "Giant Rat": {
@@ -76,9 +22,10 @@ const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
     baseHp: 15,
     baseMp: 0,
     specials: [],
-    items: [...BaseLevel1ItemLoot],
-    money: [...BaseLevel1MoneyLoot],
+    items: [...ItemLootByLevel[1]],
+    money: [...MoneyLootByLevel[2]],
     // this monster can not live in water or sand
+    terrains: [ETerrain.Floor, ETerrain.Pit],
     effects: [
       ETerrainEffect.Antimagic,
       ETerrainEffect.Darkness,
@@ -104,9 +51,10 @@ const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
     baseHp: 18,
     baseMp: 0,
     specials: [],
-    items: [...BaseLevel2ItemLoot],
-    money: [...BaseLevel2MoneyLoot],
+    items: [...ItemLootByLevel[2]],
+    money: [...MoneyLootByLevel[2]],
     // this monster can not live in water or sand
+    terrains: [ETerrain.Floor, ETerrain.Pit],
     effects: [
       ETerrainEffect.Antimagic,
       ETerrainEffect.Darkness,
@@ -132,11 +80,11 @@ const GlobalMonsterCatalogue: { [name: string]: IBaseMonster } = {
     baseHp: 8,
     baseMp: 0,
     specials: [],
-    items: [...BaseLevel2ItemLoot],
-    money: [...BaseLevel2MoneyLoot],
+    items: [...ItemLootByLevel[2]],
+    money: [...MoneyLootByLevel[2]],
     // this monster can not live in water
+    terrains: [ETerrain.Floor, ETerrain.Pit, ETerrain.Quicksand],
     effects: [
-      ETerrainEffect.Quicksand,
       ETerrainEffect.Antimagic,
       ETerrainEffect.Darkness,
       ETerrainEffect.Extinguish,

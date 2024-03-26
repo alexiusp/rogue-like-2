@@ -8,7 +8,7 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
-import { ETerrainEffect } from "../dungeon/types";
+import { ETerrain, ETerrainEffect } from "../dungeon/types";
 import { TGameItem, generateRandomItemByName } from "../items/models";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
@@ -47,8 +47,9 @@ export interface IBaseMonster {
   // random bag for possible amount in encounter
   pack: TRandomBag<number>;
   // possible terraing effects for this monster
+  terrains: TRandomBag<ETerrain>;
   // some monsters can for example only live in water or in sand
-  effects: Array<ETerrainEffect | null>;
+  effects: TRandomBag<ETerrainEffect>;
 }
 
 export enum EAggroMode {
