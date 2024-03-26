@@ -47,10 +47,10 @@
 - Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
 - respawn: respawn only possible encounter, not terraing and effects?
 
-# Bugs to fix:
-
-- respawn counter does not increase for levels other than current
+# Known bugs to fix:
 
 # Next tasks (sorted):
 
+- bug: respawn counter does not increase for levels other than current
 - chests: opened, locked, magically locked
+- falling into a pit handling
