@@ -1,4 +1,5 @@
-import { RandomBag } from "../common/random";
+import { RandomBag, rollDiceCheck } from "../common/random";
+import { generateItemsForChest } from "../items/models";
 import { generateNewMonsterByName } from "../monsters/model";
 import DungeonSpec, { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
 import {
@@ -9,6 +10,7 @@ import {
   EEncounterType,
   ETerrain,
   ETerrainEffect,
+  IChest,
   ICommonMapTile,
   IMapCoordinates,
   IMonsterEncounter,
@@ -18,6 +20,23 @@ import {
   TGameTileEncounter,
   TMapTile,
 } from "./types";
+
+function generateChest(level: number): IChest | undefined {
+  // hardcoded probability of 1 in 5
+  const shouldHaveChest = rollDiceCheck(2, "1D10");
+  if (!shouldHaveChest) {
+    return;
+  }
+  // TODO: generate random amount of money
+  // TODO: generate random locked status
+  return {
+    isLocked: true,
+    isOpened: false,
+    items: generateItemsForChest(level),
+    money: 0,
+    // no trap since no magic implemented yet
+  };
+}
 
 function generateEncounter(
   type: EEncounterType,
@@ -50,9 +69,11 @@ function generateEncounter(
       const monsters = new Array(amount)
         .fill(null)
         .map(() => generateNewMonsterByName(randomMonsterName, level));
+
       const encounter: IMonsterEncounter = {
         type: EEncounterType.Monster,
         monsters,
+        chest: generateChest(level),
       };
       return encounter;
     }

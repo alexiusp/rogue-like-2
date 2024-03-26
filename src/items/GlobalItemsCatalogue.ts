@@ -6,6 +6,7 @@ import { TBaseItem } from "./models";
 const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   "Bronze Dagger": {
     name: "Bronze Dagger",
+    level: 1,
     picture: "bronze_dagger.png",
     kind: "dagger",
     material: "Bronze",
@@ -30,6 +31,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Iron Dagger": {
     name: "Iron Dagger",
+    level: 2,
     picture: "iron_dagger.png",
     kind: "dagger",
     material: "Iron",
@@ -58,6 +60,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Wooden Shield": {
     name: "Wooden Shield",
+    level: 1,
     picture: "wooden_shield.png",
     kind: "shield",
     slot: "shield",
@@ -84,6 +87,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Leather Boots": {
     name: "Leather Boots",
+    level: 1,
     picture: "leather_boots.png",
     kind: "boots",
     slot: "feet",
@@ -106,6 +110,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Leather Belt": {
     name: "Leather Belt",
+    level: 1,
     picture: "leather_belt.png",
     kind: "belt",
     slot: "belt",
@@ -121,6 +126,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
   },
   "Healing Potion": {
     name: "Healing Potion",
+    level: 1,
     picture: "potionRed.png",
     kind: "potion",
     spell: "heal",
@@ -133,3 +139,14 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
 };
 
 export default GlobalItemsCatalogue;
+
+export function getItemsListForLevel(level: number) {
+  const itemsList: string[] = [];
+  for (const itemName in GlobalItemsCatalogue) {
+    const item = GlobalItemsCatalogue[itemName];
+    if (item.level <= level) {
+      itemsList.push(itemName);
+    }
+  }
+  return itemsList;
+}

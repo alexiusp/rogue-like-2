@@ -1,8 +1,10 @@
 import { EAlignment, generateRandomAlignment } from "../common/alignment";
-import { rollDiceCheck } from "../common/random";
+import { RandomBag, getRandomInt, rollDiceCheck } from "../common/random";
 import { TStatsValues, ZeroStats, getStatBonus } from "../common/stats";
 import { TGuildValues } from "../guilds/types";
-import GlobalItemsCatalogue from "./GlobalItemsCatalogue";
+import GlobalItemsCatalogue, {
+  getItemsListForLevel,
+} from "./GlobalItemsCatalogue";
 
 type TItemKind = "dagger" | "potion" | "sword" | "shield" | "boots" | "belt";
 
@@ -32,6 +34,8 @@ interface IItemAttributes {
 export interface IBaseItem {
   // unique name of the item
   name: string;
+  // level used for random generation of chests etc.
+  level: number;
   // picture of the item
   picture: string;
   // generic name for item when not identified
@@ -279,7 +283,7 @@ export function getEquippedItemsProtection(items: TGameItem[]) {
   }, 0);
 }
 
-export function generateRandomItem(
+export function generateRandomItemByName(
   itemName: string,
   idLevel: IdLevel = 0,
 ): TGameItem {
@@ -352,4 +356,16 @@ export function getItemsStatsBonuses(items: TGameItem[]) {
     bonuses.dexterity += itemBonuses.dexterity;
   }
   return bonuses;
+}
+
+export function generateItemsForChest(level: number) {
+  const amount = getRandomInt(3, 1);
+  const possibleItems = getItemsListForLevel(level);
+  const bag = new RandomBag(possibleItems);
+  const items = new Array(amount).fill(null).map(() => {
+    const itemName = bag.getRandomItem();
+    return generateRandomItemByName(itemName);
+  });
+  console.log("items for chest generated", items);
+  return items;
 }

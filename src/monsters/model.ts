@@ -9,7 +9,7 @@ import {
   getStatsProtectionModifier,
 } from "../common/stats";
 import { ETerrainEffect } from "../dungeon/types";
-import { TGameItem, generateRandomItem } from "../items/models";
+import { TGameItem, generateRandomItemByName } from "../items/models";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
@@ -182,7 +182,7 @@ export function generateMonstersItemsReward(
     const reward = moneyBag.getRandomItem();
     if (reward !== null) {
       const idLevel = rollCharacterIdSkill(character);
-      const item = generateRandomItem(reward, idLevel);
+      const item = generateRandomItemByName(reward, idLevel);
       items.push(item);
     }
   });

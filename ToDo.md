@@ -3,15 +3,17 @@
 - character
   - Name generator (for character and guild masters)
   - character avatar selection
-  - improve save slots to include avatar as menu item icon
+    - improve save slots to include avatar as menu item icon
   - create character form validation
   - add more races: dwarf, ork, troll, lizardmen etc.
   - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
   - character screen: show permanent effects from items (invisible, see invisible etc.)
+  - reordering/sorting of items in the inventory
 - Buffers or hotkeys - panel with quick access to spells/items
 - magic/spells: need to design how to structure the data in a best way
   - use of spells in battle/encounter
   - use of spells in dungeon
+  - use of spells in the city?
   - instant spells / lasting charms
   - check if monster is dead after spells do their effect
   - cursed items
@@ -46,6 +48,7 @@
 - items: ingredients (alchemy, crafting etc.)
 - Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
 - respawn: respawn only possible encounter, not terraing and effects?
+- split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
 
 # Known bugs to fix:
 
