@@ -1,5 +1,5 @@
 import { Chip, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import { getAlignmentShort } from "../../common/alignment";
+import ItemName from "../../items/ItemName";
 import { TShopItem } from "./types";
 
 interface IStoreListItemProps {
@@ -15,21 +15,14 @@ export default function StoreListItem({
   selected,
   onSelect,
 }: IStoreListItemProps) {
-  const { amount, item: itemName, alignment, kind } = item;
-  const alignmentSuffix =
-    typeof alignment !== "undefined"
-      ? ` (${getAlignmentShort(alignment)})`
-      : "";
-  const usableSuffix = kind === "usable" ? ` [${item.usesLeft}]` : "";
-  const itemLabel = `${itemName}${alignmentSuffix}${usableSuffix}`;
   return (
     <ListItem
       disablePadding
       divider={!isLast}
-      secondaryAction={<Chip label={amount} variant="outlined" />}
+      secondaryAction={<Chip label={item.amount} variant="outlined" />}
     >
       <ListItemButton selected={selected} onClick={() => onSelect()}>
-        <ListItemText primary={itemLabel} />
+        <ListItemText primary={<ItemName item={item} />} />
       </ListItemButton>
     </ListItem>
   );

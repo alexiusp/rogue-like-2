@@ -53,5 +53,4 @@
 
 # Next tasks (sorted):
 
-- bank items storage (stash)
 - chests: opened, locked, magically locked
