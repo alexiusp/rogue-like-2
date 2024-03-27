@@ -55,7 +55,7 @@
 
 # Next tasks (sorted):
 
-- chests: basic implementation
+- spells/magic initial design
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going
