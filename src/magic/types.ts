@@ -1,32 +1,5 @@
 import { TStatsValues } from "../common/stats";
-
-export type TMagicNature =
-  | "fire"
-  | "cold"
-  | "earth"
-  | "water"
-  | "air"
-  | "stone"
-  | "life"
-  | "electric"
-  | "mind"
-  | "astral";
-/**
- * Nature: magical nature of the spell (if any) - some creatures might be resistant
- *
- * common spells/effects according to nature:
- *
- * fire: burning hands, fire bolt
- * cold: cold blast, ice spray
- * earth: poison, sand burst, sand walking
- * water: acid, water walking
- * air: disease, levitate, ethereal portal
- * stone: petrification, stone skin
- * life: drain stats, drain life, healing, dispel undead
- * electric: shock, lightning bolt, chain lightning
- * mind: paralysis, charm, sight veil, see invisible
- * astral: teleport, banish demon, charm of opening
- */
+import { TNatureElement } from "../common/types";
 
 export enum ESpellType {
   Instant, // spells effect applied instantly after casting
@@ -36,9 +9,15 @@ export enum ESpellType {
 export enum ESpellClass {
   Combat,
   NonCombat,
-  Both,
+  //  Universal,
 }
 
+/**
+ * damage of the spell is determined by power of the spell
+ * timeout: for enchantments effect - time for spell to wear off - also determined by power
+ * base level of the spell (amount of mana required to cast)
+ * is defined by the guild level when this spell becomes available
+ */
 export interface IBaseSpell {
   // unique name of the spell
   name: string;
@@ -50,16 +29,46 @@ export interface IBaseSpell {
   type: ESpellType;
   // combat/non-combat
   class: ESpellClass;
+  // nature of the spell
+  nature: TNatureElement;
   // required stats
   statsRequired: TStatsValues;
   // initial power of the spell
   power: number;
-  // power increas with each level
-  levelModifier: number;
+  // power increase with each level
+  // after those when it was given by the guild
+  powerGain: number;
 }
 
-/**
- * to define:
- * damage: damage of the spell
- * timeout: for enchantments - time for spell to wear off
- */
+export interface IBaseCombatSpell extends IBaseSpell {
+  class: ESpellClass.Combat;
+  target: "self" | "all" | number;
+}
+
+export interface IBaseCombatInstant extends IBaseCombatSpell {
+  type: ESpellType.Instant;
+}
+
+export interface IBaseCombatEnchantment extends IBaseCombatSpell {
+  type: ESpellType.Continuous;
+  effect: string;
+}
+
+export interface IBaseNonCombatSpell extends IBaseSpell {
+  class: ESpellClass.NonCombat;
+}
+
+export interface IBaseNonCombatInstant extends IBaseNonCombatSpell {
+  type: ESpellType.Instant;
+}
+
+export interface IBaseNonCombatEnchantment extends IBaseNonCombatSpell {
+  type: ESpellType.Continuous;
+  effect: string;
+}
+
+export type TBaseSpell =
+  | IBaseCombatInstant
+  | IBaseCombatEnchantment
+  | IBaseNonCombatInstant
+  | IBaseNonCombatEnchantment;

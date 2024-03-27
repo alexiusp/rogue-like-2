@@ -1,10 +1,10 @@
 export enum EStat {
   strength, //chance to hit, damage bonus
-  endurance, //number of HP, chance of resurrect, resist special attacks and magic in combat, PV bonus
-  dexterity, //chance to hit, disarm traps, resist stealing, flee from combat, surpirse attack chance, DV bonus
-  wisdom, //chance to hit, max magic points, trap identify, item identify, flee from combat
   intelligence, //chance to hit, max magic points, identify item
+  wisdom, //chance to hit, max magic points, trap identify, item identify, flee from combat
+  endurance, //number of HP, chance of resurrect, resist special attacks and magic in combat, PV bonus
   charisma, //chance to monster join or aggro, prices in shop
+  dexterity, //chance to hit, disarm traps, resist stealing, flee from combat, surpirse attack chance, DV bonus
 }
 
 export type TStatNames = keyof typeof EStat;
