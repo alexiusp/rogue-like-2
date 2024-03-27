@@ -17,6 +17,7 @@
   - instant spells / lasting charms
   - check if monster is dead after spells do their effect
   - cursed items
+  - magically locked chests
 - encounters:
   - refactor battle to propagate dealt damage as event payload to properly display it
   - special animation for hits with 0 damage
@@ -54,6 +55,7 @@
 
 # Next tasks (sorted):
 
-- chests: opened, locked, magically locked
+- chests: basic implementation
+- chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going

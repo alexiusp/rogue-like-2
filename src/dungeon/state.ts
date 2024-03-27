@@ -5,7 +5,7 @@ import {
   createStore,
   sample,
 } from "effector";
-import { rollAggro } from "../character/models";
+import { ICharacterState, rollAggro } from "../character/models";
 import { $character } from "../character/state";
 import { loadCharacterData, saveCharacterData } from "../common/db";
 import { createDelayEffect } from "../common/delay";
@@ -14,6 +14,7 @@ import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
 import DungeonSpec from "./dungeonSpecs";
 import {
+  doesTileHasChest,
   generateDungeonLevel,
   getMapTileByCoordinates,
   getTileIndexByCoordinates,
@@ -24,10 +25,12 @@ import {
 } from "./model";
 import {
   EEncounterType,
+  IChest,
   ICommonMapTile,
   IMapCoordinates,
   IStairsMapTile,
   TDungeonState,
+  TMapTile,
 } from "./types";
 
 const startState: TDungeonState = (() => {
@@ -236,6 +239,7 @@ $encounter.watch((encounter) => console.log("encounter udpated:", encounter));
 export const $chest = $encounter.map((encounter) =>
   encounter !== null && encounter.chest ? encounter.chest : null,
 );
+$chest.watch((chest) => console.log("chest updated", chest));
 
 // see src/battle/model for further details about battle calculation
 export const startMonsterBattle = createEvent();
@@ -315,6 +319,156 @@ sample({
     // on any of the tiles of the current level
     // and regenerate tiles where it does
     levelMap = respawnTiles(level, levelMap);
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
+  },
+});
+
+export const chestIsOpened = createEvent();
+
+// input parameters for opening the chest
+type TOpenChestEffectProps = {
+  mapTile: TMapTile;
+  character: ICharacterState;
+};
+
+// effect must check if chest is trapped and if yes - roll for disarm
+// if disarm was successfull effect must resolve, otherwise fail
+const openingChestFx = createEffect<TOpenChestEffectProps, void, void>(
+  ({ character, mapTile }: TOpenChestEffectProps) =>
+    new Promise((resolve, reject) => {
+      if (!doesTileHasChest(mapTile)) {
+        reject();
+        throw Error("Tile does not have any chests!");
+      }
+      const updatedTile = {
+        ...mapTile,
+      };
+      const chest = updatedTile.encounter.chest;
+      if (!chest) {
+        reject();
+        throw Error("Tile does not have any chests!");
+      }
+      // TODO: roll for successfull disarming of the trap (traps are not implemented yet)
+      console.log(
+        "character successfully disarmed trap and opened the chest!",
+        character.name,
+      );
+      resolve();
+      return;
+    }),
+);
+
+sample({
+  clock: chestIsOpened,
+  target: openingChestFx,
+  source: {
+    mapTile: $currentMapTile,
+    character: $character,
+  },
+  filter({ mapTile }) {
+    if (!doesTileHasChest(mapTile)) {
+      return false;
+    }
+    const chest = mapTile.encounter.chest;
+    if (!chest) {
+      return false;
+    }
+    return true;
+  },
+});
+
+// refresh dungeon map - toggle chest opened state
+sample({
+  clock: openingChestFx.done,
+  target: $dungeonState,
+  source: {
+    mapTile: $currentMapTile,
+    state: $dungeonState,
+    level: $currentLevel,
+  },
+  fn({ level, mapTile, state }) {
+    if (!doesTileHasChest(mapTile)) {
+      throw new Error("Wrong tile does not have any chests!");
+    }
+    const levelMap = [...state[level]];
+    const tileIndex = getTileIndexByCoordinates(
+      { x: mapTile.x, y: mapTile.y },
+      levelMap,
+    );
+    const updatedTile = {
+      ...mapTile,
+    };
+    const chest = updatedTile.encounter.chest;
+    if (!chest) {
+      throw new Error("Wrong tile does not have any chests!");
+    }
+    const updatedChest: IChest = {
+      ...chest,
+      isOpened: true,
+    };
+    updatedTile.encounter = {
+      ...mapTile.encounter,
+      chest: updatedChest,
+    };
+    levelMap[tileIndex] = updatedTile;
+    const updatedState: TDungeonState = [...state];
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
+  },
+});
+
+// TODO: implement trap damaging character on effect fail
+sample({
+  clock: openingChestFx.fail,
+  target: $character,
+  source: {
+    mapTile: $currentMapTile,
+    character: $character,
+  },
+  fn(src) {
+    return src.character;
+  },
+});
+
+export const chestContentsPickedUp = createEvent();
+
+// update chest - remove items and money
+sample({
+  clock: chestContentsPickedUp,
+  target: $dungeonState,
+  source: {
+    mapTile: $currentMapTile,
+    state: $dungeonState,
+    level: $currentLevel,
+  },
+  fn({ level, mapTile, state }) {
+    if (!doesTileHasChest(mapTile)) {
+      throw new Error("Wrong tile does not have any chests!");
+    }
+    const levelMap = [...state[level]];
+    const tileIndex = getTileIndexByCoordinates(
+      { x: mapTile.x, y: mapTile.y },
+      levelMap,
+    );
+    const updatedTile = {
+      ...mapTile,
+    };
+    const chest = updatedTile.encounter.chest;
+    if (!chest) {
+      throw new Error("Wrong tile does not have any chests!");
+    }
+    const updatedChest: IChest = {
+      ...chest,
+      items: [],
+      money: 0,
+    };
+    updatedTile.encounter = {
+      ...mapTile.encounter,
+      chest: updatedChest,
+    };
+    levelMap[tileIndex] = updatedTile;
+    const updatedState: TDungeonState = [...state];
     updatedState.splice(level, 1, levelMap);
     return updatedState;
   },

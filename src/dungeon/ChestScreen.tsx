@@ -10,18 +10,34 @@ import {
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
+import { useState } from "react";
 import chestBg from "../assets/chest-big.webp";
+import {
+  characterReceivedItems,
+  moneyAddedToCharacter,
+} from "../character/state";
+import ItemDetailsDialog from "../items/ItemDetailsDialog";
+import ItemIcon from "../items/ItemIcon";
+import MoneyLabel from "../items/MoneyLabel";
+import { TGameItem } from "../items/models";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
-import { $chest } from "./state";
+import { $chest, chestContentsPickedUp, chestIsOpened } from "./state";
 
 export default function ChestScreen() {
+  const [selectedItem, selectItem] = useState<TGameItem | undefined>(undefined);
   const chest = useUnit($chest);
   if (!chest) {
     return null;
   }
   const { isLocked, isOpened, items, money /*, trap*/ } = chest;
   const leaveEncounter = () => {
+    forward("dungeon");
+  };
+  const collectItemsFromChest = () => {
+    moneyAddedToCharacter(money);
+    characterReceivedItems(items);
+    chestContentsPickedUp();
     forward("dungeon");
   };
   return (
@@ -52,19 +68,49 @@ export default function ChestScreen() {
               </>
             )}
             {isOpened ? (
-              <Typography>chest content will be here</Typography>
+              <>
+                <MoneyLabel amount={money} />
+                <Stack spacing={2} direction="row">
+                  {items.map((item, index) => (
+                    <Button
+                      variant="outlined"
+                      key={`${index}-${item.item}`}
+                      onClick={() => selectItem(item)}
+                    >
+                      <ItemIcon item={item.item} />
+                    </Button>
+                  ))}
+                </Stack>
+              </>
             ) : (
               <Skeleton variant="rounded" height={60} />
             )}
           </Stack>
         </CardContent>
         <CardActions>
-          <Button size="small">Open</Button>
+          {!isOpened ? (
+            <Button
+              size="small"
+              disabled={isLocked}
+              onClick={() => chestIsOpened()}
+            >
+              Open
+            </Button>
+          ) : (
+            <Button size="small" onClick={collectItemsFromChest}>
+              Collect
+            </Button>
+          )}
           <Button size="small" onClick={leaveEncounter}>
             Leave
           </Button>
         </CardActions>
       </Card>
+      <ItemDetailsDialog
+        item={selectedItem}
+        onClose={() => selectItem(undefined)}
+        footer={<Button onClick={() => selectItem(undefined)}>OK</Button>}
+      />
     </Screen>
   );
 }

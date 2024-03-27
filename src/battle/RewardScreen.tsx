@@ -95,7 +95,6 @@ export default function RewardScreen() {
         onClose={() => selectItem(undefined)}
         footer={
           <>
-            {" "}
             <Button variant="contained" onClick={handleItemDrop}>
               drop
             </Button>

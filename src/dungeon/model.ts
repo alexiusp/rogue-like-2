@@ -13,7 +13,9 @@ import {
   ETerrainEffect,
   IChest,
   IChestEncounter,
+  IChestMapTile,
   ICommonMapTile,
+  ILairMapTile,
   IMapCoordinates,
   IMonsterEncounter,
   IMonsterMapTile,
@@ -255,6 +257,18 @@ export function isMonsterEncounterTile(
     return false;
   }
   return !!tile.encounter && tile.encounter.type === EEncounterType.Monster;
+}
+
+export function doesTileHasChest(
+  tile: TMapTile,
+): tile is IMonsterMapTile | IChestMapTile | ILairMapTile {
+  if (isTileStairs(tile)) {
+    return false;
+  }
+  if (!tile.encounter) {
+    return false;
+  }
+  return !!tile.encounter.chest;
 }
 
 function countSpecialTerrains(levelMap: TMapTile[]) {
