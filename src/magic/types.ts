@@ -1,15 +1,9 @@
 import { TStatsValues } from "../common/stats";
 import { TNatureElement } from "../common/types";
 
-export enum ESpellType {
-  Instant, // spells effect applied instantly after casting
-  Continuous, // spells effect applied over time
-}
-
 export enum ESpellClass {
-  Combat,
-  NonCombat,
-  //  Universal,
+  Combat, //usable only in combat
+  NonCombat, // usable both in combat and outside
 }
 
 /**
@@ -25,8 +19,6 @@ export interface IBaseSpell {
   description: string;
   // path to image
   picture: string;
-  // instant/continuous
-  type: ESpellType;
   // combat/non-combat
   class: ESpellClass;
   // nature of the spell
@@ -38,37 +30,16 @@ export interface IBaseSpell {
   // power increase with each level
   // after those when it was given by the guild
   powerGain: number;
-}
-
-export interface IBaseCombatSpell extends IBaseSpell {
-  class: ESpellClass.Combat;
-  target: "self" | "all" | number;
-}
-
-export interface IBaseCombatInstant extends IBaseCombatSpell {
-  type: ESpellType.Instant;
-}
-
-export interface IBaseCombatEnchantment extends IBaseCombatSpell {
-  type: ESpellType.Continuous;
+  // effect applied
   effect: string;
+  // target of the spell
+  target?: "self" | "all" | number;
 }
 
-export interface IBaseNonCombatSpell extends IBaseSpell {
-  class: ESpellClass.NonCombat;
+export interface IGameSpell {
+  // reference to the base spell
+  name: string;
+  // level at which the spell is being cast
+  // if undefined - at casters spell level
+  level?: number;
 }
-
-export interface IBaseNonCombatInstant extends IBaseNonCombatSpell {
-  type: ESpellType.Instant;
-}
-
-export interface IBaseNonCombatEnchantment extends IBaseNonCombatSpell {
-  type: ESpellType.Continuous;
-  effect: string;
-}
-
-export type TBaseSpell =
-  | IBaseCombatInstant
-  | IBaseCombatEnchantment
-  | IBaseNonCombatInstant
-  | IBaseNonCombatEnchantment;

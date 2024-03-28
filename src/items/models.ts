@@ -2,6 +2,7 @@ import { EAlignment, generateRandomAlignment } from "../common/alignment";
 import { RandomBag, getRandomInt, rollDiceCheck } from "../common/random";
 import { TStatsValues, ZeroStats, getStatBonus } from "../common/stats";
 import { TGuildValues } from "../guilds/types";
+import { IGameSpell } from "../magic/types";
 import GlobalItemsCatalogue, {
   getItemsListForLevel,
 } from "./GlobalItemsCatalogue";
@@ -43,7 +44,7 @@ export interface IBaseItem {
   // item material (price/id calculations will depend on this)
   material?: TMaterial;
   // spell to be cast by every usage (or permanently if equipable)
-  spell?: string;
+  spell?: IGameSpell;
   // requires alignment to be used/equipped
   aligned: boolean;
   // requires stats to be used/equipped
@@ -334,7 +335,8 @@ export function getItemSpellStatusLabel(baseItem: TBaseItem) {
   if (isBaseItemEquippable(baseItem)) {
     suffix = "when equipped";
   }
-  return `Casts spell "${spell}" ${suffix}`;
+  const level = spell.level ? `level ${spell.level}` : "casters spell level";
+  return `Casts spell "${spell.name}" at ${level} ${suffix}`;
 }
 
 export function getItemStatsBonuses(itemName: string) {

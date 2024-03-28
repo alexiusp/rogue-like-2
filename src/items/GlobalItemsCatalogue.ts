@@ -129,7 +129,7 @@ const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
     level: 1,
     picture: "potionRed.png",
     kind: "potion",
-    spell: "heal",
+    spell: { name: "minor heal", level: 15 },
     aligned: false,
     statsRequired: ZeroStats,
     statsBonuses: ZeroStats,

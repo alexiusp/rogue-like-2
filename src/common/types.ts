@@ -10,7 +10,7 @@
  * water: acid, water walking
  * air: disease, levitate, ethereal portal, shield
  * stone: petrification, stone skin
- * life: drain stats, drain life, healing, dispel undead
+ * life: drain/gain stats, drain/gain life, healing, dispel undead
  * electric: shock, lightning bolt, chain lightning
  * mind: paralysis, charm, sight veil, see invisible
  * astral: teleport, banish demon, charm of opening

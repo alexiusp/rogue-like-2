@@ -5,9 +5,10 @@
  * paralysis: target can not move(attack), defense reduced to 0 until timeout
  * shield: target receives power-bonus to defense until timeout
  * burning: does power hp of fire damage until timeout
+ * heal: restores power hp until timeout
  */
 
-import { TNatureElement } from "./types";
+import { TNatureElement } from "../common/types";
 
 // base definition of the effect
 export interface IBaseEffect {
@@ -23,17 +24,24 @@ export interface IBaseEffect {
 }
 
 // in-game instance of the effect
-export interface IEffect {
+export interface IGameEffect {
   // name of the effect
   name: string;
   // power of the effect
   power: number;
   // timeout of the effect, when = 0 will be removed
   // if undefined will not expire - enchantments on items
+  // for instant spells timeout = 1
   timeout?: number;
 }
 
 export const GlobalEffectCatalogue: Record<string, IBaseEffect> = {
+  heal: {
+    name: "heal",
+    picture: "",
+    key: "heal",
+    nature: "life",
+  },
   poison: {
     name: "poison",
     picture: "",

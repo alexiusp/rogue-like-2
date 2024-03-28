@@ -1,16 +1,10 @@
-import {
-  ESpellClass,
-  ESpellType,
-  IBaseNonCombatInstant,
-  TBaseSpell,
-} from "./types";
+import { ESpellClass, IBaseSpell } from "./types";
 
-const MinorHealSpell: IBaseNonCombatInstant = {
+const MinorHealSpell: IBaseSpell = {
   name: "minor heal",
   description:
     "This general heal spell is useful for removing small wounds only, so it will not help any other type of  injury...",
   picture: "",
-  type: ESpellType.Instant,
   class: ESpellClass.NonCombat,
   nature: "life",
   statsRequired: {
@@ -23,9 +17,11 @@ const MinorHealSpell: IBaseNonCombatInstant = {
   },
   power: 15,
   powerGain: 5,
+  effect: "heal",
+  target: "self",
 };
 
-const GlobalSpellsCatalogue: Record<string, TBaseSpell> = {
+const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = {
   "minor heal": MinorHealSpell,
 };
-export default GlobalSpellsCatalogue;
+export default GlobalBaseSpellsCatalogue;
