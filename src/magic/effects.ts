@@ -30,7 +30,7 @@ export interface IGameEffect {
   // power of the effect
   power: number;
   // timeout of the effect, when = 0 will be removed
-  // if undefined will not expire - enchantments on items
+  // if undefined - will not expire: enchantments on items or curse
   // for instant spells timeout = 1
   timeout?: number;
 }

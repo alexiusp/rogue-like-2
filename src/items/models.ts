@@ -7,7 +7,14 @@ import GlobalItemsCatalogue, {
   getItemsListForLevel,
 } from "./GlobalItemsCatalogue";
 
-type TItemKind = "dagger" | "potion" | "sword" | "shield" | "boots" | "belt";
+type TItemKind =
+  | "dagger"
+  | "potion"
+  | "sword"
+  | "shield"
+  | "boots"
+  | "belt"
+  | "ring";
 
 type TSlot =
   | "head"
@@ -66,6 +73,7 @@ export interface IEquippableBaseItem extends IBaseItem {
   swings?: number;
 }
 
+// usable items always have uses, permanent spells can be only on equippable items
 export interface IUsableBaseItem extends IBaseItem {
   // amount of uses for usable item
   uses: number;
@@ -201,14 +209,17 @@ export function calculateItemPriceToSell(
   const baseShopPrice = calculateShopItemPrice(item.item, amountInShop);
   const baseItem = GlobalItemsCatalogue[item.item];
   const idModifier = item.idLevel === 0 ? 0.5 : item.idLevel === 1 ? 0.8 : 1;
-  let usesModifier = 1;
-  if (item.kind === "usable") {
-    usesModifier = item.usesLeft / (baseItem as IUsableBaseItem).uses;
+  let spellModifier = 1;
+  if (item.kind === "usable" && !isBaseItemEquippable(baseItem)) {
+    spellModifier = (10 * item.usesLeft) / baseItem.uses;
+  }
+  if (isBaseItemEquippable(baseItem) && baseItem.spell) {
+    spellModifier = 100;
   }
   const charismaBonus = getStatBonus(charisma);
   const charismaModifier = rollDiceCheck(20 - charismaBonus, "1D20") ? 1.2 : 1;
   return Math.floor(
-    baseShopPrice * idModifier * usesModifier * charismaModifier * 0.8,
+    baseShopPrice * idModifier * spellModifier * charismaModifier * 0.8,
   );
 }
 
