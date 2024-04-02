@@ -17,6 +17,7 @@ const MinorHealSpell: IBaseSpell = {
   },
   power: 15,
   powerGain: 5,
+  spRatio: 3,
   effect: "heal",
   target: "self",
 };
@@ -37,6 +38,7 @@ const Shield: IBaseSpell = {
   },
   power: 20,
   powerGain: 10,
+  spRatio: 4,
   effect: "shield",
   target: "self",
 };
@@ -57,6 +59,7 @@ const SeeInvisible: IBaseSpell = {
   },
   power: 1,
   powerGain: 0,
+  spRatio: 6,
   effect: "see invisible",
   target: "self",
 };

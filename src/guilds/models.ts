@@ -1,6 +1,8 @@
 import { EAlignment } from "../common/alignment";
 import { getRandomInt } from "../common/random";
 import { NoStatsRequired } from "../common/stats";
+import { TNatureElement } from "../common/types";
+import GlobalBaseSpellsCatalogue from "../magic/GlobalSpellsCatalogue";
 import {
   EGuild,
   IGuildMaster,
@@ -218,4 +220,108 @@ export function getGuildsDefenseModifier(guilds: IGuildMembership[]) {
 export function getGuildsProtectionModifier(guilds: IGuildMembership[]) {
   const fightingSkill = getTotalSkillFromGuilds("fight", guilds);
   return 1 + fightingSkill * 0.1;
+}
+
+const GuildSpellsMap: Record<EGuild, Array<string | null>> = {
+  [EGuild.Adventurer]: [null, "minor heal"],
+  [EGuild.Warrior]: [null],
+  [EGuild.Thief]: [null],
+};
+
+export function getAllSpellsForGuildLevel(guild: EGuild, level: number) {
+  const guildSpells = GuildSpellsMap[guild];
+  const spells: string[] = [];
+  for (let l = 0; l < level && l < guildSpells.length - 1; l++) {
+    const spell = guildSpells[l + 1];
+    if (spell !== null) {
+      spells.push(spell);
+    }
+  }
+  return spells;
+}
+
+export function getAllSpellsFromGuilds(guilds: IGuildMembership[]) {
+  const list: string[] = [];
+  for (const guildMembership of guilds) {
+    const { guild, level } = guildMembership;
+    const guildSpells = getAllSpellsForGuildLevel(guild, level);
+    for (const spell of guildSpells) {
+      if (list.includes(spell)) {
+        continue;
+      }
+      list.push(spell);
+    }
+  }
+  return list;
+}
+
+const ZeroAffinity: Record<TNatureElement, number> = {
+  air: 0,
+  astral: 0,
+  cold: 0,
+  earth: 0,
+  electric: 0,
+  fire: 0,
+  life: 0,
+  mind: 0,
+  stone: 0,
+  water: 0,
+};
+
+function applyAffinity(
+  record: Record<TNatureElement, number>,
+  nature: TNatureElement,
+  affinity: number,
+): Record<TNatureElement, number> {
+  return {
+    ...record,
+    [nature]: affinity,
+  };
+}
+// Affinity defines a base modifier for mana cost of spells of particular nature
+// some guilds are more affine with particular nature elements
+// the bigger the number - the more expensive spells of this element will be for this guild
+// minimum number = 1 - the max affinity with this nature element
+const GuildsNatureAffinities: Record<EGuild, Record<TNatureElement, number>> = {
+  [EGuild.Adventurer]: applyAffinity(ZeroAffinity, "life", 3),
+  [EGuild.Warrior]: ZeroAffinity,
+  [EGuild.Thief]: ZeroAffinity,
+};
+
+function getNatureBaseModifierForGuild(guild: EGuild, nature: TNatureElement) {
+  return GuildsNatureAffinities[guild][nature];
+}
+
+export function getMaxLevelGuildForSpell(
+  spell: string,
+  guilds: IGuildMembership[],
+) {
+  let MinLevel = 100;
+  let MinLevelGuild: EGuild | undefined = undefined;
+  let SpellCost = 0;
+  const baseSpell = GlobalBaseSpellsCatalogue[spell];
+  for (const guildMembership of guilds) {
+    const { guild, level } = guildMembership;
+    const guildSpells = GuildSpellsMap[guild];
+    const guildSpellBaseLevel = guildSpells.findIndex((s) => s === spell);
+    if (guildSpellBaseLevel < 0 || guildSpellBaseLevel > MinLevel) {
+      continue;
+    }
+    MinLevel = guildSpellBaseLevel;
+    MinLevelGuild = guild;
+    const spellLevel = Math.floor(level / 2 + 0.5);
+    const baseMod2 = Math.pow(
+      getNatureBaseModifierForGuild(guild, baseSpell.nature),
+      2,
+    );
+    SpellCost = Math.floor(
+      (guildSpellBaseLevel * baseSpell.spRatio * baseMod2 * 1.9) / spellLevel,
+    );
+  }
+  if (typeof MinLevelGuild === "undefined") {
+    throw new Error(
+      `Spell "${spell}" not found in the characters guilds spell books!`,
+    );
+  }
+  return { guild: MinLevelGuild, level: MinLevel, spellCost: SpellCost };
 }

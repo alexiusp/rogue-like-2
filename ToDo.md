@@ -55,7 +55,7 @@
 
 # Next tasks (sorted):
 
-- spells/magic: distribution of spells via guilds, manual casting in battle, monster attacks
+- spells/magic: manual casting in battle, monster attacks
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going

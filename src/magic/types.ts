@@ -30,6 +30,10 @@ export interface IBaseSpell {
   // power increase with each level
   // after those when it was given by the guild
   powerGain: number;
+  // ratio of mana costs decrease
+  // the bigger the number the more
+  // expensive it will to cast the spell
+  spRatio: number;
   // effect applied
   effect: string;
   // target of the spell
