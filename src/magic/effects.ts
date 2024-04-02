@@ -60,4 +60,10 @@ export const GlobalEffectCatalogue: Record<string, IBaseEffect> = {
     key: "protection",
     nature: "stone",
   },
+  "see invisible": {
+    name: "see invisible",
+    picture: "",
+    key: "attack",
+    nature: "mind",
+  },
 };

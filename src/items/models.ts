@@ -14,7 +14,8 @@ type TItemKind =
   | "shield"
   | "boots"
   | "belt"
-  | "ring";
+  | "ring"
+  | "amulet";
 
 type TSlot =
   | "head"

@@ -18,6 +18,7 @@
   - check if monster is dead after spells do their effect
   - cursed items
   - magically locked chests
+  - charming of monsters
 - encounters:
   - refactor battle to propagate dealt damage as event payload to properly display it
   - special animation for hits with 0 damage
@@ -43,7 +44,6 @@
 - item use in battle/dungeon/city - depends on spells implementation
 - multiple attacks (swings) handling
 - AoE attacks/spells in battle
-- charming of monsters
 - add more item types (see TItemKind)
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
@@ -55,7 +55,7 @@
 
 # Next tasks (sorted):
 
-- spells/magic initial design
+- spells/magic: distribution of spells via guilds, manual casting in battle, monster attacks
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going

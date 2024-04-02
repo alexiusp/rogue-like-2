@@ -23,16 +23,16 @@ const MinorHealSpell: IBaseSpell = {
 
 const Shield: IBaseSpell = {
   name: "shield",
-  description: "Target receives a bonus to target's defense",
+  description: "Character receives a bonus to character's defense",
   picture: "",
   class: ESpellClass.NonCombat,
   nature: "air",
   statsRequired: {
     strength: 0,
-    intelligence: 13,
-    wisdom: 13,
+    intelligence: 11,
+    wisdom: 11,
     endurance: 0,
-    charisma: 0,
+    charisma: 11,
     dexterity: 0,
   },
   power: 20,
@@ -41,8 +41,29 @@ const Shield: IBaseSpell = {
   target: "self",
 };
 
+const SeeInvisible: IBaseSpell = {
+  name: "see invisible",
+  description: "Allows character to see invisible",
+  picture: "",
+  class: ESpellClass.NonCombat,
+  nature: "mind",
+  statsRequired: {
+    strength: 0,
+    intelligence: 12,
+    wisdom: 12,
+    endurance: 0,
+    charisma: 12,
+    dexterity: 0,
+  },
+  power: 1,
+  powerGain: 0,
+  effect: "see invisible",
+  target: "self",
+};
+
 const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = {
-  "minor heal": MinorHealSpell,
-  shield: Shield,
+  [MinorHealSpell.name]: MinorHealSpell,
+  [Shield.name]: Shield,
+  [SeeInvisible.name]: SeeInvisible,
 };
 export default GlobalBaseSpellsCatalogue;

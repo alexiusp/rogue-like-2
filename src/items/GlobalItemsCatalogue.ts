@@ -148,23 +148,57 @@ const RingOfShield: IEquippableBaseItem = {
   kind: "ring",
   slot: "ring",
   aligned: true,
-  statsRequired: ZeroStats,
+  statsRequired: {
+    strength: 10,
+    intelligence: 8,
+    wisdom: 8,
+    endurance: 0,
+    charisma: 0,
+    dexterity: 3,
+  },
   statsBonuses: ZeroStats,
-  guildRequired: ZeroGuilds,
+  guildRequired: [
+    { guild: EGuild.Adventurer, value: 3 },
+    { guild: EGuild.Warrior, value: 4 },
+    { guild: EGuild.Thief, value: 5 },
+  ],
   attributes: {},
   hands: 1,
   material: "Iron",
   spell: { name: "shield", level: 10 },
 };
 
-const GlobalItemsCatalogue: { [name: string]: TBaseItem } = {
-  "Bronze Dagger": BronzeDagger,
-  "Iron Dagger": IronDagger,
-  "Wooden Shield": WoodenShield,
-  "Leather Boots": LeatherBoots,
-  "Leather Belt": LeatherBelt,
-  "Healing Potion": HealingPotion,
-  "Ring of Shield": RingOfShield,
+const AmuletOfUltravision: IEquippableBaseItem = {
+  name: "Amulet of Ultravision",
+  level: 2,
+  picture: "",
+  kind: "amulet",
+  slot: "amulet",
+  aligned: false,
+  statsRequired: {
+    strength: 0,
+    intelligence: 10,
+    wisdom: 10,
+    endurance: 0,
+    charisma: 0,
+    dexterity: 0,
+  },
+  statsBonuses: ZeroStats,
+  guildRequired: ZeroGuilds,
+  attributes: {},
+  hands: 0,
+  spell: { name: "see invisible", level: 0 },
+};
+
+const GlobalItemsCatalogue: Record<string, TBaseItem> = {
+  [BronzeDagger.name]: BronzeDagger,
+  [IronDagger.name]: IronDagger,
+  [WoodenShield.name]: WoodenShield,
+  [LeatherBoots.name]: LeatherBoots,
+  [LeatherBelt.name]: LeatherBelt,
+  [HealingPotion.name]: HealingPotion,
+  [RingOfShield.name]: RingOfShield,
+  [AmuletOfUltravision.name]: AmuletOfUltravision,
 };
 
 export default GlobalItemsCatalogue;

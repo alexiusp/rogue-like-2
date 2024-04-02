@@ -90,5 +90,22 @@ export default function getInitialStoreStock(): TShopItem[] {
       amount: 10,
       price: calculateShopItemPrice("Healing Potion", 10),
     },
+    {
+      item: "Ring of Shield",
+      kind: "equipable",
+      isEquipped: false,
+      idLevel: 2,
+      amount: 1,
+      alignment: EAlignment.Good,
+      price: calculateShopItemPrice("Ring of Shield", 1),
+    },
+    {
+      item: "Amulet of Ultravision",
+      kind: "equipable",
+      isEquipped: false,
+      idLevel: 2,
+      amount: 1,
+      price: calculateShopItemPrice("Amulet of Ultravision", 1),
+    },
   ];
 }
