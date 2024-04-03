@@ -11,8 +11,6 @@
   - reordering/sorting of items in the inventory
 - Buffers or hotkeys - panel with quick access to spells/items
 - magic/spells: need to design how to structure the data in a best way
-  - use of spells in battle/encounter
-  - use of spells in dungeon
   - use of spells in the city?
   - instant spells / lasting charms
   - check if monster is dead after spells do their effect
@@ -55,7 +53,11 @@
 
 # Next tasks (sorted):
 
-- spells/magic: manual casting in battle, monster attacks
+- spells/magic
+  - spell info popup - WIP
+  - use of spells in battle/encounter
+  - use of spells in dungeon
+  - monster attacks
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going

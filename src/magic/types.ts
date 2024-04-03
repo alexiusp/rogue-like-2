@@ -20,7 +20,7 @@ export interface IBaseSpell {
   // path to image
   picture: string;
   // combat/non-combat
-  class: ESpellClass;
+  spellClass: ESpellClass;
   // nature of the spell
   nature: TNatureElement;
   // required stats

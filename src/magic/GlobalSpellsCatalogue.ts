@@ -5,7 +5,7 @@ const MinorHealSpell: IBaseSpell = {
   description:
     "This general heal spell is useful for removing small wounds only, so it will not help any other type of  injury...",
   picture: "",
-  class: ESpellClass.NonCombat,
+  spellClass: ESpellClass.NonCombat,
   nature: "life",
   statsRequired: {
     strength: 0,
@@ -26,7 +26,7 @@ const Shield: IBaseSpell = {
   name: "shield",
   description: "Character receives a bonus to character's defense",
   picture: "",
-  class: ESpellClass.NonCombat,
+  spellClass: ESpellClass.NonCombat,
   nature: "air",
   statsRequired: {
     strength: 0,
@@ -47,7 +47,7 @@ const SeeInvisible: IBaseSpell = {
   name: "see invisible",
   description: "Allows character to see invisible",
   picture: "",
-  class: ESpellClass.NonCombat,
+  spellClass: ESpellClass.NonCombat,
   nature: "mind",
   statsRequired: {
     strength: 0,

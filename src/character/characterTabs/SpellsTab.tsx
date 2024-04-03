@@ -19,7 +19,7 @@ export default function SpellsTab({ show }: ISpellsTabProps) {
     return null;
   }
   return (
-    <Table>
+    <Table size="small">
       <TableHead>
         <TableRow>
           <TableCell>Spell</TableCell>
