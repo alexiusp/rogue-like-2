@@ -54,7 +54,6 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - spell info popup - WIP
   - use of spells in battle/encounter
   - use of spells in dungeon
   - monster attacks
