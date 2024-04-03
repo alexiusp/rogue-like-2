@@ -39,7 +39,6 @@
   - global quest (story) - need to design how and when it should be triggered
   - tavern quests (should be similar to quests from the guild)
 - tavern gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
-- item use in battle/dungeon/city - depends on spells implementation
 - multiple attacks (swings) handling
 - AoE attacks/spells in battle
 - add more item types (see TItemKind)
@@ -54,8 +53,9 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - use of spells in battle/encounter
   - use of spells in dungeon
+  - item use in battle/dungeon/city
+  - use of spells in battle/encounter
   - monster attacks
 - chests: traps
 - falling into a pit handling

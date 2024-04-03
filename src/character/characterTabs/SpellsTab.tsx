@@ -6,15 +6,13 @@ import {
   TableRow,
 } from "@mui/material";
 import { useUnit } from "effector-react";
-import { getAllSpellsFromGuilds } from "../../guilds/models";
-import { $characterGuilds } from "../state";
+import { $characterSpells } from "../../magic/state";
 import CharacterSpellsRow from "./CharacterSpellsRow";
 interface ISpellsTabProps {
   show: boolean;
 }
 export default function SpellsTab({ show }: ISpellsTabProps) {
-  const characterGuilds = useUnit($characterGuilds);
-  const spells = getAllSpellsFromGuilds(characterGuilds);
+  const spells = useUnit($characterSpells);
   if (!show) {
     return null;
   }
