@@ -318,7 +318,11 @@ function applyAffinity(
 // the bigger the number - the more expensive spells of this element will be for this guild
 // minimum number = 1 - the max affinity with this nature element
 const GuildsNatureAffinities: Record<EGuild, Record<TNatureElement, number>> = {
-  [EGuild.Adventurer]: applyAffinity(ZeroAffinity, "life", 3),
+  [EGuild.Adventurer]: applyAffinity(
+    applyAffinity(ZeroAffinity, "life", 3),
+    "air",
+    1,
+  ),
   [EGuild.Warrior]: ZeroAffinity,
   [EGuild.Thief]: ZeroAffinity,
 };

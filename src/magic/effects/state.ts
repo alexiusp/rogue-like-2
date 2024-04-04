@@ -99,3 +99,19 @@ sample({
     return effect.timeout === 1;
   },
 });
+
+sample({
+  clock: effectsAppliedToCharacterFX.doneData,
+  target: $character,
+  fn({ character }) {
+    return character;
+  },
+});
+
+sample({
+  clock: effectsAppliedToCharacterFX.doneData,
+  target: $characterEffects,
+  fn({ effects }) {
+    return effects;
+  },
+});
