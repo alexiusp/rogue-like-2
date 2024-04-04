@@ -223,9 +223,44 @@ export function getGuildsProtectionModifier(guilds: IGuildMembership[]) {
 }
 
 const GuildSpellsMap: Record<EGuild, Array<string | null>> = {
-  [EGuild.Adventurer]: [null, "minor heal"],
-  [EGuild.Warrior]: [null],
-  [EGuild.Thief]: [null],
+  [EGuild.Adventurer]: [
+    null,
+    "minor heal",
+    null,
+    "shield",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ],
+  [EGuild.Warrior]: [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ],
+  [EGuild.Thief]: [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ],
 };
 
 export function getAllSpellsForGuildLevel(guild: EGuild, level: number) {
@@ -292,7 +327,7 @@ function getNatureBaseModifierForGuild(guild: EGuild, nature: TNatureElement) {
   return GuildsNatureAffinities[guild][nature];
 }
 
-export function getMaxLevelGuildForSpell(
+export function getMinLevelGuildForSpell(
   spell: string,
   guilds: IGuildMembership[],
 ) {

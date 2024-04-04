@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import { getMaxLevelGuildForSpell } from "../../guilds/models";
+import { getMinLevelGuildForSpell } from "../../guilds/models";
 import { EGuild } from "../../guilds/types";
 import SpellDetailsDialog from "../../magic/SpellDetailsDialog";
 import { $characterGuilds } from "../state";
@@ -15,7 +15,7 @@ export default function CharacterSpellsRow({
 }: ICharacterSpellsRowProps) {
   const [spellSelected, toggleInfoDialog] = useState(false);
   const characterGuilds = useUnit($characterGuilds);
-  const { guild, level, spellCost } = getMaxLevelGuildForSpell(
+  const { guild, level, spellCost } = getMinLevelGuildForSpell(
     spellName,
     characterGuilds,
   );

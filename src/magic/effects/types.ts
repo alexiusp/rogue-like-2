@@ -8,7 +8,15 @@
  * heal: restores power hp until timeout
  */
 
-import { TNatureElement } from "../common/types";
+import { TNatureElement } from "../../common/types";
+
+export type TEffectKey =
+  | "heal" // increase characters health
+  | "hurt" // decrease characters health
+  | "defense" // increase characters defense
+  | "protection" // increase characters protection
+  | "attack" // increase characters attack
+  | "damage"; // increase characters damage
 
 // base definition of the effect
 export interface IBaseEffect {
@@ -18,7 +26,7 @@ export interface IBaseEffect {
   picture: string;
   // keyword to select this effect from the list
   // when applying bonus/damage
-  key: string;
+  key: TEffectKey;
   // nature of the effect
   nature: TNatureElement;
 }
@@ -30,40 +38,7 @@ export interface IGameEffect {
   // power of the effect
   power: number;
   // timeout of the effect, when = 0 will be removed
-  // if undefined - will not expire: enchantments on items or curse
+  // if undefined - will not expire: enchantments from items or curse
   // for instant spells timeout = 1
   timeout?: number;
 }
-
-export const GlobalEffectCatalogue: Record<string, IBaseEffect> = {
-  heal: {
-    name: "heal",
-    picture: "",
-    key: "heal",
-    nature: "life",
-  },
-  poison: {
-    name: "poison",
-    picture: "",
-    key: "damage",
-    nature: "earth",
-  },
-  shield: {
-    name: "shield",
-    picture: "",
-    key: "defense",
-    nature: "air",
-  },
-  "stone skin": {
-    name: "stone skin",
-    picture: "",
-    key: "protection",
-    nature: "stone",
-  },
-  "see invisible": {
-    name: "see invisible",
-    picture: "",
-    key: "attack",
-    nature: "mind",
-  },
-};

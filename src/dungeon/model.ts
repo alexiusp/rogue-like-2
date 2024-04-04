@@ -34,9 +34,9 @@ function generateChest(level: number): IChest | undefined {
   // generate random amount of money
   const moneyBag = new RandomBag(MoneyLootByLevel[level]);
   // generate random locked status
-  const isLocked = rollDiceCheck(2, "1D10");
+  //const isLocked = rollDiceCheck(2, "1D10");
   return {
-    isLocked: isLocked,
+    isLocked: false, //isLocked,
     isOpened: false,
     items: generateItemsForChest(level),
     money: moneyBag.getRandomItem() ?? 0,

@@ -12,7 +12,6 @@
 - Buffers or hotkeys - panel with quick access to spells/items
 - magic/spells: need to design how to structure the data in a best way
   - use of spells in the city?
-  - instant spells / lasting charms
   - check if monster is dead after spells do their effect
   - cursed items
   - magically locked chests
@@ -38,15 +37,20 @@
 - quests
   - global quest (story) - need to design how and when it should be triggered
   - tavern quests (should be similar to quests from the guild)
+  - guild quests
 - tavern gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
+- tavern rest: restore health/mana by resting (age increase)
 - multiple attacks (swings) handling
 - AoE attacks/spells in battle
 - add more item types (see TItemKind)
 - items that modifies character stats -> related calculations, guild joining must not be affected
 - items: ingredients (alchemy, crafting etc.)
 - Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
-- respawn: respawn only possible encounter, not terraing and effects?
-- split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
+- dungeon:
+  - respawn only encounters, not terrains and effects?
+  - unfinished encounters (alive monsters, closed chests) - should they respawn?
+  - global events when everything respawns including terrain and effects (after implementing quest)
+  - split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
 
 # Known bugs to fix:
 

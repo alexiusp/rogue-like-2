@@ -16,7 +16,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import HealthStatusProgress from "../character/HealthStatusProgress";
-import InventoryList from "../character/InventoryList";
+//import InventoryList from "../character/InventoryList";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import SpellsList from "../character/SpellsList";
 import XpStatusProgress from "../character/XpStatusProgress";
@@ -115,7 +115,7 @@ export default function DungeonScreen() {
               <Tab value="spells" label="Spells" />
             </Tabs>
             <Box sx={{ display: activeTab === "inv" ? "block" : "none" }}>
-              <InventoryList />
+              {/*<InventoryList />*/}
             </Box>
             <Box sx={{ display: activeTab === "spells" ? "block" : "none" }}>
               <SpellsList />
