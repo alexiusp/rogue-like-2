@@ -15,6 +15,7 @@ export const $characterSpells = $characterGuilds.map((guilds) =>
 );
 
 export const characterCastsASpell = createEvent<IGameSpell>();
+characterCastsASpell.watch(() => console.log("characterCastsASpell"));
 
 type TSpellCastPayload = { character: ICharacterState; spell: IGameSpell };
 type TSpellCastResult = { character: ICharacterState; effect: IGameEffect };
@@ -25,6 +26,7 @@ const characterCastsASpellFx = createEffect<
 >(
   ({ character, spell }) =>
     new Promise((resolve, reject) => {
+      console.log("characterCastsASpellFx start", spell.name);
       let castingLevel = spell.level;
       // if fixed level from item, then no casting cost should be applied
       let manaCost = 0;
@@ -38,11 +40,13 @@ const characterCastsASpellFx = createEffect<
         manaCost = spellCost;
       }
       if (character.mp - manaCost < 0) {
+        console.warn("Not enough mana!");
         reject("Not enough mana!");
         return;
       }
       const spellEffect = createEffectForASpell(spell.name, castingLevel);
       if (typeof spellEffect === "undefined") {
+        console.warn("Spell does nothing!");
         reject("Spell does nothing!");
         return;
       }
