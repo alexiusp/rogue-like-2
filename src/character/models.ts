@@ -36,6 +36,7 @@ import {
   getRaceDamageModifier,
   getRaceDefenseModifier,
   getRaceHealthModifier,
+  getRaceManaModifier,
   getRaceProtectionModifier,
 } from "./races";
 
@@ -68,6 +69,13 @@ export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
   return getRandomInt(20, 10) + raceBonus + strBonus + endBonus + genderBonus;
 }
 
+export function getInitialCharacterMana({ race, stats }: ICharacter) {
+  const raceBonus = getRaceManaModifier(race);
+  const intBonus = Math.round(stats.intelligence - 10);
+  const wisBonus = Math.round((stats.wisdom - 14) / 2);
+  return getRandomInt(20, 10) * raceBonus + intBonus + wisBonus;
+}
+
 export interface ICharacterState extends ICharacter {
   // characters age
   age: number;
@@ -89,13 +97,14 @@ export interface ICharacterState extends ICharacter {
 export function createNewCharacter(charData: ICharacter): ICharacterState {
   const race = charData.race;
   const hp = getInitialCharacterHealth(charData);
+  const mp = getInitialCharacterMana(charData);
   return {
     ...charData,
     age: RaceAgeMap[race][0],
     hp,
     hpMax: hp,
-    mp: 0,
-    mpMax: 0,
+    mp: mp,
+    mpMax: mp,
     guilds: [
       {
         guild: EGuild.Adventurer,

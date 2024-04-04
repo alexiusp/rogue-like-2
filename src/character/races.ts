@@ -62,6 +62,19 @@ export function getRaceHealthModifier(race: ECharacterRace) {
   return modifier;
 }
 
+export function getRaceManaModifier(race: ECharacterRace) {
+  let modifier: number;
+  switch (race) {
+    case ECharacterRace.Elf:
+      modifier = 1.8;
+      break;
+    default:
+      // default bonus for non-magical affine races is 1
+      modifier = 1;
+  }
+  return modifier;
+}
+
 export function getRaceAttackModifier(race: ECharacterRace) {
   let modifier: number;
   switch (race) {
