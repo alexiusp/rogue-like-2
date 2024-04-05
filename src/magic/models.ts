@@ -33,3 +33,13 @@ export function isSpellCombat(spellName: string) {
   const baseSpell = GlobalBaseSpellsCatalogue[spellName];
   return baseSpell.spellClass !== ESpellClass.NonCombat;
 }
+
+export function isTargetedSpell(spellName: string) {
+  const baseSpell = GlobalBaseSpellsCatalogue[spellName];
+  return typeof baseSpell.target === "number";
+}
+
+export function isTargetedOnSelfSpell(spellName: string) {
+  const baseSpell = GlobalBaseSpellsCatalogue[spellName];
+  return baseSpell.target === "self";
+}

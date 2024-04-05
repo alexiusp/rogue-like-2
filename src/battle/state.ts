@@ -35,6 +35,13 @@ import {
   TDungeonLevelMap,
 } from "../dungeon/types";
 import { TGameItem, itemsAreSame } from "../items/models";
+import {
+  isSpellCombat,
+  isTargetedOnSelfSpell,
+  isTargetedSpell,
+} from "../magic/models";
+import { characterCastsASpell } from "../magic/state";
+import { IGameSpell } from "../magic/types";
 import { messageAdded } from "../messages/state";
 import {
   EAggroMode,
@@ -626,3 +633,42 @@ sample({
   source: $currentLevel,
   target: characterResurrected,
 });
+
+const spellPrepared = createStore<IGameSpell | null>(null);
+
+// save combat spell to store when cast
+// to wait for target selection
+sample({
+  clock: characterCastsASpell,
+  target: spellPrepared,
+  filter(spell) {
+    // filter only combat spells
+    if (!isSpellCombat(spell.name)) {
+      return false;
+    }
+    // and not target=all or self - they will trigger immediately
+    if (!isTargetedSpell(spell.name)) {
+      return false;
+    }
+    return true;
+  },
+});
+
+// switch to monsters turn when cast spell on self
+sample({
+  clock: characterCastsASpell,
+  target: startMonstersRound,
+  filter(spell) {
+    // filter only combat spells
+    if (!isSpellCombat(spell.name)) {
+      return false;
+    }
+    // and target = self
+    return isTargetedOnSelfSpell(spell.name);
+  },
+});
+
+// TODO: target=all handling
+
+// TODO: targeted spell handling - create a separate event and fire it from UI
+// need to create a spell for testing first

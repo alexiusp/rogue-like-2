@@ -7,7 +7,7 @@ import {
 } from "../guilds/models";
 import { characterReceivedAnEffect } from "./effects/state";
 import { IGameEffect } from "./effects/types";
-import { createEffectForASpell } from "./models";
+import { createEffectForASpell, isSpellNonCombat } from "./models";
 import { IGameSpell } from "./types";
 
 export const $characterSpells = $characterGuilds.map((guilds) =>
@@ -58,15 +58,29 @@ const characterCastsASpellFx = createEffect<
     }),
 );
 
-// trigger effect when character casts a spell
+// trigger effect when character casts a non-combat spell
 sample({
   clock: characterCastsASpell,
   source: $character,
   target: characterCastsASpellFx,
-  fn(src, clk) {
-    return { character: src, spell: clk };
+  fn(character, spell) {
+    return { character, spell };
   },
-  // TODO: add filter to check for posible limitations - mana cost etc.
+  filter(character, spell) {
+    if (!isSpellNonCombat(spell.name)) {
+      return false;
+    }
+    if (typeof spell.level === "undefined") {
+      const { spellCost } = getMinLevelGuildForSpell(
+        spell.name,
+        character.guilds,
+      );
+      if (character.mp - spellCost < 0) {
+        return false;
+      }
+    }
+    return true;
+  },
 });
 
 // update character with results of the spell - reduce mana if applicable
