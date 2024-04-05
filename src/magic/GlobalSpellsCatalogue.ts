@@ -5,7 +5,7 @@ const MinorHealSpell: IBaseSpell = {
   description:
     "This general heal spell is useful for removing small wounds only, so it will not help any other type of  injury...",
   picture: "heal-minor.png",
-  spellClass: ESpellClass.NonCombat,
+  spellClass: ESpellClass.Both,
   nature: "life",
   statsRequired: {
     strength: 0,

@@ -73,10 +73,12 @@ export default function DungeonScreen() {
     toggleConfirmation(false);
   };
 
-  const [activeTab, toggleTab] = useState<"inv" | "spells">("inv");
+  const [activeTab, toggleTab] = useState<"buffer" | "inv" | "spells">(
+    "buffer",
+  );
   const handleTabChange = (
     _: React.SyntheticEvent,
-    newValue: "inv" | "spells",
+    newValue: "buffer" | "inv" | "spells",
   ) => {
     toggleTab(newValue);
   };
@@ -111,14 +113,18 @@ export default function DungeonScreen() {
         <Card elevation={3}>
           <CardContent>
             <Tabs value={activeTab} onChange={handleTabChange}>
+              <Tab value="buffer" label="Buffer" />
               <Tab value="inv" label="Inventory" />
               <Tab value="spells" label="Spells" />
             </Tabs>
+            <Box sx={{ display: activeTab === "buffer" ? "block" : "none" }}>
+              {/* buffer list to be implemented here */}
+            </Box>
             <Box sx={{ display: activeTab === "inv" ? "block" : "none" }}>
               {/*<InventoryList />*/}
             </Box>
             <Box sx={{ display: activeTab === "spells" ? "block" : "none" }}>
-              <SpellsList />
+              <SpellsList filter="dungeon" />
             </Box>
           </CardContent>
         </Card>

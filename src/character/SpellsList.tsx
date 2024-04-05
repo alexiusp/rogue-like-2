@@ -1,16 +1,33 @@
 import { Button, ButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
 import SpellIcon from "../magic/SpellIcon";
+import { isSpellCombat, isSpellNonCombat } from "../magic/models";
 import { $characterSpells, characterCastsASpell } from "../magic/state";
 import "./SpellsList.css";
 
-export default function SpellsList() {
-  const spells = useUnit($characterSpells);
+interface ISpellsListProps {
+  filter?: "all" | "dungeon" | "combat";
+}
+
+export default function SpellsList({ filter = "all" }: ISpellsListProps) {
+  const allSpells = useUnit($characterSpells);
+  let spellsList: string[];
   const castASpell = useUnit(characterCastsASpell);
   const getCastHandler = (spell: string) => () => castASpell({ name: spell });
+  switch (filter) {
+    case "combat":
+      spellsList = allSpells.filter(isSpellCombat);
+      break;
+    case "dungeon":
+      spellsList = allSpells.filter(isSpellNonCombat);
+      break;
+    default:
+      spellsList = allSpells;
+      break;
+  }
   return (
     <ButtonGroup size="large" className="spells-list">
-      {spells.map((spell) => (
+      {spellsList.map((spell) => (
         <Button
           key={`spells-list-button-${spell}`}
           onClick={getCastHandler(spell)}

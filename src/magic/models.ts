@@ -1,5 +1,6 @@
 import GlobalBaseSpellsCatalogue from "./GlobalSpellsCatalogue";
 import { IGameEffect } from "./effects/types";
+import { ESpellClass } from "./types";
 
 function createHealEffect(power: number): IGameEffect {
   // effect for healing spell - instant i.e. timeout = 1
@@ -21,4 +22,14 @@ export function createEffectForASpell(
       return createHealEffect(spellPower);
   }
   return;
+}
+
+export function isSpellNonCombat(spellName: string) {
+  const baseSpell = GlobalBaseSpellsCatalogue[spellName];
+  return baseSpell.spellClass !== ESpellClass.Combat;
+}
+
+export function isSpellCombat(spellName: string) {
+  const baseSpell = GlobalBaseSpellsCatalogue[spellName];
+  return baseSpell.spellClass !== ESpellClass.NonCombat;
 }

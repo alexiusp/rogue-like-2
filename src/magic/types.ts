@@ -2,16 +2,12 @@ import { TStatsValues } from "../common/stats";
 import { TNatureElement } from "../common/types";
 
 export enum ESpellClass {
-  Combat, //usable only in combat
-  NonCombat, // usable both in combat and outside
+  Combat, // usable only in combat
+  NonCombat, // usable only outside of the combat
+  Both, // usable both in combat and outside
 }
 
-/**
- * damage of the spell is determined by power of the spell
- * timeout: for enchantments effect - time for spell to wear off - also determined by power
- * base level of the spell (amount of mana required to cast)
- * is defined by the guild level when this spell becomes available
- */
+// base information about a spell common for all instances
 export interface IBaseSpell {
   // unique name of the spell
   name: string;
@@ -36,10 +32,12 @@ export interface IBaseSpell {
   spRatio: number;
   // effect applied
   effect: string;
-  // target of the spell
+  // possible target of the spell
+  // in case of number - amount of adjacent targets
   target?: "self" | "all" | number;
 }
 
+// properties of a particular instance of the spell
 export interface IGameSpell {
   // reference to the base spell
   name: string;

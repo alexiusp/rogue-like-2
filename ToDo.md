@@ -57,10 +57,8 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - mana points generation
-  - use of spells in dungeon
-  - item use in battle/dungeon/city
   - use of spells in battle/encounter
+  - item use in battle/dungeon/city
   - monster attacks
 - chests: traps
 - falling into a pit handling
