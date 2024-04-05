@@ -51,8 +51,13 @@
   - unfinished encounters (alive monsters, closed chests) - should they respawn?
   - global events when everything respawns including terrain and effects (after implementing quest)
   - split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
+- give experience also for other actions (opening chests etc.)
+- give experience "in runtime" not only after battle?
 
 # Known bugs to fix:
+
+- spell distribution by guilds must be generated from parameters, not hardcoded as an array
+- xp needed to level up must be generated from parameters, not hardcoded as an array
 
 # Next tasks (sorted):
 
