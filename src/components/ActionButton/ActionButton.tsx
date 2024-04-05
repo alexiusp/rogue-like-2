@@ -1,10 +1,9 @@
 import { ToggleButton } from "@mui/material";
-import { TBattleMode } from "../../battle/types";
 import "./ActionButton.css";
 
 interface IActionButtonProps {
-  action: TBattleMode;
-  disabled: boolean;
+  action: string;
+  disabled?: boolean;
   onClick?: () => void;
 }
 

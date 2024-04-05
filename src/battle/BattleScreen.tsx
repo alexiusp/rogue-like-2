@@ -1,11 +1,18 @@
-import { Box, Stack, ToggleButtonGroup, Typography } from "@mui/material";
-import { blueGrey, deepPurple } from "@mui/material/colors";
+import {
+  Box,
+  Collapse,
+  Stack,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+import { blueGrey } from "@mui/material/colors";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.webp";
 import chestImage from "../assets/tiles/chest.png";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
+import SpellsList from "../character/SpellsList";
 import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
 import { IChest } from "../dungeon/types";
@@ -21,7 +28,6 @@ import {
   characterTriesToFlee,
   monsterAttacked,
 } from "./state";
-import { TBattleMode } from "./types";
 
 interface IBattleScreenProps {
   chest?: IChest;
@@ -29,6 +35,14 @@ interface IBattleScreenProps {
   monsters: Array<IGameMonster>;
   //  terrain: ETerrain;
 }
+
+type TBattleAction =
+  | "fight"
+  | "buffer"
+  | "items"
+  | "spells"
+  | "defend"
+  | "flee";
 
 export default function BattleScreen({
   chest,
@@ -38,14 +52,14 @@ export default function BattleScreen({
 }: IBattleScreenProps) {
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
-  const [mode, setMode] = useState<TBattleMode>();
+  const [action, setAction] = useState<TBattleAction>();
   const characterIsDead = useUnit($characterIsDead);
   const monsterAreaClicked = (monster: IGameMonster, index: number) => {
     if (battleRound !== "character" || characterIsDead) {
       return;
     }
-    console.log("monsterAreaClicked for ", monster.monster, mode);
-    switch (mode) {
+    console.log("monsterAreaClicked for ", monster.monster, action);
+    switch (action) {
       case "fight":
         monsterAttacked(index);
         break;
@@ -55,11 +69,11 @@ export default function BattleScreen({
   };
 
   const setDefend = () => {
-    setMode("defend");
+    setAction("defend");
     characterDefends();
   };
   const setFlee = () => {
-    setMode("flee");
+    setAction("flee");
     characterTriesToFlee();
   };
   return (
@@ -94,36 +108,51 @@ export default function BattleScreen({
       </Stack>
       <HealthStatusProgress />
       <ManaStatusProgress />
-      <ToggleButtonGroup size="large" value={mode}>
-        <ActionButton
-          disabled={battleRound !== "character"}
-          action="fight"
-          onClick={() => setMode("fight")}
-        />
-        <ActionButton
-          disabled={battleRound !== "character"}
-          action="spells"
-          onClick={() => setMode("spells")}
-        />
-        <ActionButton
-          disabled={battleRound !== "character"}
-          action="items"
-          onClick={() => setMode("items")}
-        />
-        <ActionButton
-          disabled={battleRound !== "character"}
-          action="defend"
-          onClick={setDefend}
-        />
-        <ActionButton
-          disabled={battleRound !== "character"}
-          action="flee"
-          onClick={setFlee}
-        />
-      </ToggleButtonGroup>
-      <Box sx={{ backgroundColor: deepPurple[500] }}>
-        <Typography>saved actions/spells/items</Typography>
-      </Box>
+      <Stack>
+        <ToggleButtonGroup size="large" value={action}>
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="fight"
+            onClick={() => setAction("fight")}
+          />
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="buffer"
+            onClick={() => setAction("buffer")}
+          />
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="items"
+            onClick={() => setAction("items")}
+          />
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="spells"
+            onClick={() => setAction("spells")}
+          />
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="defend"
+            onClick={setDefend}
+          />
+          <ActionButton
+            disabled={battleRound !== "character"}
+            action="flee"
+            onClick={setFlee}
+          />
+        </ToggleButtonGroup>
+        <Box sx={{ minHeight: "72px", mt: 0.5 }}>
+          <Collapse in={action === "buffer"}>
+            <Box>buffer not implemented yet</Box>
+          </Collapse>
+          <Collapse in={action === "items"}>
+            <Box>items quick selection not implemented yet</Box>
+          </Collapse>
+          <Collapse in={action === "spells"}>
+            <SpellsList filter="battle" />
+          </Collapse>
+        </Box>
+      </Stack>
       <CharacterIsDead />
     </Stack>
   );

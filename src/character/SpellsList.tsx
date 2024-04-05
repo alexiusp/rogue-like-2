@@ -6,7 +6,7 @@ import { $characterSpells, characterCastsASpell } from "../magic/state";
 import "./SpellsList.css";
 
 interface ISpellsListProps {
-  filter?: "all" | "dungeon" | "combat";
+  filter?: "all" | "dungeon" | "battle";
 }
 
 export default function SpellsList({ filter = "all" }: ISpellsListProps) {
@@ -15,7 +15,7 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
   const castASpell = useUnit(characterCastsASpell);
   const getCastHandler = (spell: string) => () => castASpell({ name: spell });
   switch (filter) {
-    case "combat":
+    case "battle":
       spellsList = allSpells.filter(isSpellCombat);
       break;
     case "dungeon":

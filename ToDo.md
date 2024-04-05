@@ -19,15 +19,14 @@
 - encounters:
   - refactor battle to propagate dealt damage as event payload to properly display it
   - special animation for hits with 0 damage
-  - monster: generate optional chest
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
   - monster: size for monster - depends on character races (trolls and halflings) implementation
-  - monster generate different monsters in one group (rules to combine them? by type?)
+  - monster: generate different monsters in one group (rules to combine them? by type?)
   - lair
   - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character, monster ambush
 - other terrains and effects
-  - effect in battle
-  - multiple effects on same tile
+  - effects of terrain and effects in battle and display on UI
+  - multiple effects on same tile?
 - guilds
   - guild log - list of "events" happened with guild members, initialized with guild master takes the position
   - guild masters list save on update instead of manual saving
@@ -64,6 +63,7 @@
 - spells/magic
   - use of spells in battle/encounter
   - item use in battle/dungeon/city
+  - small effects icons in battle and in dungeon
   - monster attacks
 - chests: traps
 - falling into a pit handling

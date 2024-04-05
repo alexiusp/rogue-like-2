@@ -1,28 +1,22 @@
 import {
-  Box,
   Button,
-  Card,
-  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Stack,
-  Tab,
-  Tabs,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import HealthStatusProgress from "../character/HealthStatusProgress";
-//import InventoryList from "../character/InventoryList";
 import ManaStatusProgress from "../character/ManaStatusProgress";
-import SpellsList from "../character/SpellsList";
 import XpStatusProgress from "../character/XpStatusProgress";
 import { characterSaved } from "../character/state";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
+import ActionBar from "./ActionBar";
 import "./Dungeon.css";
 import DungeonTile from "./DungeonTile";
 import { areAdjacentCoordinates, areSameCoordinates } from "./model";
@@ -73,15 +67,6 @@ export default function DungeonScreen() {
     toggleConfirmation(false);
   };
 
-  const [activeTab, toggleTab] = useState<"buffer" | "inv" | "spells">(
-    "buffer",
-  );
-  const handleTabChange = (
-    _: React.SyntheticEvent,
-    newValue: "buffer" | "inv" | "spells",
-  ) => {
-    toggleTab(newValue);
-  };
   const cells = dungeonMap.map.map((tile, index) => (
     <Grid xs={1} key={`cell-${index}`}>
       <DungeonTile
@@ -110,24 +95,7 @@ export default function DungeonScreen() {
         <HealthStatusProgress />
         <ManaStatusProgress />
         <XpStatusProgress />
-        <Card elevation={3}>
-          <CardContent>
-            <Tabs value={activeTab} onChange={handleTabChange}>
-              <Tab value="buffer" label="Buffer" />
-              <Tab value="inv" label="Inventory" />
-              <Tab value="spells" label="Spells" />
-            </Tabs>
-            <Box sx={{ display: activeTab === "buffer" ? "block" : "none" }}>
-              {/* buffer list to be implemented here */}
-            </Box>
-            <Box sx={{ display: activeTab === "inv" ? "block" : "none" }}>
-              {/*<InventoryList />*/}
-            </Box>
-            <Box sx={{ display: activeTab === "spells" ? "block" : "none" }}>
-              <SpellsList filter="dungeon" />
-            </Box>
-          </CardContent>
-        </Card>
+        <ActionBar />
       </Stack>
       <Dialog
         onClose={() => toggleConfirmation(false)}
