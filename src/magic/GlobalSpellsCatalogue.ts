@@ -64,9 +64,32 @@ const SeeInvisible: IBaseSpell = {
   target: "self",
 };
 
+const Firebolt: IBaseSpell = {
+  name: "firebolt",
+  description:
+    "This simplest of Fire Spells creates a small flame arrow and hurls it into a monster, burning anything that gets in its way.",
+  picture: "firebolt.png",
+  spellClass: ESpellClass.Combat,
+  nature: "fire",
+  statsRequired: {
+    strength: 0,
+    intelligence: 12,
+    wisdom: 9,
+    endurance: 0,
+    charisma: 0,
+    dexterity: 0,
+  },
+  power: 5,
+  powerGain: 2,
+  spRatio: 1,
+  effect: "burning",
+  target: 1,
+};
+
 const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = {
   [MinorHealSpell.name]: MinorHealSpell,
   [Shield.name]: Shield,
   [SeeInvisible.name]: SeeInvisible,
+  [Firebolt.name]: Firebolt,
 };
 export default GlobalBaseSpellsCatalogue;

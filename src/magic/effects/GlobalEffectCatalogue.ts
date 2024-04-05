@@ -31,4 +31,10 @@ export const GlobalEffectCatalogue: Record<string, IBaseEffect> = {
     key: "attack",
     nature: "mind",
   },
+  burning: {
+    name: "burning",
+    picture: "",
+    key: "hurt",
+    nature: "fire",
+  },
 };

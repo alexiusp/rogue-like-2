@@ -227,7 +227,7 @@ const GuildSpellsMap: Record<EGuild, Array<string | null>> = {
     null,
     "minor heal",
     null,
-    "shield",
+    "firebolt",
     null,
     null,
     null,
@@ -320,7 +320,7 @@ function applyAffinity(
 const GuildsNatureAffinities: Record<EGuild, Record<TNatureElement, number>> = {
   [EGuild.Adventurer]: applyAffinity(
     applyAffinity(ZeroAffinity, "life", 3),
-    "air",
+    "fire",
     1,
   ),
   [EGuild.Warrior]: ZeroAffinity,
