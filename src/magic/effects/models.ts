@@ -1,8 +1,9 @@
 import { ICharacterState } from "../../character/models";
+import { IGameMonster } from "../../monsters/model";
 import { GlobalEffectCatalogue } from "./GlobalEffectCatalogue";
 import { IGameEffect } from "./types";
 
-function applyHealEffect(
+function applyHealEffectToCharacter(
   effect: IGameEffect,
   character: ICharacterState,
 ): ICharacterState {
@@ -14,6 +15,18 @@ function applyHealEffect(
   };
 }
 
+function applyHurtEffectToMonster(
+  effect: IGameEffect,
+  monster: IGameMonster,
+): IGameMonster {
+  const { power } = effect;
+  const updatedHp = Math.min(monster.hpMax, monster.hp - power);
+  return {
+    ...monster,
+    hp: updatedHp,
+  };
+}
+
 export function applyEffectToCharacter(
   effect: IGameEffect,
   character: ICharacterState,
@@ -21,7 +34,7 @@ export function applyEffectToCharacter(
   const baseEffect = GlobalEffectCatalogue[effect.name];
   switch (baseEffect.key) {
     case "heal":
-      return applyHealEffect(effect, character);
+      return applyHealEffectToCharacter(effect, character);
     case "hurt":
       break;
     case "defense":
@@ -34,4 +47,26 @@ export function applyEffectToCharacter(
       break;
   }
   return character;
+}
+
+export function applyEffectToMonster(
+  effect: IGameEffect,
+  monster: IGameMonster,
+): IGameMonster {
+  const baseEffect = GlobalEffectCatalogue[effect.name];
+  switch (baseEffect.key) {
+    case "heal":
+      break;
+    case "hurt":
+      return applyHurtEffectToMonster(effect, monster);
+    case "defense":
+      break;
+    case "protection":
+      break;
+    case "attack":
+      break;
+    case "damage":
+      break;
+  }
+  return monster;
 }

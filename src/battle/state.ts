@@ -37,6 +37,7 @@ import {
 } from "../dungeon/types";
 import { getMinLevelGuildForSpell } from "../guilds/models";
 import { TGameItem, itemsAreSame } from "../items/models";
+import { applyEffectToMonster } from "../magic/effects/models";
 import {
   createEffectForASpell,
   isSpellCombat,
@@ -641,13 +642,13 @@ sample({
   target: characterResurrected,
 });
 
-const spellSelected = createStore<IGameSpell | null>(null);
+const $spellSelected = createStore<IGameSpell | null>(null);
 
 // save combat spell to store when cast
 // to wait for target selection
 sample({
   clock: characterCastsASpell,
-  target: spellSelected,
+  target: $spellSelected,
   filter(spell) {
     // filter only combat spells
     if (!isSpellCombat(spell.name)) {
@@ -726,6 +727,7 @@ export const characterAttacksMonsterWithSpellFx = createEffect<
         reject({ character, monsters: mapTile.encounter.monsters });
         return;
       }
+      // update characters mana
       const updatedCharacter: typeof character = {
         ...character,
         mp: character.mp - manaCost,
@@ -750,4 +752,117 @@ export const characterAttacksMonsterWithSpellFx = createEffect<
     }),
 );
 
-// TODO: apply effects to monsters before switching to the monsters turn
+// set animation state to result of an attack
+$hitResult.on(characterAttacksMonsterWithSpellFx.done, () => "hit");
+
+// trigger effect when event is dispatched
+sample({
+  clock: monsterAttackedBySpell,
+  source: {
+    tile: $currentMapTile,
+    character: $character,
+    spell: $spellSelected,
+  },
+  target: characterAttacksMonsterWithSpellFx,
+  fn: ({ tile, character, spell }, index) => {
+    if (!spell) {
+      // this error should never happen actually
+      throw new Error("Invalid spell!");
+    }
+    const mapTile = tile as IMonsterMapTile;
+    const params: TMonsterAttackedWithSpellParams = {
+      mapTile,
+      character,
+      monsterCursor: index,
+      spell,
+    };
+    return params;
+  },
+  filter({ spell }) {
+    if (spell === null) {
+      return false;
+    }
+    // TODO: implement other checks? what shold they be?
+    return true;
+  },
+});
+
+// apply effects to monsters before switching to the monsters turn
+const spellEffectsAppliedToMonstersFx = createEffect<
+  IGameMonster[],
+  IGameMonster[],
+  IGameMonster[]
+>(
+  (monsters) =>
+    new Promise((res) => {
+      const updatedMonsters: IGameMonster[] = monsters.map((monster) => {
+        const effects = monster.effects;
+        if (!effects || !effects.length) {
+          return monster;
+        }
+        let updatedMonster = monster;
+        for (const effect of effects) {
+          updatedMonster = applyEffectToMonster(effect, monster);
+        }
+        return updatedMonster;
+      });
+      res(updatedMonsters);
+      return;
+    }),
+);
+
+// redirect monsters data from effects generation to application
+sample({
+  clock: characterAttacksMonsterWithSpellFx.doneData,
+  target: spellEffectsAppliedToMonstersFx,
+  fn({ monsters }) {
+    return [...monsters];
+  },
+});
+
+// apply mana reduction to the character
+sample({
+  clock: characterAttacksMonsterWithSpellFx.doneData,
+  target: $character,
+  fn({ character }) {
+    return { ...character };
+  },
+});
+
+// stop rounds rotation when all monsters are dead
+sample({
+  clock: spellEffectsAppliedToMonstersFx.doneData,
+  filter: (monsters) => {
+    return !areAllMonstersDead(monsters);
+  },
+  target: characterToMonsterTransition,
+});
+
+// update dungeon state with results of an attack
+sample({
+  clock: spellEffectsAppliedToMonstersFx.doneData,
+  source: {
+    state: $dungeonState,
+    level: $currentLevel,
+    mapTile: $currentMapTile,
+  },
+  target: $dungeonState,
+  fn: (source, monsters) => {
+    const { state, level, mapTile } = source;
+    const updatedMonsters = [...monsters];
+    const levelMap = [...state[level]];
+    const updatedMapTile = { ...mapTile } as IMonsterMapTile;
+    const tileIndex = getTileIndexByCoordinates(
+      { x: updatedMapTile.x, y: updatedMapTile.y },
+      levelMap,
+    );
+    updatedMapTile.encounter = {
+      ...updatedMapTile.encounter,
+      monsters: updatedMonsters,
+    };
+    levelMap[tileIndex] = updatedMapTile;
+    const updatedState = [...state];
+    updatedState.splice(level, 1, levelMap);
+    return updatedState;
+  },
+});
