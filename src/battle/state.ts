@@ -4,6 +4,7 @@ import {
   getCharacterAttack,
   getCharacterDamage,
   getCharacterDefense,
+  getCharacterGuildLevel,
   getCharacterProtection,
   rollCharacterFleeChance,
 } from "../character/models";
@@ -34,8 +35,10 @@ import {
   IMonsterMapTile,
   TDungeonLevelMap,
 } from "../dungeon/types";
+import { getMinLevelGuildForSpell } from "../guilds/models";
 import { TGameItem, itemsAreSame } from "../items/models";
 import {
+  createEffectForASpell,
   isSpellCombat,
   isTargetedOnSelfSpell,
   isTargetedSpell,
@@ -679,14 +682,55 @@ sample({
 export const monsterAttackedBySpell = createEvent<number>();
 
 // calculate results of an character attacking a single monster with spell
-// TODO: copied from battle flow, need to refactor
+type TMonsterAttackedWithSpellParams = {
+  mapTile: IMonsterMapTile;
+  monsterCursor: number;
+  character: ICharacterState;
+  spell: IGameSpell;
+};
+type TMonsterAttackedWithSpellResult = {
+  character: ICharacterState;
+  monsters: Array<IGameMonster>;
+};
 export const characterAttacksMonsterWithSpellFx = createEffect<
-  TMonsterAttackedParams,
-  Array<IGameMonster>,
-  Array<IGameMonster>
+  TMonsterAttackedWithSpellParams,
+  TMonsterAttackedWithSpellResult,
+  TMonsterAttackedWithSpellResult
 >(
-  ({ mapTile, monsterCursor, character }) =>
+  ({ mapTile, monsterCursor, character, spell }) =>
     new Promise((resolve, reject) => {
+      // get spell effect and mana cost
+      console.log("characterAttacksMonsterWithSpellFx start", spell.name);
+      let castingLevel = spell.level;
+      // if fixed level from item, then no casting cost should be applied
+      let manaCost = 0;
+      if (typeof castingLevel === "undefined") {
+        const { guild, level, spellCost } = getMinLevelGuildForSpell(
+          spell.name,
+          character.guilds,
+        );
+        const currentGuildLevel = getCharacterGuildLevel(guild, character);
+        castingLevel = currentGuildLevel - level;
+        manaCost = spellCost;
+      }
+      if (character.mp - manaCost < 0) {
+        console.warn("Not enough mana!");
+        messageAdded("Not enough mana!");
+        reject({ character, monsters: mapTile.encounter.monsters });
+        return;
+      }
+      const spellEffect = createEffectForASpell(spell.name, castingLevel);
+      if (typeof spellEffect === "undefined") {
+        console.warn("Spell does nothing!");
+        messageAdded("Spell does nothing!");
+        reject({ character, monsters: mapTile.encounter.monsters });
+        return;
+      }
+      const updatedCharacter: typeof character = {
+        ...character,
+        mp: character.mp - manaCost,
+      };
+
       // all monsters must aggro
       const monsters = mapTile.encounter.monsters.map((m) => ({
         ...m,
@@ -694,22 +738,16 @@ export const characterAttacksMonsterWithSpellFx = createEffect<
       }));
       // select attacked monster
       const monster = monsters[monsterCursor];
-      const attack = getCharacterAttack(character);
-      const defense = getMonsterDV(monster);
-      const attackRoll = rollAttack(attack, defense);
-      console.log("attackRoll:", attackRoll);
-      if (!attackRoll) {
-        messageAdded(`You missed ${monster.monster}`);
-        reject(monsters);
-        return;
-      }
-      const damage = getCharacterDamage(character);
-      const protection = getMonsterPV(monster);
-      const damageDone = rollDamage(damage, protection);
-      console.log("damageDone", damageDone);
-      monster.hp = Math.max(monster.hp - damageDone, 0);
+      // TODO: check for monster resistances
+      const effects = monster.effects ?? [];
+      effects.push(spellEffect);
+      monster.effects = effects;
       monsters[monsterCursor] = monster;
-      messageAdded(`You hit ${monster.monster} for ${damageDone}`);
-      resolve(monsters);
+      messageAdded(
+        `${monster.monster} received effect ${spellEffect.name} with power of ${spellEffect.power}`,
+      );
+      resolve({ character: updatedCharacter, monsters });
     }),
 );
+
+// TODO: apply effects to monsters before switching to the monsters turn
