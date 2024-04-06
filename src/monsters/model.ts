@@ -10,6 +10,7 @@ import {
 } from "../common/stats";
 import { ETerrain, ETerrainEffect } from "../dungeon/types";
 import { TGameItem, generateRandomItemByName } from "../items/models";
+import { IGameEffect } from "../magic/effects/types";
 import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
@@ -75,6 +76,8 @@ export interface IGameMonster {
   mpMax: number;
   // current aggro mode
   aggro: EAggroMode;
+  // effects applied to monster
+  effects?: IGameEffect[];
 }
 
 function generateMonsterHp(baseHp: number, level: number, stats: TStatsValues) {

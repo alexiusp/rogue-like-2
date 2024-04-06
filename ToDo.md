@@ -52,6 +52,8 @@
   - split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
 - give experience also for other actions (opening chests etc.)
 - give experience "in runtime" not only after battle?
+- keyboard support for movement in dungeons and buffers/hotkeys (probably also actions)
+- new terrain type: stone - unpassable tile, teleporting to which means death
 
 # Known bugs to fix:
 

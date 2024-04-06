@@ -78,7 +78,7 @@ $hitResult.watch((hitResult) => console.info("hitResult:", hitResult));
 
 type TMonsterAttackedParams = {
   mapTile: IMonsterMapTile;
-  index: number;
+  monsterCursor: number;
   character: ICharacterState;
 };
 // calculate results of an character attacking a single monster
@@ -87,7 +87,7 @@ export const characterAttacksMonsterFx = createEffect<
   Array<IGameMonster>,
   Array<IGameMonster>
 >(
-  ({ mapTile, index, character }) =>
+  ({ mapTile, monsterCursor, character }) =>
     new Promise((resolve, reject) => {
       // all monsters must aggro
       const monsters = mapTile.encounter.monsters.map((m) => ({
@@ -95,7 +95,7 @@ export const characterAttacksMonsterFx = createEffect<
         aggro: EAggroMode.Angry,
       }));
       // select attacked monster
-      const monster = monsters[index];
+      const monster = monsters[monsterCursor];
       const attack = getCharacterAttack(character);
       const defense = getMonsterDV(monster);
       const attackRoll = rollAttack(attack, defense);
@@ -110,7 +110,7 @@ export const characterAttacksMonsterFx = createEffect<
       const damageDone = rollDamage(damage, protection);
       console.log("damageDone", damageDone);
       monster.hp = Math.max(monster.hp - damageDone, 0);
-      monsters[index] = monster;
+      monsters[monsterCursor] = monster;
       messageAdded(`You hit ${monster.monster} for ${damageDone}`);
       resolve(monsters);
     }),
@@ -125,7 +125,11 @@ sample({
   target: characterAttacksMonsterFx,
   fn: ({ tile, character }, index) => {
     const mapTile = tile as IMonsterMapTile;
-    const params: TMonsterAttackedParams = { mapTile, character, index };
+    const params: TMonsterAttackedParams = {
+      mapTile,
+      character,
+      monsterCursor: index,
+    };
     return params;
   },
 });
@@ -634,13 +638,13 @@ sample({
   target: characterResurrected,
 });
 
-const spellPrepared = createStore<IGameSpell | null>(null);
+const spellSelected = createStore<IGameSpell | null>(null);
 
 // save combat spell to store when cast
 // to wait for target selection
 sample({
   clock: characterCastsASpell,
-  target: spellPrepared,
+  target: spellSelected,
   filter(spell) {
     // filter only combat spells
     if (!isSpellCombat(spell.name)) {
@@ -672,3 +676,40 @@ sample({
 
 // TODO: targeted spell handling - create a separate event and fire it from UI
 // need to create a spell for testing first
+export const monsterAttackedBySpell = createEvent<number>();
+
+// calculate results of an character attacking a single monster with spell
+// TODO: copied from battle flow, need to refactor
+export const characterAttacksMonsterWithSpellFx = createEffect<
+  TMonsterAttackedParams,
+  Array<IGameMonster>,
+  Array<IGameMonster>
+>(
+  ({ mapTile, monsterCursor, character }) =>
+    new Promise((resolve, reject) => {
+      // all monsters must aggro
+      const monsters = mapTile.encounter.monsters.map((m) => ({
+        ...m,
+        aggro: EAggroMode.Angry,
+      }));
+      // select attacked monster
+      const monster = monsters[monsterCursor];
+      const attack = getCharacterAttack(character);
+      const defense = getMonsterDV(monster);
+      const attackRoll = rollAttack(attack, defense);
+      console.log("attackRoll:", attackRoll);
+      if (!attackRoll) {
+        messageAdded(`You missed ${monster.monster}`);
+        reject(monsters);
+        return;
+      }
+      const damage = getCharacterDamage(character);
+      const protection = getMonsterPV(monster);
+      const damageDone = rollDamage(damage, protection);
+      console.log("damageDone", damageDone);
+      monster.hp = Math.max(monster.hp - damageDone, 0);
+      monsters[monsterCursor] = monster;
+      messageAdded(`You hit ${monster.monster} for ${damageDone}`);
+      resolve(monsters);
+    }),
+);
