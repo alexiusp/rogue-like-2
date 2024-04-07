@@ -642,7 +642,7 @@ sample({
   target: characterResurrected,
 });
 
-const $spellSelected = createStore<IGameSpell | null>(null);
+export const $spellSelected = createStore<IGameSpell | null>(null);
 
 // save combat spell to store when cast
 // to wait for target selection

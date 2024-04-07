@@ -1,5 +1,6 @@
-import { Button, ButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
+import { $spellSelected } from "../battle/state";
 import SpellIcon from "../magic/SpellIcon";
 import { isSpellCombat, isSpellNonCombat } from "../magic/models";
 import { $characterSpells, characterCastsASpell } from "../magic/state";
@@ -13,6 +14,13 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
   const allSpells = useUnit($characterSpells);
   let spellsList: string[];
   const castASpell = useUnit(characterCastsASpell);
+  const selectedBattleSpell = useUnit($spellSelected);
+  const selectedSpell =
+    filter === "battle"
+      ? selectedBattleSpell
+        ? selectedBattleSpell.name
+        : ""
+      : "";
   const getCastHandler = (spell: string) => () => castASpell({ name: spell });
   switch (filter) {
     case "battle":
@@ -25,16 +33,23 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
       spellsList = allSpells;
       break;
   }
+  // TODO: calculate if spell can be cast due to mana cost
   return (
-    <ButtonGroup size="large" className="spells-list">
+    <ToggleButtonGroup
+      size="large"
+      className="spells-list"
+      value={selectedSpell}
+    >
       {spellsList.map((spell) => (
-        <Button
+        <ToggleButton
+          size="large"
+          value={spell}
           key={`spells-list-button-${spell}`}
           onClick={getCastHandler(spell)}
         >
           <SpellIcon spell={spell} />
-        </Button>
+        </ToggleButton>
       ))}
-    </ButtonGroup>
+    </ToggleButtonGroup>
   );
 }

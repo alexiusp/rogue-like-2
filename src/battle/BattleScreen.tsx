@@ -27,6 +27,7 @@ import {
   characterDefends,
   characterTriesToFlee,
   monsterAttacked,
+  monsterAttackedBySpell,
 } from "./state";
 
 interface IBattleScreenProps {
@@ -62,6 +63,9 @@ export default function BattleScreen({
     switch (action) {
       case "fight":
         monsterAttacked(index);
+        break;
+      case "spells":
+        monsterAttackedBySpell(index);
         break;
       default:
         break;

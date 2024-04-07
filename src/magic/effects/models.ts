@@ -20,7 +20,7 @@ function applyHurtEffectToMonster(
   monster: IGameMonster,
 ): IGameMonster {
   const { power } = effect;
-  const updatedHp = Math.min(monster.hpMax, monster.hp - power);
+  const updatedHp = Math.max(0, monster.hp - power);
   return {
     ...monster,
     hp: updatedHp,
