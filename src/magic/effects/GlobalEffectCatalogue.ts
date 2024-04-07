@@ -3,37 +3,37 @@ import { IBaseEffect } from "./types";
 export const GlobalEffectCatalogue: Record<string, IBaseEffect> = {
   heal: {
     name: "heal",
-    picture: "heal-minor.png",
+    picture: "heal.svg",
     key: "heal",
     nature: "life",
   },
   poison: {
     name: "poison",
-    picture: "",
+    picture: "poison.svg",
     key: "hurt",
     nature: "earth",
   },
   shield: {
     name: "shield",
-    picture: "shield.png",
+    picture: "shield.svg",
     key: "defense",
     nature: "air",
   },
   "stone skin": {
     name: "stone skin",
-    picture: "",
+    picture: "stone-skin.svg",
     key: "protection",
     nature: "stone",
   },
   "see invisible": {
     name: "see invisible",
-    picture: "",
+    picture: "see-invisible.svg",
     key: "attack",
     nature: "mind",
   },
   burning: {
     name: "burning",
-    picture: "",
+    picture: "burning.svg",
     key: "hurt",
     nature: "fire",
   },

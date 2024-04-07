@@ -64,8 +64,8 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - item use in battle/dungeon/city
   - small effects icons in battle and in dungeon
+  - item use in battle/dungeon/city
   - monster attacks
 - chests: traps
 - falling into a pit handling
