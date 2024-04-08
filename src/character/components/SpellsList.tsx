@@ -1,9 +1,9 @@
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
-import { $spellSelected } from "../battle/state";
-import SpellIcon from "../magic/SpellIcon";
-import { isSpellCombat, isSpellNonCombat } from "../magic/models";
-import { $characterSpells, characterCastsASpell } from "../magic/state";
+import { $spellSelected } from "../../battle/state";
+import SpellIcon from "../../magic/SpellIcon";
+import { isSpellCombat, isSpellNonCombat } from "../../magic/models";
+import { $characterSpells, characterCastsASpell } from "../../magic/state";
 import "./SpellsList.css";
 
 interface ISpellsListProps {

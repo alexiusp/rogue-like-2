@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
-import ProgressBar from "../components/ProgressBar";
-import { $characterCurrentXp, $characterMaxXpForCurrentGuild } from "./state";
+import ProgressBar from "../../components/ProgressBar";
+import { $characterCurrentXp, $characterMaxXpForCurrentGuild } from "../state";
 
 export default function XpStatusProgress() {
   const xp = useUnit($characterCurrentXp);

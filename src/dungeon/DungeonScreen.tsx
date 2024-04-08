@@ -10,10 +10,10 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import CharacterEffectsBar from "../character/CharacterEffectsBar";
-import HealthStatusProgress from "../character/HealthStatusProgress";
-import ManaStatusProgress from "../character/ManaStatusProgress";
-import XpStatusProgress from "../character/XpStatusProgress";
+import CharacterEffectsBar from "../character/components/CharacterEffectsBar";
+import HealthStatusProgress from "../character/components/HealthStatusProgress";
+import ManaStatusProgress from "../character/components/ManaStatusProgress";
+import XpStatusProgress from "../character/components/XpStatusProgress";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
 import ActionBar from "./ActionBar";

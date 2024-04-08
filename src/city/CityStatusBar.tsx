@@ -1,7 +1,7 @@
 import { Stack, Toolbar } from "@mui/material";
-import HealthStatusBadge from "../character/HealthStatusBadge";
-import MoneyStatusBadge from "../character/MoneyStatusBadge";
-import XPStatusBadge from "../character/XPStatusBadge";
+import HealthStatusBadge from "../character/components/HealthStatusBadge";
+import MoneyStatusBadge from "../character/components/MoneyStatusBadge";
+import XPStatusBadge from "../character/components/XPStatusBadge";
 
 export default function CityStatusBar() {
   return (

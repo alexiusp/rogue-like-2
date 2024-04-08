@@ -9,7 +9,6 @@
   - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
   - character screen: show permanent effects from items (invisible, see invisible etc.)
   - reordering/sorting of items in the inventory
-- Buffers or hotkeys - panel with quick access to spells/items
 - magic/spells: need to design how to structure the data in a best way
   - use of spells in the city?
   - check if monster is dead after spells do their effect
@@ -55,7 +54,7 @@
 - give experience "in runtime" not only after battle?
 - keyboard support for movement in dungeons and buffers/hotkeys (probably also actions)
 - monsters exquisit for the lore of the game
-- corruptions (like in ADoM) - negative effects on deeper levels of the dungeon
+- corruptions (like in ADoM) - negative effects on deeper levels of the dungeon - may be instead of cursed items?
 
 # Known bugs to fix:
 
@@ -66,10 +65,11 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - item use in battle/dungeon/city
   - small effects icons in battle and in dungeon
+  - item use in battle/dungeon/city
   - items improving characters stats (books potions)
   - monster attacks
+- Buffers or hotkeys - panel with quick access to spells/items
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going

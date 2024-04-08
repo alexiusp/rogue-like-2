@@ -1,7 +1,7 @@
 import PaidIcon from "@mui/icons-material/Paid";
 import { Chip, Tooltip } from "@mui/material";
 import { useUnit } from "effector-react";
-import { $characterMoney } from "./state";
+import { $characterMoney } from "../state";
 
 export default function MoneyStatusBadge() {
   const money = useUnit($characterMoney);

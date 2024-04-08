@@ -1,7 +1,7 @@
 import { List, ListItem, ListItemText } from "@mui/material";
 import { useUnit } from "effector-react";
-import { StatList } from "../common/stats";
-import { $characterItemsStatsBonuses, $characterStats } from "./state";
+import { StatList } from "../../common/stats";
+import { $characterItemsStatsBonuses, $characterStats } from "../state";
 
 export default function StatsList() {
   const baseStats = useUnit($characterStats);

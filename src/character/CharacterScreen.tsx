@@ -17,12 +17,12 @@ import { getAlignmentLong } from "../common/alignment";
 import { EGuild } from "../guilds/types";
 import Screen from "../layout/Screen";
 import { back } from "../navigation";
-import CharacterAgeLabel from "./CharacterAgeLabel";
-import StatsList from "./StatsList";
 import GuildsTab from "./characterTabs/GuildsTab";
 import InventoryTab from "./characterTabs/InventoryTab";
 import ResistansesTab from "./characterTabs/ResistansesTab";
 import SpellsTab from "./characterTabs/SpellsTab";
+import CharacterAgeLabel from "./components/CharacterAgeLabel";
+import StatsList from "./components/StatsList";
 import {
   EGender,
   getCharacterAttack,
@@ -85,7 +85,7 @@ export default function CharacterScreen() {
         <Tabs value={activeMainTab} onChange={handleMainTabChange}>
           <Tab value="char" label="Character" />
           <Tab value="guilds" label="Guilds & skills" />
-          <Tab value="res" label="Resistances" disabled={true} />
+          <Tab value="res" label="Resistances & Effects" />
         </Tabs>
         <Box sx={{ display: activeMainTab === "char" ? "block" : "none" }}>
           <List dense={true}>

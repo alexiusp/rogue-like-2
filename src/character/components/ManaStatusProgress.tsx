@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
-import ProgressBar from "../components/ProgressBar";
-import { $characterMana, $characterMaxMana } from "./state";
+import ProgressBar from "../../components/ProgressBar";
+import { $characterMana, $characterMaxMana } from "../state";
 
 export default function ManaStatusProgress() {
   const mp = useUnit($characterMana);

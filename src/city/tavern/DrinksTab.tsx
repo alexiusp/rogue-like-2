@@ -7,8 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
-import HealthStatusBadge from "../../character/HealthStatusBadge";
-import MoneyStatusBadge from "../../character/MoneyStatusBadge";
+import HealthStatusBadge from "../../character/components/HealthStatusBadge";
+import MoneyStatusBadge from "../../character/components/MoneyStatusBadge";
 import {
   $characterMoney,
   characterDrinkBeer,

@@ -1,6 +1,6 @@
 import { useUnit } from "effector-react";
-import ProgressBar from "../components/ProgressBar";
-import { $characterHealth, $characterMaxHp } from "./state";
+import ProgressBar from "../../components/ProgressBar";
+import { $characterHealth, $characterMaxHp } from "../state";
 
 export default function HealthStatusProgress() {
   const hp = useUnit($characterHealth);

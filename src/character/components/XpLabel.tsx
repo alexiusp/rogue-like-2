@@ -1,4 +1,4 @@
-import heartImg from "../assets/items/heart.png";
+import heartImg from "../../assets/items/heart.png";
 import "./XpLabel.css";
 
 interface IXpLabelProps {

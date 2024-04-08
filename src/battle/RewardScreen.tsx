@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
-import XpLabel from "../character/XpLabel";
+import XpLabel from "../character/components/XpLabel";
 import {
   characterReceivedItems,
   moneyAddedToCharacter,

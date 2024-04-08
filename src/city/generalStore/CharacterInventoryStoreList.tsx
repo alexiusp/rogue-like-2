@@ -2,7 +2,7 @@ import { Button, Card, CardContent, CardHeader, Chip } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useCallback, useEffect, useState } from "react";
 import InventoryList from "../../character/InventoryList";
-import MoneyStatusBadge from "../../character/MoneyStatusBadge";
+import MoneyStatusBadge from "../../character/components/MoneyStatusBadge";
 import {
   $characterCharisma,
   $characterInventory,

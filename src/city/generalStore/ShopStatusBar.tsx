@@ -1,5 +1,5 @@
 import { Stack, Toolbar } from "@mui/material";
-import MoneyStatusBadge from "../../character/MoneyStatusBadge";
+import MoneyStatusBadge from "../../character/components/MoneyStatusBadge";
 
 export default function ShopStatusBar() {
   return (

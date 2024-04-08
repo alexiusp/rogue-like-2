@@ -1,7 +1,7 @@
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import { Chip, Tooltip } from "@mui/material";
 import { useUnit } from "effector-react";
-import { $characterXpToNextLevel } from "./state";
+import { $characterXpToNextLevel } from "../state";
 
 export default function XPStatusBadge() {
   const xp = useUnit($characterXpToNextLevel);

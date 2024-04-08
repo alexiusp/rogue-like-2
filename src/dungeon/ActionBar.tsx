@@ -1,6 +1,6 @@
 import { Box, Collapse, Stack, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
-import SpellsList from "../character/SpellsList";
+import SpellsList from "../character/components/SpellsList";
 import ActionButton from "../components/ActionButton/ActionButton";
 
 type TDungeonActionMode = "buffer" | "items" | "spells";

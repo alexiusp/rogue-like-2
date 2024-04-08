@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { useUnit } from "effector-react";
-import EffectIcon from "../magic/effects/EffectIcon";
-import { $characterEffects } from "../magic/effects/state";
+import EffectIcon from "../../magic/effects/EffectIcon";
+import { $characterEffects } from "../../magic/effects/state";
 
 export default function CharacterEffectsBar() {
   const effects = useUnit($characterEffects);

@@ -1,7 +1,7 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Chip, Tooltip } from "@mui/material";
 import { useUnit } from "effector-react";
-import { $characterHealth, $characterMaxHp } from "./state";
+import { $characterHealth, $characterMaxHp } from "../state";
 
 export default function HealthStatusBadge() {
   const hp = useUnit($characterHealth);
