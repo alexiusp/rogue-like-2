@@ -4,6 +4,7 @@ import {
   $character,
   $characterInventory,
   characterEquippedAnItem,
+  characterUnequippedAnItem,
 } from "../../character/state";
 import GlobalItemsCatalogue from "../../items/GlobalItemsCatalogue";
 import { createEffectForASpell } from "../models";
@@ -18,6 +19,23 @@ $characterEffects.on(characterReceivedAnEffect, (state, effect) => [
   ...state,
   effect,
 ]);
+
+export const characterLostAnEffect = createEvent<IGameEffect>();
+
+$characterEffects.on(characterLostAnEffect, (state, effectToDelete) => {
+  const updatedState = [...state];
+  const effectIndex = updatedState.findIndex(
+    (effect) =>
+      effect.name === effectToDelete.name &&
+      effect.power === effectToDelete.power &&
+      effect.timeout === effectToDelete.timeout,
+  );
+  if (effectIndex < 0) {
+    throw new Error("Effect to remove not found on character!");
+  }
+  updatedState.splice(effectIndex, 1);
+  return updatedState;
+});
 
 export const effectsAppliedToCharacter = createEvent<boolean>();
 type TEffectToCharacterPayload = {
@@ -141,7 +159,7 @@ sample({
     if (!effect) {
       throw new Error("Empty effect!");
     }
-    console.log("created effect", effect);
+    console.log("adding effect to character", effect);
     return effect;
   },
   filter(items, itemIndex) {
@@ -153,9 +171,34 @@ sample({
     return true;
   },
 });
-/*
+
 sample({
   clock: characterUnequippedAnItem,
   source: $characterInventory,
-})
-*/
+  target: characterLostAnEffect,
+  filter(items, itemIndex) {
+    const equippedItem = items[itemIndex];
+    const baseItem = GlobalItemsCatalogue[equippedItem.item];
+    if (!baseItem.spell) {
+      return false;
+    }
+    return true;
+  },
+  fn(items, itemIndex) {
+    const equippedItem = items[itemIndex];
+    const baseItem = GlobalItemsCatalogue[equippedItem.item];
+    if (!baseItem.spell) {
+      throw new Error("Item does not have any spell!");
+    }
+    const effect = createEffectForASpell(
+      baseItem.spell.name,
+      baseItem.spell.level ?? 0,
+      true,
+    );
+    if (!effect) {
+      throw new Error("Empty effect!");
+    }
+    console.log("removing effect from character:", effect);
+    return effect;
+  },
+});
