@@ -9,7 +9,6 @@ import { Button, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
 import bg from "../assets/castle.webp";
-import { characterLoaded, characterSaved } from "../character/state";
 import { descendToDungeonLevel, dungeonLoaded } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";
@@ -22,13 +21,11 @@ export default function CityScreen() {
     if (dataLoaded) {
       return;
     }
-    characterLoaded();
     storeStateLoaded();
     dungeonLoaded();
     setDataLoaded(true);
   }, [dataLoaded, setDataLoaded]);
   const openDungeon = () => {
-    characterSaved();
     storeStateSaved();
     navigate("dungeon");
     descendToDungeonLevel(1);

@@ -1,5 +1,6 @@
 import {
   combine,
+  createDomain,
   createEffect,
   createEvent,
   createStore,
@@ -7,6 +8,7 @@ import {
 } from "effector";
 import { EAlignment } from "../common/alignment";
 import {
+  getCurrentSlot,
   loadCharacterData,
   saveCharacterData,
   setSlotName,
@@ -57,12 +59,30 @@ const fallbackState: ICharacterState = {
   mp: 0,
   mpMax: 0,
 };
-const startState = (() => {
-  const cachedData = loadCharacterData<ICharacterState>("character");
-  return cachedData !== null ? cachedData : fallbackState;
-})();
 
-export const $character = createStore<ICharacterState>(startState);
+export const characterDomain = createDomain("character");
+
+characterDomain.onCreateStore((store) => {
+  const key = `${characterDomain.shortName}-${store.shortName}`;
+  let value = null;
+  if (getCurrentSlot()) {
+    value = loadCharacterData(key);
+  }
+  if (value !== null) {
+    store.setState(value);
+  }
+  store.watch((value) => {
+    if (!getCurrentSlot()) {
+      return;
+    }
+    saveCharacterData(key, value);
+  });
+});
+
+export const $character = characterDomain.createStore<ICharacterState>(
+  fallbackState,
+  { name: "main" },
+);
 
 export const $characterRace = $character.map((character) => character.race);
 
@@ -165,23 +185,7 @@ $character.on(characterCreated, (state) => {
   const newState = createNewCharacter(state);
   const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
   setSlotName(saveSlotName);
-  saveCharacterData("character", newState);
   return newState;
-});
-export const characterSaved = createEvent();
-$character.on(characterSaved, (state) => {
-  const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
-  setSlotName(saveSlotName);
-  saveCharacterData("character", state);
-  return state;
-});
-export const characterLoaded = createEvent();
-$character.on(characterLoaded, (state) => {
-  const character = loadCharacterData<ICharacterState>("character");
-  if (!character) {
-    return state;
-  }
-  return { ...state, ...character };
 });
 
 $character.watch(console.log);
@@ -652,8 +656,6 @@ sample({
   target: characterResurrectionDelayFx,
 });
 
-// start saving after updating the state
-sample({ clock: characterResurrectionDelayFx.done, target: characterSaved });
 // trigger redirect to city after saving
 sample({
   clock: characterResurrectionDelayFx.finally,

@@ -2,7 +2,6 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import { IconButton, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import bg from "../../assets/tavern.webp";
-import { characterSaved } from "../../character/state";
 import Screen from "../../layout/Screen";
 import { back } from "../../navigation";
 import DrinksTab from "./DrinksTab";
@@ -16,7 +15,6 @@ export default function TavernScreen() {
     toggleTab(newValue);
   };
   const goBackToCity = () => {
-    characterSaved();
     back();
   };
 

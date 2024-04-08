@@ -32,7 +32,7 @@ import {
   getCharacterTotalXp,
 } from "./models";
 import { ECharacterRace } from "./races";
-import { $character, characterSaved } from "./state";
+import { $character } from "./state";
 
 type TMainTab = "char" | "guilds" | "res";
 type TSecondaryTab = "inv" | "buffers" | "spells";
@@ -56,7 +56,6 @@ export default function CharacterScreen() {
     (g) => g.guild === currentGuild,
   );
   const goBackToCity = () => {
-    characterSaved();
     back();
   };
   if (!currentGuildInfo) {

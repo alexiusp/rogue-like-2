@@ -14,7 +14,6 @@ import CharacterEffectsBar from "../character/CharacterEffectsBar";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import XpStatusProgress from "../character/XpStatusProgress";
-import { characterSaved } from "../character/state";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
 import ActionBar from "./ActionBar";
@@ -55,7 +54,6 @@ export default function DungeonScreen() {
   };
   const leaveTheLevelHandler = () => {
     dungeonSaved();
-    characterSaved();
     if (ladderDown) {
       descendToDungeonLevel(currentLevel + 1);
     } else {

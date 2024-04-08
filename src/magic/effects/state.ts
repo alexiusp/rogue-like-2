@@ -1,8 +1,9 @@
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { createEffect, createEvent, sample } from "effector";
 import { ICharacterState } from "../../character/models";
 import {
   $character,
   $characterInventory,
+  characterDomain,
   characterEquippedAnItem,
   characterUnequippedAnItem,
 } from "../../character/state";
@@ -11,7 +12,10 @@ import { createEffectForASpell } from "../models";
 import { applyEffectToCharacter } from "./models";
 import { IGameEffect } from "./types";
 
-export const $characterEffects = createStore<IGameEffect[]>([]);
+export const $characterEffects = characterDomain.createStore<IGameEffect[]>(
+  [],
+  { name: "effects" },
+);
 
 export const characterReceivedAnEffect = createEvent<IGameEffect>();
 

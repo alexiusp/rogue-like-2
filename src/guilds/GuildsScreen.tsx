@@ -25,7 +25,6 @@ import {
   $guildLevelMoneyCost,
   characterJoinedGuild,
   characterLevelsUp,
-  characterSaved,
 } from "../character/state";
 import CityStatusBar from "../city/CityStatusBar";
 import { statsSufficient } from "../common/stats";
@@ -62,7 +61,6 @@ export default function GuildsScreen() {
   }
   const levelUpHandler = useUnit(characterLevelsUp);
   const goBackToCity = () => {
-    characterSaved();
     back();
   };
   return (

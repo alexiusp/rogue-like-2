@@ -1,13 +1,11 @@
 import CastleIcon from "@mui/icons-material/Castle";
 import { IconButton, Typography } from "@mui/material";
 import bg from "../../assets/mage-tower.webp";
-import { characterSaved } from "../../character/state";
 import Screen from "../../layout/Screen";
 import { back } from "../../navigation";
 
 export default function TowerScreen() {
   const goBackToCity = () => {
-    characterSaved();
     back();
   };
 
