@@ -19,9 +19,21 @@ function createBurningEffect(power: number, timeout: number = 1): IGameEffect {
   };
 }
 
+function createSeeInvisibleEffect(
+  power: number,
+  timeout?: number,
+): IGameEffect {
+  return {
+    name: "see invisible",
+    power,
+    timeout,
+  };
+}
+
 export function createEffectForASpell(
   spellName: string,
   castingLevel: number,
+  fromItem: boolean = false,
 ): IGameEffect | undefined {
   const baseSpell = GlobalBaseSpellsCatalogue[spellName];
   const spellPower = baseSpell.power + baseSpell.powerGain * castingLevel;
@@ -30,6 +42,10 @@ export function createEffectForASpell(
       return createHealEffect(spellPower);
     case "firebolt":
       return createBurningEffect(spellPower);
+    case "see invisible": {
+      const timeout = fromItem ? undefined : 1;
+      return createSeeInvisibleEffect(spellPower, timeout);
+    }
   }
   return;
 }

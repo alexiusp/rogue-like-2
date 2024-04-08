@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material";
 import "./EffectIcon.css";
 import { GlobalEffectCatalogue } from "./GlobalEffectCatalogue";
 
@@ -13,10 +14,12 @@ export default function EffectIcon({
   const effect = GlobalEffectCatalogue[effectName];
   const className = `effect-icon ${size}`;
   return (
-    <img
-      className={className}
-      src={`/src/assets/effects/${effect.picture}`}
-      alt={effect.name}
-    />
+    <Tooltip arrow title={effectName}>
+      <img
+        className={className}
+        src={`/src/assets/effects/${effect.picture}`}
+        alt={effect.name}
+      />
+    </Tooltip>
   );
 }

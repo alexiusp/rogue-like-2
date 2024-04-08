@@ -27,6 +27,7 @@
 - other terrains and effects
   - effects of terrain and effects in battle and display on UI
   - multiple effects on same tile?
+  - new terrain type: stone - unpassable tile, teleporting to which means death
 - guilds
   - guild log - list of "events" happened with guild members, initialized with guild master takes the position
   - guild masters list save on update instead of manual saving
@@ -53,7 +54,8 @@
 - give experience also for other actions (opening chests etc.)
 - give experience "in runtime" not only after battle?
 - keyboard support for movement in dungeons and buffers/hotkeys (probably also actions)
-- new terrain type: stone - unpassable tile, teleporting to which means death
+- monsters exquisit for the lore of the game
+- corruptions (like in ADoM) - negative effects on deeper levels of the dungeon
 
 # Known bugs to fix:
 
@@ -64,8 +66,9 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - small effects icons in battle and in dungeon
+  - effects from equipped items
   - item use in battle/dungeon/city
+  - small effects icons in battle and in dungeon
   - monster attacks
 - chests: traps
 - falling into a pit handling

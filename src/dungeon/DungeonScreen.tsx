@@ -10,6 +10,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import { useUnit } from "effector-react";
 import { useState } from "react";
+import CharacterEffectsBar from "../character/CharacterEffectsBar";
 import HealthStatusProgress from "../character/HealthStatusProgress";
 import ManaStatusProgress from "../character/ManaStatusProgress";
 import XpStatusProgress from "../character/XpStatusProgress";
@@ -92,6 +93,7 @@ export default function DungeonScreen() {
             {cells}
           </Grid>
         </div>
+        <CharacterEffectsBar />
         <HealthStatusProgress />
         <ManaStatusProgress />
         <XpStatusProgress />

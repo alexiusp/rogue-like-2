@@ -1,6 +1,12 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { ICharacterState } from "../../character/models";
-import { $character } from "../../character/state";
+import {
+  $character,
+  $characterInventory,
+  characterEquippedAnItem,
+} from "../../character/state";
+import GlobalItemsCatalogue from "../../items/GlobalItemsCatalogue";
+import { createEffectForASpell } from "../models";
 import { applyEffectToCharacter } from "./models";
 import { IGameEffect } from "./types";
 
@@ -115,3 +121,41 @@ sample({
     return effects;
   },
 });
+
+// add an effect when character equips an item with spell
+sample({
+  clock: characterEquippedAnItem,
+  source: $characterInventory,
+  target: characterReceivedAnEffect,
+  fn(items, itemIndex) {
+    const equippedItem = items[itemIndex];
+    const baseItem = GlobalItemsCatalogue[equippedItem.item];
+    if (!baseItem.spell) {
+      throw new Error("Item does not have any spell!");
+    }
+    const effect = createEffectForASpell(
+      baseItem.spell.name,
+      baseItem.spell.level ?? 0,
+      true,
+    );
+    if (!effect) {
+      throw new Error("Empty effect!");
+    }
+    console.log("created effect", effect);
+    return effect;
+  },
+  filter(items, itemIndex) {
+    const equippedItem = items[itemIndex];
+    const baseItem = GlobalItemsCatalogue[equippedItem.item];
+    if (!baseItem.spell) {
+      return false;
+    }
+    return true;
+  },
+});
+/*
+sample({
+  clock: characterUnequippedAnItem,
+  source: $characterInventory,
+})
+*/
