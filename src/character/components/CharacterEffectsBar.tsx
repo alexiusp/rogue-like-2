@@ -8,7 +8,11 @@ export default function CharacterEffectsBar() {
   return (
     <Stack spacing={0.5} direction="row">
       {effects.map((effect, index) => (
-        <EffectIcon key={`${index}-${effect.name}`} effectName={effect.name} />
+        <EffectIcon
+          key={`${index}-${effect.name}`}
+          effectName={effect.name}
+          timeout={effect.timeout}
+        />
       ))}
     </Stack>
   );

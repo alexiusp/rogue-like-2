@@ -10,7 +10,7 @@ export default function CharacterEffectsList() {
       {effects.map((effect, index) => (
         <ListItem key={`${index}-${effect.name}`}>
           <ListItemIcon>
-            <EffectIcon effectName={effect.name} />
+            <EffectIcon effectName={effect.name} showTooltip={false} />
           </ListItemIcon>
           <ListItemText>{effect.name}</ListItemText>
         </ListItem>

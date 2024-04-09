@@ -1,15 +1,9 @@
-import {
-  Box,
-  Collapse,
-  Stack,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
-import { blueGrey } from "@mui/material/colors";
+import { Box, Collapse, Stack, ToggleButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.webp";
 import chestImage from "../assets/tiles/chest.png";
+import CharacterEffectsBar from "../character/components/CharacterEffectsBar";
 import HealthStatusProgress from "../character/components/HealthStatusProgress";
 import ManaStatusProgress from "../character/components/ManaStatusProgress";
 import SpellsList from "../character/components/SpellsList";
@@ -106,9 +100,7 @@ export default function BattleScreen({
         </Stack>
         <HitAnimation />
         {chest ? <img src={chestImage} alt="chest" className="chest" /> : null}
-        <Box sx={{ backgroundColor: blueGrey[500] }}>
-          <Typography>TODO: active effects, spells, etc. icons</Typography>
-        </Box>
+        <CharacterEffectsBar />
       </Stack>
       <HealthStatusProgress />
       <ManaStatusProgress />
