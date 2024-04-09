@@ -1,16 +1,20 @@
-import { Typography } from "@mui/material";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useUnit } from "effector-react";
+import EffectIcon from "../../magic/effects/EffectIcon";
 import { $characterEffects } from "../../magic/effects/state";
 
 export default function CharacterEffectsList() {
   const effects = useUnit($characterEffects);
   return (
-    <>
+    <List dense={true}>
       {effects.map((effect, index) => (
-        <Typography component="span" key={`${index}-${effect.name}`}>
-          {effect.name}
-        </Typography>
+        <ListItem key={`${index}-${effect.name}`}>
+          <ListItemIcon>
+            <EffectIcon effectName={effect.name} />
+          </ListItemIcon>
+          <ListItemText>{effect.name}</ListItemText>
+        </ListItem>
       ))}
-    </>
+    </List>
   );
 }

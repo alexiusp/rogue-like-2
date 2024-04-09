@@ -1,4 +1,5 @@
-import { Divider, List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import CharacterEffectsList from "../components/CharacterEffectsList";
 interface IResistansesTabProps {
   show: boolean;
@@ -8,25 +9,26 @@ export default function ResistansesTab({ show }: IResistansesTabProps) {
     return null;
   }
   return (
-    <List dense={true}>
-      <ListItem>
-        <ListItemText>Active effects:</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>
-          <CharacterEffectsList />
-        </ListItemText>
-      </ListItem>
-      <Divider component="li" />
-      <ListItem>
-        <ListItemText>Current resistances:</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>Resistanses info to be developed</ListItemText>
-        <ListItemText primaryTypographyProps={{ align: "right" }}>
-          ---
-        </ListItemText>
-      </ListItem>
-    </List>
+    <Grid container spacing={0.5}>
+      <Grid xs={6}>
+        <Typography variant="h6" component="h4">
+          Active effects:
+        </Typography>
+        <CharacterEffectsList />
+      </Grid>
+      <Grid xs={6}>
+        <Typography variant="h6" component="h4">
+          Resistances:
+        </Typography>
+        <List dense={true}>
+          <ListItem>
+            <ListItemText>Resistanses info to be developed</ListItemText>
+            <ListItemText primaryTypographyProps={{ align: "right" }}>
+              ---
+            </ListItemText>
+          </ListItem>
+        </List>
+      </Grid>
+    </Grid>
   );
 }
