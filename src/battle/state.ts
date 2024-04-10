@@ -643,6 +643,9 @@ sample({
 });
 
 export const $spellSelected = createStore<IGameSpell | null>(null);
+$spellSelected.watch((spell) =>
+  console.log("spell selected for casting", spell),
+);
 
 // save combat spell to store when cast
 // to wait for target selection
@@ -732,6 +735,7 @@ export const characterAttacksMonsterWithSpellFx = createEffect<
         reject({ character, monsters: mapTile.encounter.monsters });
         return;
       }
+      console.log(`spell ${spell.name} will cost ${manaCost} mana.`);
       // update characters mana
       const updatedCharacter: typeof character = {
         ...character,
@@ -841,6 +845,15 @@ sample({
     return !areAllMonstersDead(monsters);
   },
   target: characterToMonsterTransition,
+});
+
+// end battle if spell killed the last monster
+sample({
+  clock: spellEffectsAppliedToMonstersFx.doneData,
+  filter: (monsters) => {
+    return areAllMonstersDead(monsters);
+  },
+  target: battleEnded,
 });
 
 // update dungeon state with results of an attack

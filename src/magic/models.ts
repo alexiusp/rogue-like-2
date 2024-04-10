@@ -19,6 +19,14 @@ function createBurningEffect(power: number, timeout: number = 1): IGameEffect {
   };
 }
 
+function createShockEffect(power: number, timeout: number = 1): IGameEffect {
+  return {
+    name: "shock",
+    power,
+    timeout,
+  };
+}
+
 function createSeeInvisibleEffect(
   power: number,
   timeout?: number,
@@ -46,6 +54,8 @@ export function createEffectForASpell(
       const timeout = fromItem ? undefined : 1;
       return createSeeInvisibleEffect(spellPower, timeout);
     }
+    case "shock":
+      return createShockEffect(spellPower);
   }
   return;
 }

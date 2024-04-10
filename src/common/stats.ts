@@ -38,6 +38,15 @@ export const NoStatsRequired: TStatsValues = {
   dexterity: 1,
 };
 
+export function extendStatsRequired(
+  stats: Partial<TStatsValues>,
+): TStatsValues {
+  return {
+    ...NoStatsRequired,
+    ...stats,
+  };
+}
+
 export function getStatBonus(statValue: number) {
   if (statValue <= 1) {
     return -5;

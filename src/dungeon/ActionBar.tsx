@@ -20,7 +20,7 @@ export default function ActionBar() {
           <Box>buffer not implemented yet</Box>
         </Collapse>
         <Collapse in={action === "items"}>
-          <UsableItemsList />
+          <UsableItemsList filter="dungeon" />
         </Collapse>
         <Collapse in={action === "spells"}>
           <SpellsList filter="dungeon" />

@@ -1,3 +1,4 @@
+import { createCatalogue } from "../common/utils";
 import { ESpellClass, IBaseSpell } from "./types";
 
 const MinorHealSpell: IBaseSpell = {
@@ -86,10 +87,33 @@ const Firebolt: IBaseSpell = {
   target: 1,
 };
 
-const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = {
-  [MinorHealSpell.name]: MinorHealSpell,
-  [Shield.name]: Shield,
-  [SeeInvisible.name]: SeeInvisible,
-  [Firebolt.name]: Firebolt,
+const Shock: IBaseSpell = {
+  name: "shock",
+  description:
+    "This basic spell creates an electrical arc from the caster's hands to the designated targets, attempting to instantly electrify and kill them.",
+  picture: "shock-spell.svg",
+  spellClass: ESpellClass.Combat,
+  nature: "electric",
+  statsRequired: {
+    strength: 0,
+    intelligence: 12,
+    wisdom: 0,
+    endurance: 0,
+    charisma: 0,
+    dexterity: 9,
+  },
+  power: 5,
+  powerGain: 2,
+  spRatio: 1,
+  effect: "shock",
+  target: 1,
 };
+
+const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = createCatalogue([
+  MinorHealSpell,
+  Shield,
+  SeeInvisible,
+  Firebolt,
+  Shock,
+]);
 export default GlobalBaseSpellsCatalogue;

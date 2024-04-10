@@ -1,6 +1,6 @@
 import { Badge, Tooltip } from "@mui/material";
 import "./EffectIcon.css";
-import { GlobalEffectCatalogue } from "./GlobalEffectCatalogue";
+import GlobalEffectCatalogue from "./GlobalEffectCatalogue";
 
 interface IEffectIconProps {
   effectName: string;

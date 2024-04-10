@@ -1,20 +1,45 @@
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useUnit } from "effector-react";
 import ItemIcon from "../../items/ItemIcon";
-import { filterUsable, itemCanBeUsed } from "../../items/models";
+import {
+  filterUsable,
+  filterUsableInBattle,
+  filterUsableInDungeon,
+  itemCanBeUsed,
+  itemCanBeUsedInBattle,
+  itemCanBeUsedInDungeon,
+} from "../../items/models";
 import { $characterInventory, characterUsesAnItem } from "../state";
 import "./UsableItemsList.css";
 
-export default function UsableItemsList() {
+interface IUsableItemsListProps {
+  filter?: "all" | "dungeon" | "battle";
+}
+
+export default function UsableItemsList({
+  filter = "all",
+}: IUsableItemsListProps) {
   const allItems = useUnit($characterInventory);
   const handleUseItem = (index: number) => () => characterUsesAnItem(index);
-  if (!filterUsable(allItems).length) {
+  let checkFn = itemCanBeUsed;
+  let filterFn = filterUsable;
+  switch (filter) {
+    case "battle":
+      checkFn = itemCanBeUsedInBattle;
+      filterFn = filterUsableInBattle;
+      break;
+    case "dungeon":
+      checkFn = itemCanBeUsedInDungeon;
+      filterFn = filterUsableInDungeon;
+      break;
+  }
+  if (!filterFn(allItems).length) {
     return <Typography>You have no usable items in your inventory</Typography>;
   }
   return (
     <ToggleButtonGroup size="large" className="usable-items-list">
       {allItems.map((item, index) => {
-        if (!itemCanBeUsed(item)) {
+        if (!checkFn(item)) {
           return null;
         }
         return (

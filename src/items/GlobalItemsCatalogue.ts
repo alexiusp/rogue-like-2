@@ -1,4 +1,9 @@
-import { ZeroStats } from "../common/stats";
+import {
+  NoStatsRequired,
+  ZeroStats,
+  extendStatsRequired,
+} from "../common/stats";
+import { createCatalogue } from "../common/utils";
 import { ZeroGuilds } from "../guilds/models";
 import { EGuild } from "../guilds/types";
 import { IEquippableBaseItem, IUsableBaseItem, TBaseItem } from "./models";
@@ -135,7 +140,7 @@ const HealingPotion: IUsableBaseItem = {
   kind: "potion",
   spell: { name: "minor heal", level: 15 },
   aligned: false,
-  statsRequired: ZeroStats,
+  statsRequired: NoStatsRequired,
   statsBonuses: ZeroStats,
   guildRequired: ZeroGuilds,
   uses: 5,
@@ -190,17 +195,49 @@ const AmuletOfUltravision: IEquippableBaseItem = {
   spell: { name: "see invisible", level: 0 },
 };
 
-const GlobalItemsCatalogue: Record<string, TBaseItem> = {
-  [BronzeDagger.name]: BronzeDagger,
-  [IronDagger.name]: IronDagger,
-  [WoodenShield.name]: WoodenShield,
-  [LeatherBoots.name]: LeatherBoots,
-  [LeatherBelt.name]: LeatherBelt,
-  [HealingPotion.name]: HealingPotion,
-  [RingOfShield.name]: RingOfShield,
-  [AmuletOfUltravision.name]: AmuletOfUltravision,
+const GlowingRock: IUsableBaseItem = {
+  name: "Glowing Rock",
+  level: 2,
+  picture: "glowing-rock.png",
+  kind: "stone",
+  spell: { name: "shock", level: 15 },
+  aligned: false,
+  statsRequired: extendStatsRequired({
+    strength: 5,
+    intelligence: 8,
+    wisdom: 8,
+    endurance: 6,
+    dexterity: 10,
+  }),
+  statsBonuses: ZeroStats,
+  guildRequired: [
+    {
+      guild: EGuild.Adventurer,
+      value: 3,
+    },
+    {
+      guild: EGuild.Warrior,
+      value: 4,
+    },
+    {
+      guild: EGuild.Thief,
+      value: 5,
+    },
+  ],
+  uses: 5,
 };
 
+const GlobalItemsCatalogue: Record<string, TBaseItem> = createCatalogue([
+  BronzeDagger,
+  IronDagger,
+  WoodenShield,
+  LeatherBoots,
+  LeatherBelt,
+  HealingPotion,
+  RingOfShield,
+  AmuletOfUltravision,
+  GlowingRock,
+]);
 export default GlobalItemsCatalogue;
 
 export function getItemsListForLevel(level: number) {

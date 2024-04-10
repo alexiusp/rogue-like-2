@@ -7,6 +7,7 @@ import CharacterEffectsBar from "../character/components/CharacterEffectsBar";
 import HealthStatusProgress from "../character/components/HealthStatusProgress";
 import ManaStatusProgress from "../character/components/ManaStatusProgress";
 import SpellsList from "../character/components/SpellsList";
+import UsableItemsList from "../character/components/UsableItemsList";
 import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
 import { IChest } from "../dungeon/types";
@@ -59,6 +60,9 @@ export default function BattleScreen({
         monsterAttacked(index);
         break;
       case "spells":
+        monsterAttackedBySpell(index);
+        break;
+      case "items":
         monsterAttackedBySpell(index);
         break;
       default:
@@ -142,7 +146,7 @@ export default function BattleScreen({
             <Box>buffer not implemented yet</Box>
           </Collapse>
           <Collapse in={action === "items"}>
-            <Box>items quick selection not implemented yet</Box>
+            <UsableItemsList filter="battle" />
           </Collapse>
           <Collapse in={action === "spells"}>
             <SpellsList filter="battle" />

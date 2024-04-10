@@ -2,6 +2,7 @@ import { EAlignment, generateRandomAlignment } from "../common/alignment";
 import { RandomBag, getRandomInt, rollDiceCheck } from "../common/random";
 import { TStatsValues, ZeroStats, getStatBonus } from "../common/stats";
 import { TGuildValues } from "../guilds/types";
+import { isSpellCombat, isSpellNonCombat } from "../magic/models";
 import { IGameSpell } from "../magic/types";
 import GlobalItemsCatalogue, {
   getItemsListForLevel,
@@ -15,7 +16,8 @@ type TItemKind =
   | "boots"
   | "belt"
   | "ring"
-  | "amulet";
+  | "amulet"
+  | "stone";
 
 type TSlot =
   | "head"
@@ -398,7 +400,7 @@ export function isItemEquipable(item: TGameItem): item is IEquipmentGameItem {
   return item.kind === "equipable";
 }
 
-export function itemCanBeUsed(item: TGameItem) {
+export function itemCanBeUsed(item: TGameItem): item is IUsableGameItem {
   if (!isItemUsable(item)) {
     return false;
   }
@@ -407,9 +409,51 @@ export function itemCanBeUsed(item: TGameItem) {
 
 export function filterUsable(items: TGameItem[]) {
   return items.reduce((usableItems, item) => {
-    if (isItemUsable(item) && itemCanBeUsed(item)) {
+    if (itemCanBeUsed(item)) {
       usableItems.push(item);
     }
     return usableItems;
   }, [] as IUsableGameItem[]);
+}
+
+export function itemCanBeUsedInDungeon(
+  item: TGameItem,
+): item is IUsableGameItem {
+  if (!isItemUsable(item)) {
+    return false;
+  }
+  if (item.usesLeft < 1) {
+    return false;
+  }
+  const baseitem = GlobalItemsCatalogue[item.item];
+  if (!isBaseItemUsable(baseitem)) {
+    return false;
+  }
+  const spell = baseitem.spell;
+  return isSpellNonCombat(spell.name);
+}
+
+export function filterUsableInDungeon(items: TGameItem[]) {
+  return items.filter(itemCanBeUsedInDungeon);
+}
+
+export function itemCanBeUsedInBattle(
+  item: TGameItem,
+): item is IUsableGameItem {
+  if (!isItemUsable(item)) {
+    return false;
+  }
+  if (item.usesLeft < 1) {
+    return false;
+  }
+  const baseitem = GlobalItemsCatalogue[item.item];
+  if (!isBaseItemUsable(baseitem)) {
+    return false;
+  }
+  const spell = baseitem.spell;
+  return isSpellCombat(spell.name);
+}
+
+export function filterUsableInBattle(items: TGameItem[]) {
+  return items.filter(itemCanBeUsedInBattle);
 }
