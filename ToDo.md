@@ -55,6 +55,7 @@
 - keyboard support for movement in dungeons and buffers/hotkeys (probably also actions)
 - monsters exquisit for the lore of the game
 - corruptions (like in ADoM) - negative effects on deeper levels of the dungeon - may be instead of cursed items?
+- chests: mimics -> when character tries to open chest its transformed to monster and attacks
 
 # Known bugs to fix:
 
@@ -65,10 +66,9 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - small effects icons in battle and in dungeon
-  - item use in battle/dungeon/city
-  - items improving characters stats (books potions)
-  - monster attacks
+  - item use in battle
+  - items improving characters stats (books, potions etc.)
+  - monster special attacks
 - Buffers or hotkeys - panel with quick access to spells/items
 - chests: traps
 - falling into a pit handling

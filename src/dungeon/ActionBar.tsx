@@ -1,6 +1,7 @@
 import { Box, Collapse, Stack, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
 import SpellsList from "../character/components/SpellsList";
+import UsableItemsList from "../character/components/UsableItemsList";
 import ActionButton from "../components/ActionButton/ActionButton";
 
 type TDungeonActionMode = "buffer" | "items" | "spells";
@@ -19,7 +20,7 @@ export default function ActionBar() {
           <Box>buffer not implemented yet</Box>
         </Collapse>
         <Collapse in={action === "items"}>
-          <Box>items quick selection not implemented yet</Box>
+          <UsableItemsList />
         </Collapse>
         <Collapse in={action === "spells"}>
           <SpellsList filter="dungeon" />

@@ -1,4 +1,4 @@
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Badge, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
 import { $spellSelected } from "../../battle/state";
 import SpellIcon from "../../magic/SpellIcon";
@@ -47,7 +47,13 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
           key={`spells-list-button-${spell}`}
           onClick={getCastHandler(spell)}
         >
-          <SpellIcon spell={spell} />
+          {spell === selectedSpell ? (
+            <Badge variant="dot">
+              <SpellIcon spell={spell} />
+            </Badge>
+          ) : (
+            <SpellIcon spell={spell} />
+          )}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>

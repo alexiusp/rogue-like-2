@@ -78,6 +78,8 @@ export interface IEquippableBaseItem extends IBaseItem {
 export interface IUsableBaseItem extends IBaseItem {
   // amount of uses for usable item
   uses: number;
+  // spell must be defined for usable item
+  spell: IGameSpell;
 }
 
 export type TBaseItem = IUsableBaseItem | IEquippableBaseItem;
@@ -86,6 +88,10 @@ export function isBaseItemEquippable(
   item: TBaseItem,
 ): item is IEquippableBaseItem {
   return !!(item as IEquippableBaseItem).slot;
+}
+
+export function isBaseItemUsable(item: TBaseItem): item is IUsableBaseItem {
+  return typeof item.spell !== "undefined";
 }
 
 export type IdLevel = 0 | 1 | 2; //0 - unidentified, 1 - partially identified, 2 - fully identified
@@ -382,4 +388,28 @@ export function generateItemsForChest(level: number) {
   });
   console.log("items for chest generated", items);
   return items;
+}
+
+export function isItemUsable(item: TGameItem): item is IUsableGameItem {
+  return item.kind === "usable";
+}
+
+export function isItemEquipable(item: TGameItem): item is IEquipmentGameItem {
+  return item.kind === "equipable";
+}
+
+export function itemCanBeUsed(item: TGameItem) {
+  if (!isItemUsable(item)) {
+    return false;
+  }
+  return item.usesLeft > 0;
+}
+
+export function filterUsable(items: TGameItem[]) {
+  return items.reduce((usableItems, item) => {
+    if (isItemUsable(item) && itemCanBeUsed(item)) {
+      usableItems.push(item);
+    }
+    return usableItems;
+  }, [] as IUsableGameItem[]);
 }

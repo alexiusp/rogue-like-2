@@ -2,7 +2,7 @@ import { Box, Collapse, Stack, ToggleButtonGroup } from "@mui/material";
 import { useUnit } from "effector-react";
 import { useState } from "react";
 import bg from "../assets/dungeon.webp";
-import chestImage from "../assets/tiles/chest.png";
+import chestImage from "../assets/tiles/locked-chest.svg";
 import CharacterEffectsBar from "../character/components/CharacterEffectsBar";
 import HealthStatusProgress from "../character/components/HealthStatusProgress";
 import ManaStatusProgress from "../character/components/ManaStatusProgress";

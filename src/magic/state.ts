@@ -1,6 +1,10 @@
 import { createEffect, createEvent, sample } from "effector";
 import { ICharacterState, getCharacterGuildLevel } from "../character/models";
-import { $character, $characterGuilds } from "../character/state";
+import {
+  $character,
+  $characterGuilds,
+  characterUsesAnItemFx,
+} from "../character/state";
 import {
   getAllSpellsFromGuilds,
   getMinLevelGuildForSpell,
@@ -93,4 +97,10 @@ sample({
   fn(clk) {
     return clk.effect;
   },
+});
+
+// get spell from item use and send to to action
+sample({
+  clock: characterUsesAnItemFx.doneData,
+  target: characterCastsASpell,
 });

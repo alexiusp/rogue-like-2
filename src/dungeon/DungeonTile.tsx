@@ -1,8 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { ReactNode } from "react";
 import avatar from "../assets/avatar.png";
-import chest from "../assets/tiles/chest.png";
-import openChest from "../assets/tiles/chest_open.png";
 import danger from "../assets/tiles/danger.svg";
 import down from "../assets/tiles/dungeon-down.svg";
 import up from "../assets/tiles/dungeon-up.svg";
@@ -13,6 +11,7 @@ import water from "../assets/tiles/water.webp";
 import { areAllMonstersDead } from "../monsters/model";
 import { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
 import { isTileStairs } from "./model";
+import Chest from "./tiles/Chest";
 import {
   EEncounterType,
   ETerrain,
@@ -42,7 +41,11 @@ export default function DungeonTile({
       case ETerrain.Chute:
       case ETerrain.Pit:
         tileLayers.push(
-          <img src={pit} alt={ETerrain[terrain]} key={`terrain-${terrain}`} />,
+          <img
+            src={pit}
+            alt={ETerrain[terrain]}
+            key={`${x}-${y}-terrain-${terrain}`}
+          />,
         );
         break;
       case ETerrain.Water:
@@ -50,7 +53,7 @@ export default function DungeonTile({
           <img
             src={water}
             alt={ETerrain[terrain]}
-            key={`terrain-${terrain}`}
+            key={`${x}-${y}-terrain-${terrain}`}
           />,
         );
         break;
@@ -78,7 +81,7 @@ export default function DungeonTile({
                 <img
                   src={fog}
                   alt={ETerrainEffect[effect]}
-                  key={`effect-${effect}`}
+                  key={`${x}-${y}-effect-${effect}`}
                 />,
               );
               break;
@@ -92,14 +95,19 @@ export default function DungeonTile({
         switch (type) {
           case EEncounterType.Monster:
             if (areAllMonstersDead(encounter.monsters)) {
-              if (encounter.chest && !encounter.chest.isOpened) {
-                tileLayers.push(<img src={chest} alt="chest" key={type} />);
+              if (encounter.chest) {
+                tileLayers.push(
+                  <Chest
+                    key={`${x}-${y}-encounter-${type}`}
+                    chest={encounter.chest}
+                  />,
+                );
               } else {
                 tileLayers.push(
                   <img
                     src={tombstone}
                     alt={"dead monsters"}
-                    key={`encounter-${type}`}
+                    key={`${x}-${y}-encounter-${type}`}
                   />,
                 );
               }
@@ -108,15 +116,17 @@ export default function DungeonTile({
                 <img
                   src={danger}
                   alt={"alive monsters"}
-                  key={`encounter-${type}`}
+                  key={`${x}-${y}-encounter-${type}`}
                 />,
               );
             }
             break;
           case EEncounterType.Chest: {
-            const isOpen = encounter.chest.isOpened;
             tileLayers.push(
-              <img src={isOpen ? openChest : chest} alt="chest" key={type} />,
+              <Chest
+                key={`${x}-${y}-encounter-${type}`}
+                chest={encounter.chest}
+              />,
             );
             break;
           }

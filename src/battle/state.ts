@@ -665,8 +665,13 @@ sample({
 // switch to monsters turn when cast spell on self
 sample({
   clock: characterCastsASpell,
+  source: $encounter,
   target: startMonstersRound,
-  filter(spell) {
+  filter(encounter, spell) {
+    // ignore if not in an encounter
+    if (encounter === null) {
+      return false;
+    }
     // filter only combat spells
     if (!isSpellCombat(spell.name)) {
       return false;

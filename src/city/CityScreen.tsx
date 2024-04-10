@@ -8,7 +8,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import { Button, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
-import bg from "../assets/castle.webp";
+import bg from "../assets/city.webp";
 import { descendToDungeonLevel, dungeonLoaded } from "../dungeon/state";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";

@@ -22,7 +22,18 @@ import {
   getGuildXpRequirementsForLevel,
 } from "../guilds/models";
 import { EGuild, IGuildMembership } from "../guilds/types";
-import { IdLevel, TGameItem, getItemsStatsBonuses } from "../items/models";
+import GlobalItemsCatalogue from "../items/GlobalItemsCatalogue";
+import {
+  IUsableGameItem,
+  IdLevel,
+  TGameItem,
+  getItemsStatsBonuses,
+  isBaseItemUsable,
+  isItemEquipable,
+  isItemUsable,
+  itemCanBeUsed,
+} from "../items/models";
+import { IGameSpell } from "../magic/types";
 import { messageAdded } from "../messages/state";
 import { forward } from "../navigation";
 import {
@@ -439,7 +450,7 @@ $character.on(characterSoldAnItem, (state, transaction) => {
 export const characterEquippedAnItem = createEvent<number>();
 $character.on(characterEquippedAnItem, (state, itemIndex) => {
   const item = state.items[itemIndex];
-  if (item.kind !== "equipable") {
+  if (!isItemEquipable(item)) {
     throw new Error("Item is not equippable!");
   }
   const udpatedInventory = [...state.items];
@@ -453,7 +464,7 @@ $character.on(characterEquippedAnItem, (state, itemIndex) => {
 export const characterUnequippedAnItem = createEvent<number>();
 $character.on(characterUnequippedAnItem, (state, itemIndex) => {
   const item = state.items[itemIndex];
-  if (item.kind !== "equipable" || !item.isEquipped) {
+  if (!isItemEquipable(item) || !item.isEquipped) {
     // cursed status can be also handled here
     throw new Error("Item can not be unequipped!");
   }
@@ -661,4 +672,67 @@ sample({
   clock: characterResurrectionDelayFx.finally,
   target: forward,
   fn: () => "city",
+});
+
+export const characterUsesAnItem = createEvent<number>();
+characterUsesAnItem.watch((index) =>
+  console.log("character uses item #", index, "from list"),
+);
+
+export const characterUsesAnItemFx = createEffect<
+  IUsableGameItem,
+  IGameSpell,
+  string
+>(
+  (item) =>
+    new Promise((resolve, reject) => {
+      console.log("characterUsesAnItemFx.start", item);
+      const baseItem = GlobalItemsCatalogue[item.item];
+      if (!isBaseItemUsable(baseItem)) {
+        reject("Item is unusable!");
+        return;
+      }
+      const spell = baseItem.spell;
+      console.log("characterUsesAnItemFx.end", spell);
+      resolve(spell);
+      return;
+    }),
+);
+
+// get item and send it to effect to create a spell
+sample({
+  clock: characterUsesAnItem,
+  source: { character: $character, items: $characterInventory },
+  target: characterUsesAnItemFx,
+  fn({ items }, itemIndex) {
+    const item = items[itemIndex];
+    if (!isItemUsable(item) || !itemCanBeUsed(item)) {
+      throw new Error("unusable item");
+    }
+    return item;
+  },
+});
+
+// reduce item uses
+sample({
+  clock: characterUsesAnItem,
+  source: $character,
+  target: $character,
+  fn(character, itemIndex) {
+    const item = character.items[itemIndex];
+    if (!isItemUsable(item) || !itemCanBeUsed(item)) {
+      throw new Error("unusable item");
+    }
+    const updatedItem: IUsableGameItem = {
+      ...item,
+      usesLeft: item.usesLeft - 1,
+    };
+    const updatedItems = [...character.items];
+    updatedItems[itemIndex] = updatedItem;
+    const updatedCharacter: ICharacterState = {
+      ...character,
+      items: updatedItems,
+    };
+    return updatedCharacter;
+  },
 });
