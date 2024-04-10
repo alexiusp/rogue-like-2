@@ -61,12 +61,11 @@
 
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array
 - xp needed to level up must be generated from parameters, not hardcoded as an array
-- spell selected as current in battle is not very prominent - need to find a way to style it better
 
 # Next tasks (sorted):
 
 - spells/magic
-  - item use in battle
+  - spells and items selected in battle is not very prominent - need to find a way to style it better
   - items improving characters stats (books, potions etc.)
   - monster special attacks
 - Buffers or hotkeys - panel with quick access to spells/items
