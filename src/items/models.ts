@@ -422,9 +422,6 @@ export function itemCanBeUsedInDungeon(
   if (!isItemUsable(item)) {
     return false;
   }
-  if (item.usesLeft < 1) {
-    return false;
-  }
   const baseitem = GlobalItemsCatalogue[item.item];
   if (!isBaseItemUsable(baseitem)) {
     return false;
@@ -443,9 +440,6 @@ export function itemCanBeUsedInBattle(
   if (!isItemUsable(item)) {
     return false;
   }
-  if (item.usesLeft < 1) {
-    return false;
-  }
   const baseitem = GlobalItemsCatalogue[item.item];
   if (!isBaseItemUsable(baseitem)) {
     return false;
@@ -456,4 +450,12 @@ export function itemCanBeUsedInBattle(
 
 export function filterUsableInBattle(items: TGameItem[]) {
   return items.filter(itemCanBeUsedInBattle);
+}
+
+export function getUsableItemSpellName(item: IUsableGameItem) {
+  const baseitem = GlobalItemsCatalogue[item.item];
+  if (!isBaseItemUsable(baseitem)) {
+    return "";
+  }
+  return baseitem.spell.name;
 }

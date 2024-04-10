@@ -16,11 +16,7 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
   const castASpell = useUnit(characterCastsASpell);
   const selectedBattleSpell = useUnit($spellSelected);
   const selectedSpell =
-    filter === "battle"
-      ? selectedBattleSpell
-        ? selectedBattleSpell.name
-        : ""
-      : "";
+    filter === "battle" && selectedBattleSpell ? selectedBattleSpell.name : "";
   const getCastHandler = (spell: string) => () => castASpell({ name: spell });
   switch (filter) {
     case "battle":

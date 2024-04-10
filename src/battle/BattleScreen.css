@@ -12,6 +12,8 @@
   position: absolute;
   top: 0;
   right: 0;
+  height: 64px;
+  width: 64px;
 }
 .battle-screen .encounter .monsters {
   flex-direction: row;

@@ -64,8 +64,8 @@
 
 # Next tasks (sorted):
 
+- refactor character state to be more granular (split parts of the character state into separate states)
 - spells/magic
-  - spells and items selected in battle is not very prominent - need to find a way to style it better
   - items improving characters stats (books, potions etc.)
   - monster special attacks
 - Buffers or hotkeys - panel with quick access to spells/items

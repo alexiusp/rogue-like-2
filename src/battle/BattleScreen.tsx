@@ -141,9 +141,9 @@ export default function BattleScreen({
             onClick={setFlee}
           />
         </ToggleButtonGroup>
-        <Box sx={{ minHeight: "72px", mt: 0.5 }}>
+        <Box sx={{ minHeight: "72px" }}>
           <Collapse in={action === "buffer"}>
-            <Box>buffer not implemented yet</Box>
+            <Box sx={{ pt: 2 }}>buffer not implemented yet</Box>
           </Collapse>
           <Collapse in={action === "items"}>
             <UsableItemsList filter="battle" />
