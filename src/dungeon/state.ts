@@ -5,8 +5,9 @@ import {
   createStore,
   sample,
 } from "effector";
-import { ICharacterState, rollAggro } from "../character/models";
+import { rollAggro } from "../character/models";
 import { $character } from "../character/state";
+import { ICharacterState } from "../character/types";
 import { loadCharacterData, saveCharacterData } from "../common/db";
 import { createDelayEffect } from "../common/delay";
 import { messageAdded } from "../messages/state";

@@ -1,8 +1,6 @@
-import { EAlignment } from "../common/alignment";
 import { getRandomInt, rollDiceCheck } from "../common/random";
 import {
   TStatNames,
-  TStatsValues,
   getStatBonus,
   getStatsAttackModifier,
   getStatsDamageModifier,
@@ -17,10 +15,9 @@ import {
   getMaxSkillFromGuilds,
   getTotalSkillFromGuilds,
 } from "../guilds/models";
-import { EGuild, IGuildMembership } from "../guilds/types";
+import { EGuild } from "../guilds/types";
 import {
   IdLevel,
-  TGameItem,
   getEquippedItemsAttack,
   getEquippedItemsDamage,
   getEquippedItemsDefense,
@@ -39,21 +36,12 @@ import {
   getRaceManaModifier,
   getRaceProtectionModifier,
 } from "./races";
-
-export enum EGender {
-  Male,
-  Female,
-  Other,
-}
-
-export interface ICharacter {
-  picture: string;
-  gender: EGender;
-  race: ECharacterRace;
-  alignment: EAlignment;
-  name: string;
-  stats: TStatsValues;
-}
+import {
+  EGender,
+  ICharacter,
+  ICharacterState,
+  TCharacterCombinedState,
+} from "./types";
 
 export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
   const raceBonus = getRaceHealthModifier(race);
@@ -76,24 +64,6 @@ export function getInitialCharacterMana({ race, stats }: ICharacter) {
   return getRandomInt(20, 10) * raceBonus + intBonus + wisBonus;
 }
 
-export interface ICharacterState extends ICharacter {
-  // characters age
-  age: number;
-  // hit points - character health
-  hp: number;
-  hpMax: number;
-  // mana points - amount of magic powers
-  mp: number;
-  mpMax: number;
-  // guild memebership info
-  guilds: Array<IGuildMembership>;
-  // currently selected guild
-  guild: EGuild;
-  // money
-  money: number;
-  items: Array<TGameItem>;
-}
-
 export function createNewCharacter(charData: ICharacter): ICharacterState {
   const race = charData.race;
   const hp = getInitialCharacterHealth(charData);
@@ -114,7 +84,6 @@ export function createNewCharacter(charData: ICharacter): ICharacterState {
     ],
     guild: EGuild.Adventurer,
     money: 100,
-    items: [],
   };
 }
 
@@ -152,7 +121,7 @@ export const rerollStat = (statName: TStatNames, charRace: ECharacterRace) => {
   return getRandomInt(maxValue, minValue);
 };
 
-export function getCharacterAttack(character: ICharacterState) {
+export function getCharacterAttack(character: TCharacterCombinedState) {
   const baseValue = 20;
   // modifier by race
   const raceModifier = getRaceAttackModifier(character.race);
@@ -167,7 +136,7 @@ export function getCharacterAttack(character: ICharacterState) {
   );
 }
 
-export function getCharacterDamage(character: ICharacterState) {
+export function getCharacterDamage(character: TCharacterCombinedState) {
   const baseValue = 5;
   // get base damage value from item
   const itemValue = getEquippedItemsDamage(character.items);
@@ -183,7 +152,7 @@ export function getCharacterDamage(character: ICharacterState) {
 }
 
 export function getCharacterDefense(
-  character: ICharacterState,
+  character: TCharacterCombinedState,
   defending: boolean = false,
 ) {
   const baseValue = 0;
@@ -206,7 +175,7 @@ export function getCharacterDefense(
   );
 }
 
-export function getCharacterProtection(character: ICharacterState) {
+export function getCharacterProtection(character: TCharacterCombinedState) {
   const baseValue = 0;
   // get base defense value from item
   const itemValue = getEquippedItemsProtection(character.items);

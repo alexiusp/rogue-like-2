@@ -18,7 +18,7 @@ import { useState } from "react";
 import bg from "../assets/guilds-street.webp";
 import {
   $canAffordLevelUp,
-  $characterCurrentGuild,
+  $characterGuild,
   $characterGuilds,
   $characterReadyToLevelUp,
   $characterStats,
@@ -38,7 +38,7 @@ import { EGuild } from "./types";
 
 export default function GuildsScreen() {
   const guildCursor = useUnit($guildCursor);
-  const characterCurrentGuild = useUnit($characterCurrentGuild);
+  const characterCurrentGuild = useUnit($characterGuild);
   const currentGuildMaster = useUnit($currentGuildMaster);
   const statsRequired = GuildSpecs[guildCursor].statsRequired;
   const characterGuilds = useUnit($characterGuilds);

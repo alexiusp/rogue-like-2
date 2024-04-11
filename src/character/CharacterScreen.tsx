@@ -24,7 +24,6 @@ import SpellsTab from "./characterTabs/SpellsTab";
 import CharacterAgeLabel from "./components/CharacterAgeLabel";
 import StatsList from "./components/StatsList";
 import {
-  EGender,
   getCharacterAttack,
   getCharacterDamage,
   getCharacterDefense,
@@ -32,7 +31,8 @@ import {
   getCharacterTotalXp,
 } from "./models";
 import { ECharacterRace } from "./races";
-import { $character } from "./state";
+import { $characterGuild, $characterState } from "./state";
+import { EGender } from "./types";
 
 type TMainTab = "char" | "guilds" | "res";
 type TSecondaryTab = "inv" | "buffers" | "spells";
@@ -50,8 +50,8 @@ export default function CharacterScreen() {
   ) => {
     toggleSecondaryTab(newValue);
   };
-  const character = useUnit($character);
-  const currentGuild = character.guild;
+  const character = useUnit($characterState);
+  const currentGuild = useUnit($characterGuild);
   const currentGuildInfo = character.guilds.find(
     (g) => g.guild === currentGuild,
   );

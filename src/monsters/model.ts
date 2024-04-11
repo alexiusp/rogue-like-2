@@ -1,4 +1,5 @@
-import { ICharacterState, rollCharacterIdSkill } from "../character/models";
+import { rollCharacterIdSkill } from "../character/models";
+import { ICharacterState } from "../character/types";
 import { EAlignment } from "../common/alignment";
 import { RandomBag, TRandomBag, getRandomInt } from "../common/random";
 import {

@@ -1,5 +1,4 @@
 import { createEffect, createEvent, sample } from "effector";
-import { ICharacterState } from "../../character/models";
 import {
   $character,
   $characterInventory,
@@ -7,6 +6,7 @@ import {
   characterEquippedAnItem,
   characterUnequippedAnItem,
 } from "../../character/state";
+import { ICharacterState } from "../../character/types";
 import GlobalItemsCatalogue from "../../items/GlobalItemsCatalogue";
 import { createEffectForASpell } from "../models";
 import { applyEffectToCharacter } from "./models";

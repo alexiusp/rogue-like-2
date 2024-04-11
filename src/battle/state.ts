@@ -1,6 +1,5 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
 import {
-  ICharacterState,
   getCharacterAttack,
   getCharacterDamage,
   getCharacterDefense,
@@ -11,8 +10,10 @@ import {
 import {
   $character,
   $characterIsDead,
+  $characterState,
   characterResurrected,
 } from "../character/state";
+import { ICharacterState, TCharacterCombinedState } from "../character/types";
 import { createDelayEffect } from "../common/delay";
 import { RandomBag } from "../common/random";
 import {
@@ -83,7 +84,7 @@ $hitResult.watch((hitResult) => console.info("hitResult:", hitResult));
 type TMonsterAttackedParams = {
   mapTile: IMonsterMapTile;
   monsterCursor: number;
-  character: ICharacterState;
+  character: TCharacterCombinedState;
 };
 // calculate results of an character attacking a single monster
 export const characterAttacksMonsterFx = createEffect<
@@ -125,7 +126,7 @@ export const monsterAttacked = createEvent<number>();
 // collect data from stores to calculate an attack
 sample({
   clock: monsterAttacked,
-  source: { tile: $currentMapTile, character: $character },
+  source: { tile: $currentMapTile, character: $characterState },
   target: characterAttacksMonsterFx,
   fn: ({ tile, character }, index) => {
     const mapTile = tile as IMonsterMapTile;
@@ -286,7 +287,7 @@ sample({
 
 type TCharacterAttackedParams = {
   monster: IGameMonster;
-  character: ICharacterState;
+  character: TCharacterCombinedState;
   isDefending: boolean;
 };
 export const monsterAttackCharacterFx = createEffect<
@@ -318,7 +319,7 @@ export const monsterAttackCharacterFx = createEffect<
 sample({
   clock: characterAttackedByMonster,
   source: {
-    character: $character,
+    character: $characterState,
     encounter: $encounter,
     isDefending: $isDefending,
   },

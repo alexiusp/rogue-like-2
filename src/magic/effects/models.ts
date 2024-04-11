@@ -1,4 +1,4 @@
-import { ICharacterState } from "../../character/models";
+import { ICharacterState } from "../../character/types";
 import { IGameMonster } from "../../monsters/model";
 import GlobalEffectCatalogue from "./GlobalEffectCatalogue";
 import { IGameEffect } from "./types";

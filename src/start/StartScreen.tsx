@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
-import { EGender } from "../character/models";
 import { ECharacterRace } from "../character/races";
 import {
   $character,
@@ -18,6 +17,7 @@ import {
   nameChanged,
   raceChanged,
 } from "../character/state";
+import { EGender } from "../character/types";
 import { EAlignment } from "../common/alignment";
 import Screen from "../layout/Screen";
 import { navigate } from "../navigation";

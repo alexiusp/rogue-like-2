@@ -1,10 +1,11 @@
 import { createEffect, createEvent, sample } from "effector";
-import { ICharacterState, getCharacterGuildLevel } from "../character/models";
+import { getCharacterGuildLevel } from "../character/models";
 import {
   $character,
   $characterGuilds,
   characterUsesAnItemFx,
 } from "../character/state";
+import { ICharacterState } from "../character/types";
 import {
   getAllSpellsFromGuilds,
   getMinLevelGuildForSpell,

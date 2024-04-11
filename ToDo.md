@@ -65,6 +65,7 @@
 # Next tasks (sorted):
 
 - refactor character state to be more granular (split parts of the character state into separate states)
+- character avatar selection
 - spells/magic
   - items improving characters stats (books, potions etc.)
   - monster special attacks

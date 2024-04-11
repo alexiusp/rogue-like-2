@@ -37,19 +37,23 @@ import { IGameSpell } from "../magic/types";
 import { messageAdded } from "../messages/state";
 import { forward } from "../navigation";
 import {
-  EGender,
-  ICharacterState,
   createNewCharacter,
   findCharacterGuildIndex,
   getCharacterGuild,
   rerollStat,
 } from "./models";
 import { ECharacterRace, RaceAgeMap } from "./races";
+import {
+  EGender,
+  ICharacterState,
+  TCharacterCombinedState,
+  TCharacterInventory,
+} from "./types";
 
 const fallbackState: ICharacterState = {
+  name: "PlayerName",
   alignment: EAlignment.Good,
   gender: EGender.Other,
-  name: "PlayerName",
   picture: "",
   race: ECharacterRace.Human,
   stats: {
@@ -65,7 +69,6 @@ const fallbackState: ICharacterState = {
   guilds: [{ guild: EGuild.Adventurer, level: 1, xp: 0 }],
   hp: 0,
   hpMax: 0,
-  items: [],
   money: 0,
   mp: 0,
   mpMax: 0,
@@ -339,7 +342,7 @@ export const $characterGuildQuest = $character.map((character) => {
   }
   return currentGuild.quest ?? null;
 });
-export const $characterCurrentGuild = $character.map((c) => c.guild);
+export const $characterGuild = $character.map((c) => c.guild);
 export const $characterGuilds = $character.map((c) => c.guilds);
 
 export const characterJoinedGuild = createEvent<EGuild>();
@@ -409,9 +412,8 @@ $character.on(characterLevelsUp, (character) => {
   };
 });
 
-export const $characterInventory = $character.map(
-  (character) => character.items,
-);
+export const $characterInventory =
+  characterDomain.createStore<TCharacterInventory>([], { name: "inventory" });
 
 export const $characterItemsStatsBonuses = $characterInventory.map((items) =>
   getItemsStatsBonuses(items),
@@ -422,14 +424,16 @@ export const characterBoughtAnItem = createEvent<{
   price: number;
 }>();
 $character.on(characterBoughtAnItem, (state, transaction) => {
-  const { item, price } = transaction;
+  const { price } = transaction;
   return {
     ...state,
     // reduce amount of money
     money: state.money - price,
-    // add item to inventory
-    items: [...state.items, item],
   };
+});
+$characterInventory.on(characterBoughtAnItem, (state, transaction) => {
+  const { item } = transaction;
+  return [...state, item];
 });
 
 export const characterSoldAnItem = createEvent<{
@@ -437,86 +441,95 @@ export const characterSoldAnItem = createEvent<{
   price: number;
 }>();
 $character.on(characterSoldAnItem, (state, transaction) => {
-  const { itemIndex, price } = transaction;
-  const udpatedInventory = [...state.items];
-  udpatedInventory.splice(itemIndex, 1);
+  const { price } = transaction;
   return {
     ...state,
     money: state.money + price,
-    items: udpatedInventory,
   };
+});
+$characterInventory.on(characterSoldAnItem, (state, transaction) => {
+  const { itemIndex } = transaction;
+  const udpatedInventory = [...state];
+  udpatedInventory.splice(itemIndex, 1);
+  return udpatedInventory;
 });
 
 export const characterEquippedAnItem = createEvent<number>();
-$character.on(characterEquippedAnItem, (state, itemIndex) => {
-  const item = state.items[itemIndex];
+$characterInventory.on(characterEquippedAnItem, (state, itemIndex) => {
+  const item = state[itemIndex];
   if (!isItemEquipable(item)) {
     throw new Error("Item is not equippable!");
   }
-  const udpatedInventory = [...state.items];
+  const udpatedInventory = [...state];
   udpatedInventory.splice(itemIndex, 1, { ...item, isEquipped: true });
-  return {
-    ...state,
-    items: udpatedInventory,
-  };
+  return udpatedInventory;
 });
 
 export const characterUnequippedAnItem = createEvent<number>();
-$character.on(characterUnequippedAnItem, (state, itemIndex) => {
-  const item = state.items[itemIndex];
+$characterInventory.on(characterUnequippedAnItem, (state, itemIndex) => {
+  const item = state[itemIndex];
   if (!isItemEquipable(item) || !item.isEquipped) {
     // cursed status can be also handled here
     throw new Error("Item can not be unequipped!");
   }
-  const udpatedInventory = [...state.items];
+  const udpatedInventory = [...state];
   udpatedInventory.splice(itemIndex, 1, { ...item, isEquipped: false });
-  return {
-    ...state,
-    items: udpatedInventory,
-  };
+  return udpatedInventory;
 });
 
 export const characterDroppedAnItem = createEvent<number>();
-$character.on(characterDroppedAnItem, (state, itemIndex) => {
-  const udpatedInventory = [...state.items];
+$characterInventory.on(characterDroppedAnItem, (state, itemIndex) => {
+  const udpatedInventory = [...state];
   udpatedInventory.splice(itemIndex, 1);
-  return {
-    ...state,
-    items: udpatedInventory,
-  };
+  return udpatedInventory;
 });
 
 export const characterReceivedItems = createEvent<TGameItem[]>();
-$character.on(characterReceivedItems, (character, receivedItems) => {
-  const udpatedInventory = [...character.items, ...receivedItems];
-  return {
-    ...character,
-    items: udpatedInventory,
-  };
+$characterInventory.on(characterReceivedItems, (inventory, receivedItems) => {
+  const udpatedInventory = [...inventory, ...receivedItems];
+  return udpatedInventory;
 });
 
-export const characterIdentifiedAnItem = createEvent<{
+type TItemId = {
   itemIndex: number;
   price: number;
-}>();
-$character.on(characterIdentifiedAnItem, (character, { itemIndex, price }) => {
-  const item = character.items[itemIndex];
-  if (item.idLevel === 2) {
-    return character;
-  }
-  const newIdLevel: IdLevel = item.idLevel >= 1 ? 2 : 1;
-  const udpatedInventory = [...character.items];
-  const identifiedItem: TGameItem = {
-    ...item,
-    idLevel: newIdLevel,
-  };
-  udpatedInventory.splice(itemIndex, 1, identifiedItem);
-  return {
-    ...character,
-    items: udpatedInventory,
-    money: character.money - price,
-  };
+};
+export const characterIdentifiedAnItem = createEvent<TItemId>();
+type TCharacterIdPayload = {
+  character: ICharacterState;
+  inventory: TCharacterInventory;
+  action: TItemId;
+};
+const itemIdFx = createEffect<TCharacterIdPayload, TCharacterIdPayload>(
+  ({ action, character, inventory }) => {
+    const item = inventory[action.itemIndex];
+    if (item.idLevel === 2) {
+      throw Error("Item already identified!");
+    }
+    const newIdLevel: IdLevel = item.idLevel >= 1 ? 2 : 1;
+    const updatedInventory = [...inventory];
+    const identifiedItem: TGameItem = {
+      ...item,
+      idLevel: newIdLevel,
+    };
+    updatedInventory.splice(action.itemIndex, 1, identifiedItem);
+    const updatedCharacter: ICharacterState = {
+      ...character,
+      money: character.money - action.price,
+    };
+    return { action, character: updatedCharacter, inventory: updatedInventory };
+  },
+);
+sample({
+  clock: characterIdentifiedAnItem,
+  source: { character: $character, inventory: $characterInventory },
+  target: itemIdFx,
+  fn({ character, inventory }, action) {
+    return { character, inventory, action };
+  },
 });
+$character.on(itemIdFx.doneData, (_, { character }) => character);
+$characterInventory.on(itemIdFx.doneData, (_, { inventory }) => inventory);
 
 export const characterEatBread = createEvent();
 $character.on(characterEatBread, (character) => {
@@ -716,10 +729,10 @@ sample({
 // reduce item uses
 sample({
   clock: characterUsesAnItem,
-  source: $character,
-  target: $character,
-  fn(character, itemIndex) {
-    const item = character.items[itemIndex];
+  source: $characterInventory,
+  target: $characterInventory,
+  fn(inventory, itemIndex) {
+    const item = inventory[itemIndex];
     if (!isItemUsable(item) || !itemCanBeUsed(item)) {
       throw new Error("unusable item");
     }
@@ -727,12 +740,17 @@ sample({
       ...item,
       usesLeft: item.usesLeft - 1,
     };
-    const updatedItems = [...character.items];
+    const updatedItems = [...inventory];
     updatedItems[itemIndex] = updatedItem;
-    const updatedCharacter: ICharacterState = {
-      ...character,
-      items: updatedItems,
-    };
-    return updatedCharacter;
+    return updatedItems;
   },
 });
+
+export const $characterState = combine(
+  $character,
+  $characterInventory,
+  (ch, inv) => {
+    const combinedState: TCharacterCombinedState = { ...ch, items: inv };
+    return combinedState;
+  },
+);

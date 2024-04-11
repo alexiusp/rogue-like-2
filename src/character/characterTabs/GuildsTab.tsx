@@ -6,13 +6,13 @@ import {
   getTotalSkillFromGuilds,
 } from "../../guilds/models";
 import { EGuild } from "../../guilds/types";
-import { $characterCurrentGuild, $characterGuilds } from "../state";
+import { $characterGuild, $characterGuilds } from "../state";
 interface IGuildsTabProps {
   show: boolean;
 }
 export default function GuildsTab({ show }: IGuildsTabProps) {
   const characterGuilds = useUnit($characterGuilds);
-  const currentGuild = useUnit($characterCurrentGuild);
+  const currentGuild = useUnit($characterGuild);
   if (!show) {
     return null;
   }
