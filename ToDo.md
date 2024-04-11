@@ -2,8 +2,7 @@
 
 - character
   - Name generator (for character and guild masters)
-  - character avatar selection
-    - improve save slots to include avatar as menu item icon
+  - improve save slots to include avatar as menu item icon
   - create character form validation
   - add more races: dwarf, ork, troll, lizardmen etc.
   - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
@@ -65,7 +64,6 @@
 # Next tasks (sorted):
 
 - refactor character state to be more granular (split parts of the character state into separate states)
-- character avatar selection
 - spells/magic
   - items improving characters stats (books, potions etc.)
   - monster special attacks

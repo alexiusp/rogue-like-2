@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { common, grey } from "@mui/material/colors";
 import { useEffect, useState } from "react";
+import { characterLoaded } from "../character/state";
 import {
   TSaveSlotName,
   TSaveSlotsState,
@@ -32,6 +33,7 @@ export default function MenuScreen() {
   };
   const loadExistingGame = (slot: TSaveSlotName) => {
     setCurrentSlot(slot);
+    characterLoaded();
     // navigate to city where all data from given slot will be loaded
     navigate("city");
   };

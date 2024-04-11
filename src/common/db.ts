@@ -1,6 +1,6 @@
 export type TSaveSlotName = "slot-1" | "slot-2" | "slot-3";
 
-let currentSaveSlot: TSaveSlotName;
+let currentSaveSlot: TSaveSlotName | undefined;
 
 export type TSaveSlotsState = {
   "slot-1": string | null;
@@ -24,6 +24,11 @@ export function setCurrentSlot(slot: TSaveSlotName) {
   sessionStorage.setItem("current-save", slot);
 }
 
+export function clearCurrentSlot() {
+  currentSaveSlot = undefined;
+  sessionStorage.removeItem("current-save");
+}
+
 export function getCurrentSlot() {
   if (currentSaveSlot) {
     return currentSaveSlot;
@@ -37,6 +42,9 @@ export function getCurrentSlot() {
 }
 
 export function setSlotName(name: string) {
+  if (!currentSaveSlot) {
+    return;
+  }
   localStorage.setItem(currentSaveSlot, name);
 }
 

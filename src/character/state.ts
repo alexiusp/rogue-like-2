@@ -54,7 +54,7 @@ const fallbackState: ICharacterState = {
   name: "PlayerName",
   alignment: EAlignment.Good,
   gender: EGender.Other,
-  picture: "",
+  picture: "01.png",
   race: ECharacterRace.Human,
   stats: {
     strength: rerollStat("strength", ECharacterRace.Human),
@@ -99,6 +99,10 @@ export const $character = characterDomain.createStore<ICharacterState>(
 );
 
 export const $characterRace = $character.map((character) => character.race);
+
+export const avatarChanged = createEvent<string>();
+$character.on(avatarChanged, (_, picture) => ({ ..._, picture }));
+export const $characterAvatar = $character.map((c) => c.picture);
 
 export const nameChanged = createEvent<string>();
 $character.on(nameChanged, (_, name) => ({ ..._, name }));
@@ -200,6 +204,15 @@ $character.on(characterCreated, (state) => {
   const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
   setSlotName(saveSlotName);
   return newState;
+});
+
+export const characterLoaded = createEvent();
+$character.on(characterLoaded, (_) => {
+  const c = loadCharacterData<ICharacterState>("character-main");
+  if (!c) {
+    return _;
+  }
+  return c;
 });
 
 $character.watch(console.log);
@@ -414,6 +427,14 @@ $character.on(characterLevelsUp, (character) => {
 
 export const $characterInventory =
   characterDomain.createStore<TCharacterInventory>([], { name: "inventory" });
+
+$characterInventory.on(characterLoaded, (_) => {
+  const i = loadCharacterData<TCharacterInventory>("character-inventory");
+  if (!i) {
+    return _;
+  }
+  return i;
+});
 
 export const $characterItemsStatsBonuses = $characterInventory.map((items) =>
   getItemsStatsBonuses(items),

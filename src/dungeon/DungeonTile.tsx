@@ -1,6 +1,5 @@
 import { Box, Button } from "@mui/material";
 import { ReactNode } from "react";
-import avatar from "../assets/avatar.png";
 import danger from "../assets/tiles/danger.svg";
 import down from "../assets/tiles/dungeon-down.svg";
 import up from "../assets/tiles/dungeon-up.svg";
@@ -11,6 +10,7 @@ import water from "../assets/tiles/water.webp";
 import { areAllMonstersDead } from "../monsters/model";
 import { MAX_RESPAWN_TIMEOUT } from "./dungeonSpecs";
 import { isTileStairs } from "./model";
+import AvatarTile from "./tiles/AvatarTile";
 import Chest from "./tiles/Chest";
 import {
   EEncounterType,
@@ -139,7 +139,7 @@ export default function DungeonTile({
   }
   let characterLayer = null;
   if (character) {
-    characterLayer = <img src={avatar} key="character" alt="Character" />;
+    characterLayer = <AvatarTile />;
   }
   const classes = buttonClassNames.join(" ");
   return (

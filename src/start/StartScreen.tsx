@@ -1,4 +1,6 @@
 import {
+  Avatar,
+  Box,
   Button,
   FormControl,
   InputLabel,
@@ -12,21 +14,39 @@ import { useUnit } from "effector-react";
 import { ECharacterRace } from "../character/races";
 import {
   $character,
+  $characterAvatar,
   alignmentChanged,
+  avatarChanged,
   genderChanged,
   nameChanged,
   raceChanged,
 } from "../character/state";
 import { EGender } from "../character/types";
 import { EAlignment } from "../common/alignment";
+import { clearCurrentSlot } from "../common/db";
 import Screen from "../layout/Screen";
-import { navigate } from "../navigation";
+import { back, navigate } from "../navigation";
 
 export default function StartScreen() {
   const character = useUnit($character);
   const submitHandler = () => {
     navigate("generate");
   };
+  const nextAvatar = () => {
+    const number = Number(characterAvatar.substring(0, 2));
+    const nextNumber = `${number + 1}`.padStart(2, "0");
+    avatarChanged(`${nextNumber}.png`);
+  };
+  const prevAvatar = () => {
+    const number = Number(characterAvatar.substring(0, 2));
+    const nextNumber = `${number - 1}`.padStart(2, "0");
+    avatarChanged(`${nextNumber}.png`);
+  };
+  const cancelHandler = () => {
+    clearCurrentSlot();
+    back();
+  };
+  const characterAvatar = useUnit($characterAvatar);
   return (
     <Screen
       header={
@@ -43,6 +63,34 @@ export default function StartScreen() {
       }}
     >
       <Stack spacing={2}>
+        <Stack spacing={2} alignItems="center">
+          <InputLabel id="picture-label">Choose your avatar</InputLabel>
+          <Avatar
+            alt="character's avatar"
+            src={`/src/assets/avatars/${characterAvatar}`}
+            sx={{ width: "128px", height: "128px" }}
+          />
+          <Box>
+            <Button
+              sx={{ my: 0.5 }}
+              variant="outlined"
+              size="small"
+              onClick={prevAvatar}
+              disabled={characterAvatar === "01.png"}
+            >
+              &lt;
+            </Button>
+            <Button
+              sx={{ my: 0.5 }}
+              variant="outlined"
+              size="small"
+              onClick={nextAvatar}
+              disabled={characterAvatar === "10.png"}
+            >
+              &gt;
+            </Button>
+          </Box>
+        </Stack>
         <FormControl fullWidth>
           <InputLabel id="gender-label">Choose your gender</InputLabel>
           <Select<EGender>
@@ -93,6 +141,9 @@ export default function StartScreen() {
         />
         <Button variant="contained" onClick={submitHandler}>
           Continue
+        </Button>
+        <Button onClick={cancelHandler} color="warning">
+          cancel
         </Button>
       </Stack>
     </Screen>
