@@ -1,38 +1,38 @@
 # Ideas to be implemented (unsorted):
 
-- character
+- character:
   - Name generator (for character and guild masters)
-  - improve save slots to include avatar as menu item icon
+  - improve save slots to include avatar as menu item icon?
   - create character form validation
   - add more races: dwarf, ork, troll, lizardmen etc.
   - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
-  - character screen: show permanent effects from items (invisible, see invisible etc.)
   - reordering/sorting of items in the inventory
-- magic/spells: need to design how to structure the data in a best way
+- magic/spells:
   - use of spells in the city?
-  - check if monster is dead after spells do their effect
-  - cursed items
   - magically locked chests
+  - tile reveal spell
+  - teleportation in dungeon
+  - cursed items
   - charming of monsters
 - encounters:
   - refactor battle to propagate dealt damage as event payload to properly display it
-  - special animation for hits with 0 damage
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
-  - monster: size for monster - depends on character races (trolls and halflings) implementation
-  - monster: generate different monsters in one group (rules to combine them? by type?)
   - lair
+  - monster: size for monster - depends on character races (trolls and halflings) implementation
+  - special animation for hits with 0 damage?
+  - monster: generate different monsters in one group (rules to combine them? by type?)
   - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character, monster ambush
-- other terrains and effects
+- dungeon:
   - effects of terrain and effects in battle and display on UI
   - multiple effects on same tile?
   - new terrain type: stone - unpassable tile, teleporting to which means death
-- guilds
+- guilds:
   - guild log - list of "events" happened with guild members, initialized with guild master takes the position
   - guild masters list save on update instead of manual saving
   - guild level titles for character
   - leveling: generate guild quest - depends on quest implementation
   - all skills must work at proper moments (todo when magic, chests, monster special attacts etc. are implemented)
-- quests
+- quests:
   - global quest (story) - need to design how and when it should be triggered
   - tavern quests (should be similar to quests from the guild)
   - guild quests
@@ -47,14 +47,14 @@
 - dungeon:
   - respawn only encounters, not terrains and effects?
   - unfinished encounters (alive monsters, closed chests) - should they respawn?
-  - global events when everything respawns including terrain and effects (after implementing quest)
+  - global events when everything respawns including terrain and effects (after implementing quest since it must be a part of the story)
   - split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
-- give experience also for other actions (opening chests etc.)
-- give experience "in runtime" not only after battle?
-- keyboard support for movement in dungeons and buffers/hotkeys (probably also actions)
+  - an environmental message describing current part of the dungeon to improve UX
+- keyboard support for movement in dungeons and buffers/hotkeys (probably also actions, like toggle items/spells/buffers)
 - monsters exquisit for the lore of the game
 - corruptions (like in ADoM) - negative effects on deeper levels of the dungeon - may be instead of cursed items?
 - chests: mimics -> when character tries to open chest its transformed to monster and attacks
+- Runes and rune-words integrated into lore and used for naming of scrolls/artefacts etc.
 
 # Known bugs to fix:
 
