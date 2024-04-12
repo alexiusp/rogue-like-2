@@ -60,6 +60,7 @@
 
 # Known bugs to fix:
 
+- refactor effects to fire an event on apply so that state manager can handle it
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array
 - xp needed to level up must be generated from parameters, not hardcoded as an array
 - save slot label must be updated on guild change (in future also on title change?)

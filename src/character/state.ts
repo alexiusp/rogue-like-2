@@ -15,7 +15,7 @@ import {
 } from "../common/db";
 import { createDelayEffect } from "../common/delay";
 import { rollDiceCheck } from "../common/random";
-import { getStatBonus } from "../common/stats";
+import { TStatsValues, getStatBonus } from "../common/stats";
 import {
   GuildSpecs,
   generateHpForGuildLevel,
@@ -61,17 +61,18 @@ const baseInfoDefault: IBaseCharacterInfo = {
   gender: EGender.Other,
 };
 
+const baseStatsDefault: TStatsValues = {
+  strength: RaceStatsMap.strength[ECharacterRace.Human][0] + 5,
+  endurance: RaceStatsMap.endurance[ECharacterRace.Human][0] + 5,
+  dexterity: RaceStatsMap.dexterity[ECharacterRace.Human][0] + 5,
+  wisdom: RaceStatsMap.wisdom[ECharacterRace.Human][0] + 5,
+  intelligence: RaceStatsMap.intelligence[ECharacterRace.Human][0] + 5,
+  charisma: RaceStatsMap.charisma[ECharacterRace.Human][0] + 5,
+};
+
 const fallbackState: ICharacterState = {
   alignment: EAlignment.Good,
   race: ECharacterRace.Human,
-  stats: {
-    strength: RaceStatsMap.strength[ECharacterRace.Human][0] + 5,
-    endurance: RaceStatsMap.endurance[ECharacterRace.Human][0] + 5,
-    dexterity: RaceStatsMap.dexterity[ECharacterRace.Human][0] + 5,
-    wisdom: RaceStatsMap.wisdom[ECharacterRace.Human][0] + 5,
-    intelligence: RaceStatsMap.intelligence[ECharacterRace.Human][0] + 5,
-    charisma: RaceStatsMap.charisma[ECharacterRace.Human][0] + 5,
-  },
   age: 0,
   guild: EGuild.Adventurer,
   guilds: [{ guild: EGuild.Adventurer, level: 1, xp: 0 }],
@@ -108,6 +109,11 @@ export const $characterBaseInfo =
 export const $character = characterDomain.createStore<ICharacterState>(
   fallbackState,
   { name: "main" },
+);
+
+export const $characterStats = characterDomain.createStore<TStatsValues>(
+  baseStatsDefault,
+  { name: "stats" },
 );
 
 export const $characterRace = $character.map((character) => character.race);
@@ -157,61 +163,48 @@ export const freePointsChanged = createEvent<number>();
 $freePoints.on(raceChanged, (_, race) => RaceFreePointsMap[race]);
 $freePoints.on(freePointsChanged, (oldValue, newValue) => oldValue - newValue);
 
-export const $characterStats = $character.map((c) => c.stats);
-
-export const $characterStrength = $character.map(
-  (character) => character.stats.strength,
+export const $characterStrength = $characterStats.map(
+  (stats) => stats.strength,
 );
 export const strengthChanged = createEvent<number>();
-$character.on(strengthChanged, (_, value) => ({
-  ..._,
-  stats: { ..._.stats, strength: value },
-}));
+$characterStats.on(strengthChanged, (_, value) => ({ ..._, strength: value }));
 
-export const $characterEndurance = $character.map(
-  (character) => character.stats.endurance,
+export const $characterEndurance = $characterStats.map(
+  (stats) => stats.endurance,
 );
 export const enduranceChanged = createEvent<number>();
-$character.on(enduranceChanged, (_, value) => ({
+$characterStats.on(enduranceChanged, (_, value) => ({
   ..._,
-  stats: { ..._.stats, endurance: value },
+  endurance: value,
 }));
 
-export const $characterDexterity = $character.map(
-  (character) => character.stats.dexterity,
+export const $characterDexterity = $characterStats.map(
+  (stats) => stats.dexterity,
 );
 export const dexterityChanged = createEvent<number>();
-$character.on(dexterityChanged, (_, value) => ({
+$characterStats.on(dexterityChanged, (_, value) => ({
   ..._,
-  stats: { ..._.stats, dexterity: value },
+  dexterity: value,
 }));
 
-export const $characterWisdom = $character.map(
-  (character) => character.stats.wisdom,
-);
+export const $characterWisdom = $characterStats.map((stats) => stats.wisdom);
 export const wisdomChanged = createEvent<number>();
-$character.on(wisdomChanged, (_, value) => ({
-  ..._,
-  stats: { ..._.stats, wisdom: value },
-}));
+$characterStats.on(wisdomChanged, (_, value) => ({ ..._, wisdom: value }));
 
-export const $characterIntelligence = $character.map(
-  (character) => character.stats.intelligence,
+export const $characterIntelligence = $characterStats.map(
+  (stats) => stats.intelligence,
 );
 export const intelligenceChanged = createEvent<number>();
-$character.on(intelligenceChanged, (_, value) => ({
+$characterStats.on(intelligenceChanged, (_, value) => ({
   ..._,
-  stats: { ..._.stats, intelligence: value },
+  intelligence: value,
 }));
 
-export const $characterCharisma = $character.map(
-  (character) => character.stats.charisma,
+export const $characterCharisma = $characterStats.map(
+  (stats) => stats.charisma,
 );
 export const charismaChanged = createEvent<number>();
-$character.on(charismaChanged, (_, value) => ({
-  ..._,
-  stats: { ..._.stats, charisma: value },
-}));
+$characterStats.on(charismaChanged, (_, value) => ({ ..._, charisma: value }));
 
 export const characterCreated = createEvent();
 const setCharacterSaveSlotFx = createEffect<
@@ -248,8 +241,13 @@ $characterBaseInfo.on(characterLoaded, (_) => {
   }
   return c;
 });
-
-$character.watch(console.log);
+$characterStats.on(characterLoaded, (_) => {
+  const c = loadCharacterData<TStatsValues>("character-stats");
+  if (!c) {
+    return _;
+  }
+  return c;
+});
 
 export const $characterHealth = $character.map((character) => character.hp);
 export const characterHpChanged = createEvent<number>();
@@ -646,16 +644,18 @@ $character.on(characterDrinkWine, (character) => {
 export const characterResurrected = createEvent<number>();
 interface ICharacterResurrectionProps {
   character: ICharacterState;
+  stats: TStatsValues;
   level: number;
 }
 
 function resurrectACharacter({
   character,
+  stats,
   level,
-}: ICharacterResurrectionProps): Promise<ICharacterState> {
+}: ICharacterResurrectionProps): Promise<ICharacterResurrectionProps> {
   return new Promise((resolve) => {
     messageAdded("You were resurrected. You feel older.");
-    const { age, race, stats, money, guild, guilds, hpMax } = character;
+    const { age, race, money, guild, guilds, hpMax } = character;
     const maxAge = RaceAgeMap[race][1];
     const ageBonus = (maxAge - 2 * age) / maxAge;
     const statBonus = getStatBonus(stats.endurance);
@@ -702,31 +702,31 @@ function resurrectACharacter({
     const updatedCharacter: ICharacterState = {
       ...character,
       age: udpatedAge,
-      stats: udpatedStats,
       money: updatedMoney,
       guilds: udpatedGuilds,
       hp: hpMax,
     };
-    resolve(updatedCharacter);
+    resolve({ character: updatedCharacter, stats: udpatedStats, level });
     return;
   });
 }
 
 const characterResurrectionFx = createEffect<
   ICharacterResurrectionProps,
-  ICharacterState
+  ICharacterResurrectionProps
 >(resurrectACharacter);
 
 sample({
   clock: characterResurrected,
-  source: $character,
+  source: { character: $character, stats: $characterStats },
   target: characterResurrectionFx,
-  fn: (src, clk) => ({ character: src, level: clk }),
+  fn: ({ character, stats }, clk) => ({ character, stats, level: clk }),
 });
 $character.on(
   characterResurrectionFx.doneData,
-  (_, newCharacter) => newCharacter,
+  (_, { character }) => character,
 );
+$characterStats.on(characterResurrectionFx.doneData, (_, { stats }) => stats);
 // resurrection process implemented as effect to separate character state update, saving and redirect to city
 const characterResurrectionDelayFx = createEffect(createDelayEffect(100));
 
@@ -804,11 +804,13 @@ sample({
 export const $characterState = combine(
   $characterBaseInfo,
   $character,
+  $characterStats,
   $characterInventory,
-  (base, ch, inv) => {
+  (base, ch, stats, inv) => {
     const combinedState: TCharacterCombinedState = {
       ...base,
       ...ch,
+      stats,
       items: inv,
     };
     return combinedState;

@@ -17,15 +17,12 @@ export interface IBaseCharacterInfo {
   gender: EGender;
 }
 
-// second screen of character creation
-export interface ICharacter {
-  alignment: EAlignment;
-  race: ECharacterRace;
-  stats: TStatsValues;
-}
-
 // the rest of parameters for the character
-export interface ICharacterState extends ICharacter {
+export interface ICharacterState {
+  // alignment - good/neutral/evil
+  alignment: EAlignment;
+  // race
+  race: ECharacterRace;
   // characters age
   age: number;
   // hit points - character health
@@ -45,6 +42,6 @@ export interface ICharacterState extends ICharacter {
 export type TCharacterInventory = Array<TGameItem>;
 
 export type TCharacterCombinedState = IBaseCharacterInfo &
-  ICharacterState & {
+  ICharacterState & { stats: TStatsValues } & {
     items: TCharacterInventory;
   };
