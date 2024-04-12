@@ -15,6 +15,7 @@ import { ECharacterRace } from "../character/races";
 import {
   $character,
   $characterAvatar,
+  $characterBaseInfo,
   alignmentChanged,
   avatarChanged,
   genderChanged,
@@ -28,6 +29,7 @@ import Screen from "../layout/Screen";
 import { back, navigate } from "../navigation";
 
 export default function StartScreen() {
+  const baseInfo = useUnit($characterBaseInfo);
   const character = useUnit($character);
   const submitHandler = () => {
     navigate("generate");
@@ -96,7 +98,7 @@ export default function StartScreen() {
           <Select<EGender>
             labelId="gender-label"
             id="gender"
-            value={character.gender}
+            value={baseInfo.gender}
             label="Choose your gender"
             onChange={(e) => genderChanged(e.target.value as EGender)}
           >
@@ -133,7 +135,7 @@ export default function StartScreen() {
           </Select>
         </FormControl>
         <TextField
-          value={character.name}
+          value={baseInfo.name}
           onChange={(e) => nameChanged(e.target.value)}
           id="character-name"
           label="Enter your name"

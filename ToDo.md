@@ -60,11 +60,13 @@
 
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array
 - xp needed to level up must be generated from parameters, not hardcoded as an array
+- save slot label must be updated on guild change (in future also on title change?)
 
 # Next tasks (sorted):
 
 - refactor character state to be more granular (split parts of the character state into separate states)
 - spells/magic
+  - monsters affected by effects: implement spell with timeout and implement/test effects on monsters
   - items improving characters stats (books, potions etc.)
   - monster special attacks
 - Buffers or hotkeys - panel with quick access to spells/items

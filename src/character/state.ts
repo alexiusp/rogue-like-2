@@ -45,16 +45,20 @@ import {
 import { ECharacterRace, RaceAgeMap } from "./races";
 import {
   EGender,
+  IBaseCharacterInfo,
   ICharacterState,
   TCharacterCombinedState,
   TCharacterInventory,
 } from "./types";
 
-const fallbackState: ICharacterState = {
+const baseInfoDefault: IBaseCharacterInfo = {
   name: "PlayerName",
-  alignment: EAlignment.Good,
-  gender: EGender.Other,
   picture: "01.png",
+  gender: EGender.Other,
+};
+
+const fallbackState: ICharacterState = {
+  alignment: EAlignment.Good,
   race: ECharacterRace.Human,
   stats: {
     strength: rerollStat("strength", ECharacterRace.Human),
@@ -75,7 +79,6 @@ const fallbackState: ICharacterState = {
 };
 
 export const characterDomain = createDomain("character");
-
 characterDomain.onCreateStore((store) => {
   const key = `${characterDomain.shortName}-${store.shortName}`;
   let value = null;
@@ -93,6 +96,11 @@ characterDomain.onCreateStore((store) => {
   });
 });
 
+export const $characterBaseInfo =
+  characterDomain.createStore<IBaseCharacterInfo>(baseInfoDefault, {
+    name: "base-info",
+  });
+
 export const $character = characterDomain.createStore<ICharacterState>(
   fallbackState,
   { name: "main" },
@@ -101,14 +109,14 @@ export const $character = characterDomain.createStore<ICharacterState>(
 export const $characterRace = $character.map((character) => character.race);
 
 export const avatarChanged = createEvent<string>();
-$character.on(avatarChanged, (_, picture) => ({ ..._, picture }));
-export const $characterAvatar = $character.map((c) => c.picture);
+$characterBaseInfo.on(avatarChanged, (_, picture) => ({ ..._, picture }));
+export const $characterAvatar = $characterBaseInfo.map((c) => c.picture);
 
 export const nameChanged = createEvent<string>();
-$character.on(nameChanged, (_, name) => ({ ..._, name }));
+$characterBaseInfo.on(nameChanged, (_, name) => ({ ..._, name }));
 
 export const genderChanged = createEvent<EGender>();
-$character.on(genderChanged, (_, gender) => ({ ..._, gender }));
+$characterBaseInfo.on(genderChanged, (_, gender) => ({ ..._, gender }));
 
 export const raceChanged = createEvent<ECharacterRace>();
 $character.on(raceChanged, (character, race) => {
@@ -199,16 +207,35 @@ $character.on(charismaChanged, (_, value) => ({
 }));
 
 export const characterCreated = createEvent();
-$character.on(characterCreated, (state) => {
-  const newState = createNewCharacter(state);
-  const saveSlotName = `${state.name} - ${EGender[state.gender]} ${ECharacterRace[state.race]} (${EGuild[state.guild]})`;
+const setCharacterSaveSlotFx = createEffect<
+  { base: IBaseCharacterInfo; char: ICharacterState },
+  ICharacterState
+>(({ base, char }) => {
+  const newState = createNewCharacter(char, base);
+  const saveSlotName = `${base.name} - ${EGender[base.gender]} ${ECharacterRace[char.race]} (${EGuild[char.guild]})`;
   setSlotName(saveSlotName);
   return newState;
+});
+sample({
+  clock: characterCreated,
+  source: { base: $characterBaseInfo, char: $character },
+  target: setCharacterSaveSlotFx,
+});
+sample({
+  clock: setCharacterSaveSlotFx.doneData,
+  target: $character,
 });
 
 export const characterLoaded = createEvent();
 $character.on(characterLoaded, (_) => {
   const c = loadCharacterData<ICharacterState>("character-main");
+  if (!c) {
+    return _;
+  }
+  return c;
+});
+$characterBaseInfo.on(characterLoaded, (_) => {
+  const c = loadCharacterData<IBaseCharacterInfo>("character-base-info");
   if (!c) {
     return _;
   }
@@ -768,10 +795,15 @@ sample({
 });
 
 export const $characterState = combine(
+  $characterBaseInfo,
   $character,
   $characterInventory,
-  (ch, inv) => {
-    const combinedState: TCharacterCombinedState = { ...ch, items: inv };
+  (base, ch, inv) => {
+    const combinedState: TCharacterCombinedState = {
+      ...base,
+      ...ch,
+      items: inv,
+    };
     return combinedState;
   },
 );

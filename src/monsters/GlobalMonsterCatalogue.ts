@@ -16,13 +16,17 @@ import { IBaseMonster } from "./model";
  *  - Giant Owl
  *  - Giant Raven
  *  - Cave Lion
+ *  - Sabretooth Tiger
  * Insects:
  *  - Black spider
  *  - Giant Ant, Ant Queen as lair monster
  *  - Wasp, Wasp drone as a companion in lair
- *  - Scorpion
+ *  - Scorpions
  * Reptiles:
  *  - Bull snake
+ *  - Pit viper
+ *  - Stone cobra
+ *  - Rattlesnake
  * Humanoid:
  *  - Kobolds
  *  - Goblins
@@ -35,12 +39,15 @@ import { IBaseMonster } from "./model";
  *  - Mummy
  *  - Ghost
  * Elementals:
+ *  - some lesser elementals?
  *  - Gargoyle
  *  - Golems
  *  - Elementals
  * Water dwellers:
  *  - Dungeon pike
  *  - Alligator
+ *  - Piranha
+ *  - some water folk (need to invent some lore)
  * Lycanthrope:
  *  - Wererat
  *  - Weredog

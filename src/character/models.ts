@@ -38,12 +38,16 @@ import {
 } from "./races";
 import {
   EGender,
+  IBaseCharacterInfo,
   ICharacter,
   ICharacterState,
   TCharacterCombinedState,
 } from "./types";
 
-export function getInitialCharacterHealth({ gender, race, stats }: ICharacter) {
+export function getInitialCharacterHealth(
+  { race, stats }: ICharacter,
+  gender: EGender,
+) {
   const raceBonus = getRaceHealthModifier(race);
   const strBonus = Math.round((stats.strength - 14) / 2);
   const endBonus = Math.round(stats.endurance - 10);
@@ -64,9 +68,12 @@ export function getInitialCharacterMana({ race, stats }: ICharacter) {
   return getRandomInt(20, 10) * raceBonus + intBonus + wisBonus;
 }
 
-export function createNewCharacter(charData: ICharacter): ICharacterState {
+export function createNewCharacter(
+  charData: ICharacter,
+  baseData: IBaseCharacterInfo,
+): ICharacterState {
   const race = charData.race;
-  const hp = getInitialCharacterHealth(charData);
+  const hp = getInitialCharacterHealth(charData, baseData.gender);
   const mp = getInitialCharacterMana(charData);
   return {
     ...charData,

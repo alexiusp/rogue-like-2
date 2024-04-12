@@ -4,10 +4,12 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
 import HealthStatusBadge from "../../character/components/HealthStatusBadge";
+import ManaStatusBadge from "../../character/components/ManaStatusBadge";
 import MoneyStatusBadge from "../../character/components/MoneyStatusBadge";
 import {
   $characterMoney,
@@ -27,11 +29,12 @@ export default function DrinksTab({ show }: IDrinksTabProps) {
   }
   return (
     <>
-      <Box display="flex" flexDirection="row" paddingTop={2} paddingBottom={2}>
+      <Stack direction="row" spacing={1} paddingTop={2} paddingBottom={2}>
         <HealthStatusBadge />
+        <ManaStatusBadge />
         <Box sx={{ flexGrow: 1 }} />
         <MoneyStatusBadge />
-      </Box>
+      </Stack>
       <Box minHeight={64} padding={2}>
         <Typography>
           The barkeeper is busy polishing some old mugs, he does not pay much

@@ -18,7 +18,7 @@ export interface IBaseCharacterInfo {
 }
 
 // second screen of character creation
-export interface ICharacter extends IBaseCharacterInfo {
+export interface ICharacter {
   alignment: EAlignment;
   race: ECharacterRace;
   stats: TStatsValues;
@@ -44,6 +44,7 @@ export interface ICharacterState extends ICharacter {
 
 export type TCharacterInventory = Array<TGameItem>;
 
-export type TCharacterCombinedState = ICharacterState & {
-  items: TCharacterInventory;
-};
+export type TCharacterCombinedState = IBaseCharacterInfo &
+  ICharacterState & {
+    items: TCharacterInventory;
+  };
