@@ -40,9 +40,13 @@ import {
   createNewCharacter,
   findCharacterGuildIndex,
   getCharacterGuild,
-  rerollStat,
 } from "./models";
-import { ECharacterRace, RaceAgeMap } from "./races";
+import {
+  ECharacterRace,
+  RaceAgeMap,
+  RaceFreePointsMap,
+  RaceStatsMap,
+} from "./races";
 import {
   EGender,
   IBaseCharacterInfo,
@@ -61,12 +65,12 @@ const fallbackState: ICharacterState = {
   alignment: EAlignment.Good,
   race: ECharacterRace.Human,
   stats: {
-    strength: rerollStat("strength", ECharacterRace.Human),
-    endurance: rerollStat("endurance", ECharacterRace.Human),
-    dexterity: rerollStat("dexterity", ECharacterRace.Human),
-    wisdom: rerollStat("wisdom", ECharacterRace.Human),
-    intelligence: rerollStat("intelligence", ECharacterRace.Human),
-    charisma: rerollStat("charisma", ECharacterRace.Human),
+    strength: RaceStatsMap.strength[ECharacterRace.Human][0] + 5,
+    endurance: RaceStatsMap.endurance[ECharacterRace.Human][0] + 5,
+    dexterity: RaceStatsMap.dexterity[ECharacterRace.Human][0] + 5,
+    wisdom: RaceStatsMap.wisdom[ECharacterRace.Human][0] + 5,
+    intelligence: RaceStatsMap.intelligence[ECharacterRace.Human][0] + 5,
+    charisma: RaceStatsMap.charisma[ECharacterRace.Human][0] + 5,
   },
   age: 0,
   guild: EGuild.Adventurer,
@@ -120,13 +124,13 @@ $characterBaseInfo.on(genderChanged, (_, gender) => ({ ..._, gender }));
 
 export const raceChanged = createEvent<ECharacterRace>();
 $character.on(raceChanged, (character, race) => {
-  // reroll initial stats for given race
-  const strength = rerollStat("strength", race);
-  const endurance = rerollStat("endurance", race);
-  const dexterity = rerollStat("dexterity", race);
-  const wisdom = rerollStat("wisdom", race);
-  const intelligence = rerollStat("intelligence", race);
-  const charisma = rerollStat("charisma", race);
+  // reset initial stats for given race
+  const strength = RaceStatsMap.strength[race][0] + 5;
+  const endurance = RaceStatsMap.endurance[race][0] + 5;
+  const dexterity = RaceStatsMap.dexterity[race][0] + 5;
+  const wisdom = RaceStatsMap.wisdom[race][0] + 5;
+  const intelligence = RaceStatsMap.intelligence[race][0] + 5;
+  const charisma = RaceStatsMap.charisma[race][0] + 5;
   return {
     ...character,
     race,
@@ -141,13 +145,16 @@ $character.on(raceChanged, (character, race) => {
   };
 });
 
+export const $characterAlignment = $character.map((c) => c.alignment);
 export const alignmentChanged = createEvent<EAlignment>();
 $character.on(alignmentChanged, (_, align) => ({ ..._, align }));
 
-export const $freePoints = createStore<number>(6);
+export const $freePoints = createStore<number>(
+  RaceFreePointsMap[ECharacterRace.Human],
+);
 export const freePointsChanged = createEvent<number>();
 // reset free points on race change
-$freePoints.reset(raceChanged);
+$freePoints.on(raceChanged, (_, race) => RaceFreePointsMap[race]);
 $freePoints.on(freePointsChanged, (oldValue, newValue) => oldValue - newValue);
 
 export const $characterStats = $character.map((c) => c.stats);

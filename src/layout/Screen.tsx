@@ -4,6 +4,7 @@ import "./Screen.css";
 
 interface IScreenProps extends PropsWithChildren {
   header?: ReactNode;
+  centered?: boolean;
   sx?: SxProps;
   paperSx?: SxProps;
 }
@@ -11,6 +12,7 @@ interface IScreenProps extends PropsWithChildren {
 export default function Screen({
   children,
   header,
+  centered,
   sx,
   paperSx,
 }: IScreenProps) {
@@ -21,9 +23,19 @@ export default function Screen({
       </Container>
     </AppBar>
   ) : null;
+  const centerSx = centered
+    ? {
+        height: "100vh",
+        justifyContent: "center",
+        mb: 0,
+        mt: 0,
+        my: 0,
+      }
+    : {};
   const mergedBoxStyles: SxProps = {
     display: "flex",
     flexDirection: "column",
+    ...centerSx,
     ...sx,
   };
   const headerPadding = header ? <Toolbar></Toolbar> : null;

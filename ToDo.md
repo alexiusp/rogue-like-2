@@ -3,16 +3,17 @@
 - character:
   - Name generator (for character and guild masters)
   - improve save slots to include avatar as menu item icon?
-  - create character form validation
   - add more races: dwarf, ork, troll, lizardmen etc.
-  - character stats generation must be greedy: only minimal stats + free points validation (no reroll)
+  - alignment limitations for certain races (orks - only evil etc.)
+  - alignment limitations for certain guilds (thieves only neutral, paladin only good etc.)
+  - create character form validation
   - reordering/sorting of items in the inventory
 - magic/spells:
   - use of spells in the city?
   - magically locked chests
   - tile reveal spell
   - teleportation in dungeon
-  - cursed items
+  - cursed items: without negative stats, but unable to unequip
   - charming of monsters
 - encounters:
   - refactor battle to propagate dealt damage as event payload to properly display it
@@ -36,8 +37,9 @@
   - global quest (story) - need to design how and when it should be triggered
   - tavern quests (should be similar to quests from the guild)
   - guild quests
-- tavern gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
-- tavern rest: restore health/mana by resting (age increase)
+- tavern:
+  - gossips: after drinking/eating at tavern bartender tells player about some possible profitable item/monster and its approximate location
+  - resting: restore health/mana by resting (age increase)
 - multiple attacks (swings) handling
 - AoE attacks/spells in battle
 - add more item types (see TItemKind)

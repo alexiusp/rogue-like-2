@@ -1,6 +1,5 @@
 import { getRandomInt, rollDiceCheck } from "../common/random";
 import {
-  TStatNames,
   getStatBonus,
   getStatsAttackModifier,
   getStatsDamageModifier,
@@ -26,9 +25,7 @@ import {
 import GlobalMonsterCatalogue from "../monsters/GlobalMonsterCatalogue";
 import { IGameMonster } from "../monsters/model";
 import {
-  ECharacterRace,
   RaceAgeMap,
-  RaceStatsMap,
   getRaceAttackModifier,
   getRaceDamageModifier,
   getRaceDefenseModifier,
@@ -121,12 +118,6 @@ export function getCharacterGuildLevel(
 export function getCharacterTotalXp(character: ICharacterState) {
   return character.guilds.reduce((sum, guild) => sum + guild.xp, 0);
 }
-
-export const rerollStat = (statName: TStatNames, charRace: ECharacterRace) => {
-  const minValue = RaceStatsMap[statName][charRace][0];
-  const maxValue = RaceStatsMap[statName][charRace][1];
-  return getRandomInt(maxValue, minValue);
-};
 
 export function getCharacterAttack(character: TCharacterCombinedState) {
   const baseValue = 20;

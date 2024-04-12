@@ -45,6 +45,11 @@ export const RaceStatsMap: TRaceStatsMap = {
   },
 };
 
+export const RaceFreePointsMap: Record<ECharacterRace, number> = {
+  [ECharacterRace.Human]: 5,
+  [ECharacterRace.Elf]: 7,
+};
+
 export const RaceAgeMap: {
   [race in ECharacterRace]: [number, number];
 } = {
