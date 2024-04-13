@@ -1,5 +1,5 @@
 import { rollCharacterIdSkill } from "../character/models";
-import { ICharacterState } from "../character/types";
+import { TCharacterCombinedState } from "../character/types";
 import { EAlignment } from "../common/alignment";
 import { RandomBag, TRandomBag, getRandomInt } from "../common/random";
 import {
@@ -178,7 +178,7 @@ export function generateMonstersMoneyReward(monsters: IGameMonster[]) {
 
 export function generateMonstersItemsReward(
   monsters: IGameMonster[],
-  character: ICharacterState,
+  character: TCharacterCombinedState,
 ) {
   const items: TGameItem[] = [];
   monsters.forEach((monster) => {

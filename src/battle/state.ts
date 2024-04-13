@@ -11,6 +11,8 @@ import {
   $character,
   $characterIsDead,
   $characterState,
+  $characterStats,
+  characterHpChanged,
   characterResurrected,
 } from "../character/state";
 import { ICharacterState, TCharacterCombinedState } from "../character/types";
@@ -292,7 +294,7 @@ type TCharacterAttackedParams = {
 };
 export const monsterAttackCharacterFx = createEffect<
   TCharacterAttackedParams,
-  ICharacterState
+  number
 >(
   (params) =>
     new Promise((resolve, reject) => {
@@ -307,11 +309,10 @@ export const monsterAttackCharacterFx = createEffect<
       }
       const damage = getMonsterDamage(monster);
       const protection = getCharacterProtection(character);
-      const damageDone = rollDamage(damage, protection);
+      let damageDone = rollDamage(damage, protection);
+      damageDone = Math.max(damageDone, character.hp);
       console.log("damageDone", damageDone);
-      const hp = Math.max(character.hp - damageDone, 0);
-      character.hp = hp;
-      resolve(character);
+      resolve(damageDone);
     }),
 );
 
@@ -387,11 +388,13 @@ $hitResult.on(monsterAttackCharacterFx.done, () => "hit");
 $hitResult.on(monsterAttackCharacterFx.fail, () => "miss");
 
 // update character state after successfull attack
-$character.on(monsterAttackCharacterFx.done, (_, params) => {
-  return {
-    ..._,
-    ...params.result,
-  };
+sample({
+  clock: monsterAttackCharacterFx.doneData,
+  target: characterHpChanged,
+  fn(damageDone) {
+    // hp must be reduced
+    return -damageDone;
+  },
 });
 
 // monster attack completed - start transition to next monster
@@ -460,7 +463,7 @@ sample({
 $battleRound.on(monsterToCharacterTransition, () => "monster-to-character");
 
 type TFleeDetectionParams = {
-  character: ICharacterState;
+  character: TCharacterCombinedState;
   isFleeing: boolean;
 };
 const monsterToCharacterTransitionFx = createEffect<
@@ -489,7 +492,11 @@ const monsterToCharacterTransitionFx = createEffect<
 // trigger monster to character transition effect when round triggered
 sample({
   clock: monsterToCharacterTransition,
-  source: { character: $character, isFleeing: $isFleeing },
+  source: {
+    character: $characterState,
+    isFleeing: $isFleeing,
+    stats: $characterStats,
+  },
   target: monsterToCharacterTransitionFx,
 });
 
@@ -590,7 +597,7 @@ export const $encounterXpReward = createStore(0);
 
 //const encounterEndedWithReward = createEvent<IEncounterReward>();
 const rewardCalculationFx = createEffect<
-  { character: ICharacterState; monsters: IGameMonster[] },
+  { character: TCharacterCombinedState; monsters: IGameMonster[] },
   IEncounterReward
 >(({ character, monsters }) => {
   const money = generateMonstersMoneyReward(monsters);
@@ -610,7 +617,7 @@ const rewardCalculationFx = createEffect<
 
 sample({
   clock: battleEnded,
-  source: $character,
+  source: $characterState,
   target: rewardCalculationFx,
   fn: (character, monsters) => ({ character, monsters }),
 });

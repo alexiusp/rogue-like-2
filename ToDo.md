@@ -23,6 +23,7 @@
   - special animation for hits with 0 damage?
   - monster: generate different monsters in one group (rules to combine them? by type?)
   - event: picture, text, actions with stat to do a check roll, consequenses as items, gold, xp, spells cast on character, monster ambush
+  - button to open chest on battle screen (trigger monster aggro) - same as in Mordor
 - dungeon:
   - effects of terrain and effects in battle and display on UI
   - multiple effects on same tile?
@@ -48,7 +49,7 @@
 - Mage tower: part of main quest, alchemy, collect lore scrolls and books, uncurses items
 - dungeon:
   - respawn only encounters, not terrains and effects?
-  - unfinished encounters (alive monsters, closed chests) - should they respawn?
+  - unfinished encounters (alive monsters, closed chests) - longer respawn timeout (~ +20%)
   - global events when everything respawns including terrain and effects (after implementing quest since it must be a part of the story)
   - split dungeon map and open/respawnCounter state to enable sharing the dungeon map between characters
   - an environmental message describing current part of the dungeon to improve UX

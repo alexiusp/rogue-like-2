@@ -208,17 +208,21 @@ $characterStats.on(charismaChanged, (_, value) => ({ ..._, charisma: value }));
 
 export const characterCreated = createEvent();
 const setCharacterSaveSlotFx = createEffect<
-  { base: IBaseCharacterInfo; char: ICharacterState },
+  { base: IBaseCharacterInfo; char: ICharacterState; stats: TStatsValues },
   ICharacterState
->(({ base, char }) => {
-  const newState = createNewCharacter(char, base);
+>(({ base, char, stats }) => {
+  const newState = createNewCharacter(char, base, stats);
   const saveSlotName = `${base.name} - ${EGender[base.gender]} ${ECharacterRace[char.race]} (${EGuild[char.guild]})`;
   setSlotName(saveSlotName);
   return newState;
 });
 sample({
   clock: characterCreated,
-  source: { base: $characterBaseInfo, char: $character },
+  source: {
+    base: $characterBaseInfo,
+    char: $character,
+    stats: $characterStats,
+  },
   target: setCharacterSaveSlotFx,
 });
 sample({
@@ -251,10 +255,10 @@ $characterStats.on(characterLoaded, (_) => {
 
 export const $characterHealth = $character.map((character) => character.hp);
 export const characterHpChanged = createEvent<number>();
-$character.on(characterHpChanged, (character, hp) => {
+$character.on(characterHpChanged, (character, hpChange) => {
   return {
     ...character,
-    hp,
+    hp: character.hp + hpChange,
   };
 });
 

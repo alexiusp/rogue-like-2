@@ -1,5 +1,6 @@
 import { getRandomInt, rollDiceCheck } from "../common/random";
 import {
+  TStatsValues,
   getStatBonus,
   getStatsAttackModifier,
   getStatsDamageModifier,
@@ -25,6 +26,7 @@ import {
 import GlobalMonsterCatalogue from "../monsters/GlobalMonsterCatalogue";
 import { IGameMonster } from "../monsters/model";
 import {
+  ECharacterRace,
   RaceAgeMap,
   getRaceAttackModifier,
   getRaceDamageModifier,
@@ -36,14 +38,14 @@ import {
 import {
   EGender,
   IBaseCharacterInfo,
-  ICharacter,
   ICharacterState,
   TCharacterCombinedState,
 } from "./types";
 
 export function getInitialCharacterHealth(
-  { race, stats }: ICharacter,
+  race: ECharacterRace,
   gender: EGender,
+  stats: TStatsValues,
 ) {
   const raceBonus = getRaceHealthModifier(race);
   const strBonus = Math.round((stats.strength - 14) / 2);
@@ -58,7 +60,10 @@ export function getInitialCharacterHealth(
   return getRandomInt(20, 10) + raceBonus + strBonus + endBonus + genderBonus;
 }
 
-export function getInitialCharacterMana({ race, stats }: ICharacter) {
+export function getInitialCharacterMana(
+  race: ECharacterRace,
+  stats: TStatsValues,
+) {
   const raceBonus = getRaceManaModifier(race);
   const intBonus = Math.round(stats.intelligence - 10);
   const wisBonus = Math.round((stats.wisdom - 14) / 2);
@@ -66,12 +71,13 @@ export function getInitialCharacterMana({ race, stats }: ICharacter) {
 }
 
 export function createNewCharacter(
-  charData: ICharacter,
+  charData: ICharacterState,
   baseData: IBaseCharacterInfo,
+  stats: TStatsValues,
 ): ICharacterState {
   const race = charData.race;
-  const hp = getInitialCharacterHealth(charData, baseData.gender);
-  const mp = getInitialCharacterMana(charData);
+  const hp = getInitialCharacterHealth(race, baseData.gender, stats);
+  const mp = getInitialCharacterMana(race, stats);
   return {
     ...charData,
     age: RaceAgeMap[race][0],
@@ -188,7 +194,10 @@ export function getCharacterProtection(character: TCharacterCombinedState) {
   );
 }
 
-export function rollAggro(character: ICharacterState, monster: IGameMonster) {
+export function rollAggro(
+  character: TCharacterCombinedState,
+  monster: IGameMonster,
+) {
   const { alignment, guild, stats } = character;
   const baseMonster = GlobalMonsterCatalogue[monster.monster];
   const difLevel = getCharacterGuildLevel(guild, character) - baseMonster.level;
@@ -200,7 +209,7 @@ export function rollAggro(character: ICharacterState, monster: IGameMonster) {
   return rollDiceCheck(rollValue, "1D100");
 }
 
-export function rollCharacterIdSkill(character: ICharacterState) {
+export function rollCharacterIdSkill(character: TCharacterCombinedState) {
   let idLevel: IdLevel = 0;
   const intBonus = getStatBonus(character.stats.intelligence);
   const wisBonus = getStatBonus(character.stats.wisdom);
@@ -225,7 +234,7 @@ export function rollCharacterIdSkill(character: ICharacterState) {
   return idLevel;
 }
 
-export function rollCharacterFleeChance(character: ICharacterState) {
+export function rollCharacterFleeChance(character: TCharacterCombinedState) {
   const baseValue = 50;
   const dexBonus = getStatBonus(character.stats.dexterity);
   const wisBonus = getStatBonus(character.stats.wisdom);
