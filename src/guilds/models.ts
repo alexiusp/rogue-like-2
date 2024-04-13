@@ -227,6 +227,7 @@ const GuildSpellsMap: Record<EGuild, Array<string | null>> = {
     null,
     "minor heal",
     null,
+    "leprosy",
     "firebolt",
     null,
     null,
@@ -291,16 +292,16 @@ export function getAllSpellsFromGuilds(guilds: IGuildMembership[]) {
 }
 
 const ZeroAffinity: Record<TNatureElement, number> = {
-  air: 0,
-  astral: 0,
-  cold: 0,
-  earth: 0,
-  electric: 0,
-  fire: 0,
-  life: 0,
-  mind: 0,
-  stone: 0,
-  water: 0,
+  air: 100,
+  astral: 100,
+  cold: 100,
+  earth: 100,
+  electric: 100,
+  fire: 100,
+  life: 100,
+  mind: 100,
+  stone: 100,
+  water: 100,
 };
 
 function applyAffinity(
@@ -319,8 +320,8 @@ function applyAffinity(
 // minimum number = 1 - the max affinity with this nature element
 const GuildsNatureAffinities: Record<EGuild, Record<TNatureElement, number>> = {
   [EGuild.Adventurer]: applyAffinity(
-    applyAffinity(ZeroAffinity, "life", 3),
-    "fire",
+    applyAffinity(applyAffinity(ZeroAffinity, "life", 3), "fire", 2),
+    "air",
     1,
   ),
   [EGuild.Warrior]: ZeroAffinity,

@@ -38,6 +38,14 @@ function createSeeInvisibleEffect(
   };
 }
 
+function createDiseaseEffect(power: number, timeout?: number): IGameEffect {
+  return {
+    name: "disease",
+    power,
+    timeout,
+  };
+}
+
 export function createEffectForASpell(
   spellName: string,
   castingLevel: number,
@@ -56,6 +64,8 @@ export function createEffectForASpell(
     }
     case "shock":
       return createShockEffect(spellPower);
+    case "leprosy":
+      return createDiseaseEffect(spellPower, 3);
   }
   return;
 }

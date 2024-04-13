@@ -80,7 +80,7 @@ const Firebolt: IBaseSpell = {
     charisma: 0,
     dexterity: 0,
   },
-  power: 5,
+  power: 3,
   powerGain: 2,
   spRatio: 1,
   effect: "burning",
@@ -109,11 +109,34 @@ const Shock: IBaseSpell = {
   target: 1,
 };
 
+const Leprosy: IBaseSpell = {
+  name: "leprosy",
+  description:
+    "When invoked, this spell causes the target to become infected with such an advanced case of Leprosy, that quite often, the victim falls apart and dies horribly.",
+  picture: "leprosy.png",
+  spellClass: ESpellClass.Combat,
+  nature: "air",
+  statsRequired: {
+    strength: 0,
+    intelligence: 12,
+    wisdom: 12,
+    endurance: 12,
+    charisma: 0,
+    dexterity: 12,
+  },
+  power: 3,
+  powerGain: 1,
+  spRatio: 1,
+  effect: "disease",
+  target: 1,
+};
+
 const GlobalBaseSpellsCatalogue: Record<string, IBaseSpell> = createCatalogue([
   MinorHealSpell,
   Shield,
   SeeInvisible,
   Firebolt,
   Shock,
+  Leprosy,
 ]);
 export default GlobalBaseSpellsCatalogue;
