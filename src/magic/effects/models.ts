@@ -94,3 +94,34 @@ export function applyEffectToMonster(
   }
   return monster;
 }
+
+export function applyEffectsToMonster(monster: IGameMonster): IGameMonster {
+  const { effects } = monster;
+  if (!effects) {
+    // nothing to apply
+    return monster;
+  }
+  let updatedMonster: IGameMonster = {
+    ...monster,
+  };
+  const updatedEffects: IGameEffect[] = [];
+  for (const effect of effects) {
+    updatedMonster = applyEffectToMonster(effect, updatedMonster);
+    const updatedEffect: IGameEffect = {
+      ...effect,
+    };
+    if (updatedEffect.timeout) {
+      updatedEffect.timeout -= 1;
+    }
+    if (
+      typeof updatedEffect.timeout === "undefined" ||
+      updatedEffect.timeout > 0
+    ) {
+      updatedEffects.push(updatedEffect);
+    }
+  }
+  if (updatedEffects.length > 0) {
+    updatedMonster.effects = updatedEffects;
+  }
+  return updatedMonster;
+}

@@ -56,7 +56,6 @@ export default function UsableItemsList({
         if (!checkFn(item)) {
           return null;
         }
-        console.log(item.usesLeft);
         return (
           <ToggleButton
             disabled={item.usesLeft === 0}

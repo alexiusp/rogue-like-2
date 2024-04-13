@@ -40,7 +40,7 @@ import {
 } from "../dungeon/types";
 import { getMinLevelGuildForSpell } from "../guilds/models";
 import { TGameItem, itemsAreSame } from "../items/models";
-import { applyEffectToMonster } from "../magic/effects/models";
+import { applyEffectsToMonster } from "../magic/effects/models";
 import {
   createEffectForASpell,
   isSpellCombat,
@@ -91,8 +91,8 @@ type TMonsterAttackedParams = {
 // calculate results of an character attacking a single monster
 export const characterAttacksMonsterFx = createEffect<
   TMonsterAttackedParams,
-  Array<IGameMonster>,
-  Array<IGameMonster>
+  IGameMonster[],
+  IGameMonster[]
 >(
   ({ mapTile, monsterCursor, character }) =>
     new Promise((resolve, reject) => {
@@ -123,6 +123,22 @@ export const characterAttacksMonsterFx = createEffect<
     }),
 );
 
+// apply spells effects to monsters before switching to the monsters turn
+const spellEffectsAppliedToMonstersFx = createEffect<
+  IGameMonster[],
+  IGameMonster[],
+  IGameMonster[]
+>(
+  (monsters) =>
+    new Promise((resolve) => {
+      const updatedMonsters: IGameMonster[] = monsters.map((monster) =>
+        applyEffectsToMonster(monster),
+      );
+      resolve(updatedMonsters);
+      return;
+    }),
+);
+
 // event to fire from UI
 export const monsterAttacked = createEvent<number>();
 // collect data from stores to calculate an attack
@@ -145,14 +161,18 @@ const characterToMonsterTransition = createEvent();
 characterToMonsterTransition.watch(() =>
   console.info("characterToMonsterTransition"),
 );
-// stop rounds rotation when all monsters are dead
+// apply spell effects if not all monsters are dead after characters attack
 sample({
   clock: characterAttacksMonsterFx.finally,
   filter: (clock) => {
     const result = clock.status === "done" ? clock.result : clock.error;
     return !areAllMonstersDead(result);
   },
-  target: characterToMonsterTransition,
+  fn(clock) {
+    const result = clock.status === "done" ? clock.result : clock.error;
+    return result;
+  },
+  target: spellEffectsAppliedToMonstersFx,
 });
 // switch round stage after attack is done
 $battleRound.on(characterToMonsterTransition, () => "character-to-monster");
@@ -310,7 +330,7 @@ export const monsterAttackCharacterFx = createEffect<
       const damage = getMonsterDamage(monster);
       const protection = getCharacterProtection(character);
       let damageDone = rollDamage(damage, protection);
-      damageDone = Math.max(damageDone, character.hp);
+      damageDone = Math.min(damageDone, character.hp);
       console.log("damageDone", damageDone);
       resolve(damageDone);
     }),
@@ -589,6 +609,9 @@ sample({
   },
   target: battleEnded,
 });
+
+// redirect to reward screen when battle ended. TODO: add a delay before redirecting
+// so that player can see proper hit animation
 sample({ clock: battleEnded, target: forward, fn: () => "reward" });
 
 export const $encounterMoneyReward = createStore(0);
@@ -803,30 +826,6 @@ sample({
     return true;
   },
 });
-
-// apply effects to monsters before switching to the monsters turn
-const spellEffectsAppliedToMonstersFx = createEffect<
-  IGameMonster[],
-  IGameMonster[],
-  IGameMonster[]
->(
-  (monsters) =>
-    new Promise((res) => {
-      const updatedMonsters: IGameMonster[] = monsters.map((monster) => {
-        const effects = monster.effects;
-        if (!effects || !effects.length) {
-          return monster;
-        }
-        let updatedMonster = monster;
-        for (const effect of effects) {
-          updatedMonster = applyEffectToMonster(effect, monster);
-        }
-        return updatedMonster;
-      });
-      res(updatedMonsters);
-      return;
-    }),
-);
 
 // redirect monsters data from effects generation to application
 sample({

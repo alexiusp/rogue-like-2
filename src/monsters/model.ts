@@ -154,7 +154,7 @@ export function getMonsterDamage(monster: IGameMonster) {
   const monsterDetails = GlobalMonsterCatalogue[monsterName];
   const statsModifier = getStatsDamageModifier(monsterDetails.stats);
   console.log(
-    `getMonsterDamage. baseValue:${baseValue} level:1 statsModifier:${statsModifier}`,
+    `getMonsterDamage. baseValue:${baseValue} level:${monsterDetails.level} statsModifier:${statsModifier}`,
   );
   return Math.round(baseValue + monsterDetails.level * statsModifier);
 }

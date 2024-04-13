@@ -25,7 +25,7 @@ export default function EffectIcon({
     />
   );
   if (timeout) {
-    icon = <Badge badgeContent={4}>{icon}</Badge>;
+    icon = <Badge badgeContent={timeout}>{icon}</Badge>;
   }
   if (showTooltip) {
     icon = (

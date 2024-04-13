@@ -64,11 +64,13 @@
 - refactor effects to fire an event on apply so that state manager can handle it
 - save slot label must be updated on guild change (in future also on title change?)
 - some items don't have proper image yet
+- remove effect icon from dead monsters
+- reset/remove effects from monsters when chracter leaves the battle without killing all monsters
 
 # Next tasks (sorted):
 
+- implement delay on battle end for better UX
 - spells/magic
-  - monsters affected by effects: implement spell with timeout and implement/test effects on monsters
   - items improving characters stats (books, potions etc.)
   - monster special attacks
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array

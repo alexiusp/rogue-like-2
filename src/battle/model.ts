@@ -6,5 +6,8 @@ export function rollAttack(attackValue: number, defenseValue: number) {
 }
 
 export function rollDamage(damageValue: number, protectionValue: number) {
+  console.log(
+    `rollDamage damageValue:${damageValue} vs protectionValue:${protectionValue}`,
+  );
   return Math.max(1, Math.abs(getRandomInt(damageValue, 1) - protectionValue));
 }

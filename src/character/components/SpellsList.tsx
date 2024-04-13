@@ -45,10 +45,10 @@ export default function SpellsList({ filter = "all" }: ISpellsListProps) {
         >
           {spell === selectedSpell ? (
             <Badge variant="dot">
-              <SpellIcon spell={spell} />
+              <SpellIcon spell={spell} showTooltip={true} />
             </Badge>
           ) : (
-            <SpellIcon spell={spell} />
+            <SpellIcon spell={spell} showTooltip={true} />
           )}
         </ToggleButton>
       ))}
