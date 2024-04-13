@@ -6,8 +6,12 @@ import {
   sample,
 } from "effector";
 import { rollAggro } from "../character/models";
-import { $character } from "../character/state";
-import { ICharacterState } from "../character/types";
+import {
+  $character,
+  $characterBaseInfo,
+  $characterState,
+} from "../character/state";
+import { IBaseCharacterInfo } from "../character/types";
 import { loadCharacterData, saveCharacterData } from "../common/db";
 import { createDelayEffect } from "../common/delay";
 import { messageAdded } from "../messages/state";
@@ -269,7 +273,7 @@ sample({
   clock: startMonsterBattle,
   source: {
     mapTile: $currentMapTile,
-    character: $character,
+    character: $characterState,
     state: $dungeonState,
     level: $currentLevel,
   },
@@ -330,7 +334,7 @@ export const chestIsOpened = createEvent();
 // input parameters for opening the chest
 type TOpenChestEffectProps = {
   mapTile: TMapTile;
-  character: ICharacterState;
+  character: IBaseCharacterInfo;
 };
 
 // effect must check if chest is trapped and if yes - roll for disarm
@@ -365,7 +369,7 @@ sample({
   target: openingChestFx,
   source: {
     mapTile: $currentMapTile,
-    character: $character,
+    character: $characterBaseInfo,
   },
   filter({ mapTile }) {
     if (!doesTileHasChest(mapTile)) {
