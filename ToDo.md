@@ -16,7 +16,6 @@
   - cursed items: without negative stats, but unable to unequip
   - charming of monsters
 - encounters:
-  - refactor battle to propagate dealt damage as event payload to properly display it
   - monster: badges for spells/effect - depends on magic and monster special attacks implementation
   - lair
   - monster: size for monster - depends on character races (trolls and halflings) implementation
@@ -66,10 +65,12 @@
 - some items don't have proper image yet
 - remove effect icon from dead monsters
 - reset/remove effects from monsters when chracter leaves the battle without killing all monsters
+- usable item must be selected differently - currently all items with same name are selected
 
 # Next tasks (sorted):
 
 - implement delay on battle end for better UX
+- refactor battle to propagate dealt damage as event payload to properly display it
 - spells/magic
   - items improving characters stats (books, potions etc.)
   - monster special attacks
