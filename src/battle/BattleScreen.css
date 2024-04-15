@@ -1,5 +1,8 @@
 .battle-screen {
-  height: 100%;
+  height: 100vh;
+  margin-top: 0;
+  margin-bottom: 0;
+  justify-content: center;
 }
 .battle-screen .encounter {
   position: relative;

@@ -1,4 +1,5 @@
 import { Container } from "@mui/material";
+import BattleScreen from "./battle/BattleScreen";
 import RewardScreen from "./battle/RewardScreen";
 import CharacterScreen from "./character/CharacterScreen";
 import CityScreen from "./city/CityScreen";
@@ -51,6 +52,9 @@ function App() {
       </Route>
       <Route route="encounter">
         <EncounterScreen />
+      </Route>
+      <Route route="battle">
+        <BattleScreen />
       </Route>
       <Route route="reward">
         <RewardScreen />

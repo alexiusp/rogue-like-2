@@ -13,9 +13,7 @@ export default function EncounterScreen() {
   switch (encounter?.type) {
     case EEncounterType.Monster:
       if (!areAllMonstersDead(encounter.monsters)) {
-        subScreen = (
-          <BattleScreen monsters={encounter.monsters} chest={encounter.chest} />
-        );
+        subScreen = <BattleScreen />;
       } else {
         subScreen = <ChestScreen />;
       }

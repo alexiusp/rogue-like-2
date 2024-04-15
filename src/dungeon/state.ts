@@ -250,6 +250,12 @@ $chest.watch((chest) => console.log("chest updated", chest));
 export const startMonsterBattle = createEvent();
 startMonsterBattle.watch(() => console.info("startMonsterBattle"));
 
+sample({
+  clock: startMonsterBattle,
+  target: forward,
+  fn: () => "battle",
+});
+
 // trigger startMonsterBattle
 sample({
   clock: startEncounter,

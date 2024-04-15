@@ -10,7 +10,7 @@ import SpellsList from "../character/components/SpellsList";
 import UsableItemsList from "../character/components/UsableItemsList";
 import { $characterIsDead } from "../character/state";
 import ActionButton from "../components/ActionButton/ActionButton";
-import { IChest } from "../dungeon/types";
+import { $chest } from "../dungeon/state";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
@@ -18,19 +18,13 @@ import CharacterIsDead from "./CharacterIsDead";
 import HitAnimation from "./HitAnimation";
 import {
   $battleRound,
+  $monsters,
   $monstersCursor,
   characterDefends,
   characterTriesToFlee,
   monsterAttacked,
   monsterAttackedBySpell,
 } from "./state";
-
-interface IBattleScreenProps {
-  chest?: IChest;
-  //  effects: Array<ETerrainEffect>;
-  monsters: Array<IGameMonster>;
-  //  terrain: ETerrain;
-}
 
 type TBattleAction =
   | "fight"
@@ -40,12 +34,9 @@ type TBattleAction =
   | "defend"
   | "flee";
 
-export default function BattleScreen({
-  chest,
-  //effects,
-  monsters,
-  //terrain,
-}: IBattleScreenProps) {
+export default function BattleScreen() {
+  const monsters = useUnit($monsters);
+  const chest = useUnit($chest);
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
   const [action, setAction] = useState<TBattleAction>();
@@ -78,6 +69,10 @@ export default function BattleScreen({
     setAction("flee");
     characterTriesToFlee();
   };
+  if (!monsters) {
+    console.warn("no monsters left on this tile!");
+    return null;
+  }
   return (
     <Stack direction="column" spacing={0.5} className="battle-screen">
       <Stack

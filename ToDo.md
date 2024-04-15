@@ -57,6 +57,7 @@
 - corruptions (like in ADoM) - negative effects on deeper levels of the dungeon - may be instead of cursed items?
 - chests: mimics -> when character tries to open chest its transformed to monster and attacks
 - Runes and rune-words integrated into lore and used for naming of scrolls/artefacts etc.
+- different UI effects for different spells in battle and also in dungeon
 
 # Known bugs to fix:
 

@@ -612,7 +612,10 @@ sample({
 
 // redirect to reward screen when battle ended. TODO: add a delay before redirecting
 // so that player can see proper hit animation
-sample({ clock: battleEnded, target: forward, fn: () => "reward" });
+const battleEndDelay = createDelayEffect(5000);
+const battleEndedDelayFx = createEffect(battleEndDelay);
+sample({ clock: battleEnded, target: battleEndedDelayFx });
+//sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
 
 export const $encounterMoneyReward = createStore(0);
 export const $encounterItemsReward = createStore<TGameItem[]>([]);
@@ -891,3 +894,9 @@ sample({
     return updatedState;
   },
 });
+
+export const $monsters = $encounter.map((encounter) =>
+  encounter !== null && encounter.type === EEncounterType.Monster
+    ? encounter.monsters
+    : null,
+);
