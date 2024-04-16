@@ -612,10 +612,9 @@ sample({
 
 // redirect to reward screen when battle ended. TODO: add a delay before redirecting
 // so that player can see proper hit animation
-const battleEndDelay = createDelayEffect(5000);
-const battleEndedDelayFx = createEffect(battleEndDelay);
+const battleEndedDelayFx = createEffect(delay);
 sample({ clock: battleEnded, target: battleEndedDelayFx });
-//sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
+sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
 
 export const $encounterMoneyReward = createStore(0);
 export const $encounterItemsReward = createStore<TGameItem[]>([]);

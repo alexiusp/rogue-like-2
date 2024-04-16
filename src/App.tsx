@@ -9,7 +9,6 @@ import TowerScreen from "./city/mageTower/TowerScreen";
 import TavernScreen from "./city/tavern/TavernScreen";
 import ChestScreen from "./dungeon/ChestScreen";
 import DungeonScreen from "./dungeon/DungeonScreen";
-import EncounterScreen from "./dungeon/EncounterScreen";
 import GuildsScreen from "./guilds/GuildsScreen";
 import Messages from "./messages/Messages";
 import { Route } from "./navigation";
@@ -49,9 +48,6 @@ function App() {
       </Route>
       <Route route="character">
         <CharacterScreen />
-      </Route>
-      <Route route="encounter">
-        <EncounterScreen />
       </Route>
       <Route route="battle">
         <BattleScreen />

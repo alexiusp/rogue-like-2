@@ -227,13 +227,6 @@ sample({
   },
 });
 
-// redirect to encounter screen if moved to tile with it
-sample({
-  clock: startEncounter,
-  target: forward,
-  fn: () => "encounter",
-});
-
 // current encounter
 export const $encounter = $currentMapTile.map(
   (tile) => (tile as ICommonMapTile).encounter ?? null,
@@ -245,6 +238,29 @@ export const $chest = $encounter.map((encounter) =>
   encounter !== null && encounter.chest ? encounter.chest : null,
 );
 $chest.watch((chest) => console.log("chest updated", chest));
+
+// redirect to chest screen if moved to tile with it and its not opened
+sample({
+  clock: startEncounter,
+  source: $encounter,
+  target: forward,
+  fn: () => "chest",
+  filter: (encounter) => {
+    if (!encounter) {
+      return false;
+    }
+    if (encounter.type === EEncounterType.Monster) {
+      // check for alive monsters
+      const allMonstersDead = areAllMonstersDead(encounter.monsters);
+      const unopenedChest = !!encounter.chest && !encounter.chest.isOpened;
+      return allMonstersDead && unopenedChest;
+    }
+    if (encounter.type === EEncounterType.Chest) {
+      return !encounter.chest.isOpened;
+    }
+    return false;
+  },
+});
 
 // see src/battle/model for further details about battle calculation
 export const startMonsterBattle = createEvent();

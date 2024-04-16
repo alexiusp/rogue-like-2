@@ -70,7 +70,6 @@
 
 # Next tasks (sorted):
 
-- implement delay on battle end for better UX
 - refactor battle to propagate dealt damage as event payload to properly display it
 - spells/magic
   - items improving characters stats (books, potions etc.)
