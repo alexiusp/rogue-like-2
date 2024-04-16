@@ -14,8 +14,8 @@ import { $chest } from "../dungeon/state";
 import MonsterCard from "../monsters/MonsterCard";
 import { IGameMonster } from "../monsters/model";
 import "./BattleScreen.css";
+import CharacterHitAnimation from "./CharacterHitAnimation";
 import CharacterIsDead from "./CharacterIsDead";
-import HitAnimation from "./HitAnimation";
 import {
   $battleRound,
   $monsters,
@@ -73,8 +73,16 @@ export default function BattleScreen() {
     console.warn("no monsters left on this tile!");
     return null;
   }
+  const containerClasses = ["battle-screen"];
+  if (battleRound !== "character") {
+    containerClasses.push("disabled");
+  }
   return (
-    <Stack direction="column" spacing={0.5} className="battle-screen">
+    <Stack
+      direction="column"
+      spacing={0.5}
+      className={containerClasses.join(" ")}
+    >
       <Stack
         spacing={0}
         direction="column"
@@ -97,7 +105,7 @@ export default function BattleScreen() {
             </div>
           ))}
         </Stack>
-        <HitAnimation />
+        <CharacterHitAnimation />
         {chest ? <img src={chestImage} alt="chest" className="chest" /> : null}
         <CharacterEffectsBar />
       </Stack>

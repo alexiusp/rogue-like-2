@@ -67,6 +67,7 @@
 - remove effect icon from dead monsters
 - reset/remove effects from monsters when chracter leaves the battle without killing all monsters
 - usable item must be selected differently - currently all items with same name are selected
+- refactor drop: monsters and chests dropping items simultaneously - its too much
 
 # Next tasks (sorted):
 

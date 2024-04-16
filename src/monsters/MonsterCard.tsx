@@ -7,11 +7,16 @@ import "./MonsterCard.css";
 import { EAggroMode, IGameMonster } from "./model";
 
 interface IMonsterCardProps {
-  monster: IGameMonster;
   active: boolean;
+  isHit?: number;
+  monster: IGameMonster;
 }
 
-export default function MonsterCard({ active, monster }: IMonsterCardProps) {
+export default function MonsterCard({
+  active,
+  isHit,
+  monster,
+}: IMonsterCardProps) {
   const { effects, hp, hpMax, aggro, monster: monsterName } = monster;
   const monsterData = GlobalMonsterCatalogue[monsterName];
   const monsterCardClasses = ["monster"];
@@ -40,6 +45,9 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
         />
       ))
     : null;
+  if (typeof isHit !== "undefined") {
+    monsterCardClasses.push("hit");
+  }
   return (
     <Grow in={true}>
       <Card
@@ -53,6 +61,7 @@ export default function MonsterCard({ active, monster }: IMonsterCardProps) {
           <Typography className="monster-name">{monsterName}</Typography>
           <ProgressBar current={hp} max={hpMax} color="error" />
         </div>
+        <div className="hit-area">12</div>
       </Card>
     </Grow>
   );

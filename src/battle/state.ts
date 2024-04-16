@@ -78,10 +78,19 @@ $battleRound.reset(startCharacterRound);
 //$battleRound.on(startCharacterRound, () => 'character');
 $battleRound.watch((s) => console.info("battle round:", s));
 
-export const $hitResult = createStore<THitResult | null>(null);
-$hitResult.reset(startMonsterBattle);
-$hitResult.reset(startCharacterRound);
-$hitResult.watch((hitResult) => console.info("hitResult:", hitResult));
+export const $monstersHitResult = createStore<THitResult | null>(null);
+$monstersHitResult.reset(startMonsterBattle);
+$monstersHitResult.reset(startCharacterRound);
+$monstersHitResult.watch((hitResult) =>
+  console.info("monsters hitResult:", hitResult),
+);
+
+export const $characterHitResult = createStore<THitResult | null>(null);
+$characterHitResult.reset(startMonsterBattle);
+$characterHitResult.reset(startCharacterRound);
+$characterHitResult.watch((hitResult) =>
+  console.info("character hitResult:", hitResult),
+);
 
 type TMonsterAttackedParams = {
   mapTile: IMonsterMapTile;
@@ -177,8 +186,8 @@ sample({
 // switch round stage after attack is done
 $battleRound.on(characterToMonsterTransition, () => "character-to-monster");
 // set animation state to result of an attack
-$hitResult.on(characterAttacksMonsterFx.done, () => "hit");
-$hitResult.on(characterAttacksMonsterFx.fail, () => "miss");
+$monstersHitResult.on(characterAttacksMonsterFx.done, () => "hit");
+$monstersHitResult.on(characterAttacksMonsterFx.fail, () => "miss");
 
 // update dungeon state with results of an attack
 sample({
@@ -212,7 +221,8 @@ const delay = createDelayEffect(BATTLE_ROUND_DELAY_MS);
 
 const characterToMonsterTransitionFx = createEffect(delay);
 // reset hit result when transition done
-$hitResult.reset(characterToMonsterTransitionFx.done);
+$monstersHitResult.reset(characterToMonsterTransitionFx.done);
+$characterHitResult.reset(characterToMonsterTransitionFx.done);
 
 // trigger character to monster transition effect when round triggered
 sample({
@@ -404,8 +414,8 @@ sample({
 });
 
 // set animation state to result of an attack
-$hitResult.on(monsterAttackCharacterFx.done, () => "hit");
-$hitResult.on(monsterAttackCharacterFx.fail, () => "miss");
+$characterHitResult.on(monsterAttackCharacterFx.done, () => "hit");
+$characterHitResult.on(monsterAttackCharacterFx.fail, () => "miss");
 
 // update character state after successfull attack
 sample({
@@ -459,7 +469,7 @@ sample({
 });
 
 // reset hit result animation
-$hitResult.reset(monsterAttackTransitionFx.done);
+$characterHitResult.reset(monsterAttackTransitionFx.done);
 
 // trigger transition to character when all monsters attacked
 const monsterToCharacterTransition = createEvent();
@@ -795,7 +805,7 @@ export const characterAttacksMonsterWithSpellFx = createEffect<
 );
 
 // set animation state to result of an attack
-$hitResult.on(characterAttacksMonsterWithSpellFx.done, () => "hit");
+$monstersHitResult.on(characterAttacksMonsterWithSpellFx.done, () => "hit");
 
 // trigger effect when event is dispatched
 sample({

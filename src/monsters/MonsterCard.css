@@ -1,5 +1,6 @@
 .monster {
   min-width: 128px;
+  position: relative;
 }
 .monster.angry {
   border-color: brown;
@@ -15,4 +16,25 @@
 }
 .monster .monster-name {
   text-align: center;
+}
+.monster.hit {
+  color: brown;
+}
+.monster .hit-area {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0.7;
+  background-color: brown;
+  color: white;
+}
+.monster.hit .hit-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  line-height: 64px;
 }
