@@ -5,12 +5,12 @@ import air from "../assets/tiles/spore_cloud.png";
 import { $characterHitResult } from "./state";
 
 export default function CharacterHitAnimation() {
-  const image = useUnit($characterHitResult);
-  const show = !!image;
+  const result = useUnit($characterHitResult);
+  const show = !!result;
   if (!show) {
     return null;
   }
-  const animtaionImg = image === "hit" ? blood : air;
+  const animtaionImg = result !== null ? blood : air;
   return (
     <Zoom in={show}>
       <img src={animtaionImg} className="hit-image" />

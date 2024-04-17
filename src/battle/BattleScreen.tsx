@@ -20,6 +20,7 @@ import {
   $battleRound,
   $monsters,
   $monstersCursor,
+  $monstersHitResult,
   characterDefends,
   characterTriesToFlee,
   monsterAttacked,
@@ -39,6 +40,7 @@ export default function BattleScreen() {
   const chest = useUnit($chest);
   const battleRound = useUnit($battleRound);
   const activeMonsterIndex = useUnit($monstersCursor);
+  const hitResults = useUnit($monstersHitResult);
   const [action, setAction] = useState<TBattleAction>();
   const characterIsDead = useUnit($characterIsDead);
   const monsterAreaClicked = (monster: IGameMonster, index: number) => {
@@ -100,6 +102,11 @@ export default function BattleScreen() {
             >
               <MonsterCard
                 active={index === activeMonsterIndex}
+                isHit={
+                  hitResults.length > 0 && hitResults[index]
+                    ? hitResults[index]
+                    : undefined
+                }
                 monster={monster}
               />
             </div>

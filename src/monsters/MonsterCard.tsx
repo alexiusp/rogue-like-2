@@ -8,7 +8,7 @@ import { EAggroMode, IGameMonster } from "./model";
 
 interface IMonsterCardProps {
   active: boolean;
-  isHit?: number;
+  isHit?: number | null;
   monster: IGameMonster;
 }
 
@@ -45,7 +45,7 @@ export default function MonsterCard({
         />
       ))
     : null;
-  if (typeof isHit !== "undefined") {
+  if (typeof isHit !== "undefined" && isHit !== null) {
     monsterCardClasses.push("hit");
   }
   return (
@@ -61,7 +61,7 @@ export default function MonsterCard({
           <Typography className="monster-name">{monsterName}</Typography>
           <ProgressBar current={hp} max={hpMax} color="error" />
         </div>
-        <div className="hit-area">12</div>
+        <div className="hit-area">{isHit}</div>
       </Card>
     </Grow>
   );

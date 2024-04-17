@@ -5,7 +5,7 @@
   justify-content: center;
 }
 .battle-screen.disabled {
-  cursor: not-allowed;
+  cursor: wait;
 }
 .battle-screen .encounter {
   position: relative;

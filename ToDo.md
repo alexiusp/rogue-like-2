@@ -66,12 +66,12 @@
 - some items don't have proper image yet
 - remove effect icon from dead monsters
 - reset/remove effects from monsters when chracter leaves the battle without killing all monsters
-- usable item must be selected differently - currently all items with same name are selected
 - refactor drop: monsters and chests dropping items simultaneously - its too much
 
 # Next tasks (sorted):
 
-- refactor battle to propagate dealt damage as event payload to properly display it
+- bug: battle freezes on magic use (post-refactoring bug)
+- bug: usable item must be selected differently - currently all items with same name are selected
 - spells/magic
   - items improving characters stats (books, potions etc.)
   - monster special attacks

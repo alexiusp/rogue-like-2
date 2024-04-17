@@ -27,30 +27,6 @@ function applyHurtEffectToCharacter(
   };
 }
 
-function applyHurtEffectToMonster(
-  effect: IGameEffect,
-  monster: IGameMonster,
-): IGameMonster {
-  const { power } = effect;
-  const updatedHp = Math.max(0, monster.hp - power);
-  return {
-    ...monster,
-    hp: updatedHp,
-  };
-}
-
-function applyHealEffectToMonster(
-  effect: IGameEffect,
-  monster: IGameMonster,
-): IGameMonster {
-  const { power } = effect;
-  const updatedHp = Math.min(monster.hpMax, monster.hp + power);
-  return {
-    ...monster,
-    hp: updatedHp,
-  };
-}
-
 export function applyEffectToCharacter(
   effect: IGameEffect,
   character: ICharacterState,
@@ -73,55 +49,30 @@ export function applyEffectToCharacter(
   return character;
 }
 
-export function applyEffectToMonster(
+export function applyHurtEffectToMonster(
   effect: IGameEffect,
   monster: IGameMonster,
-): IGameMonster {
+): number {
   const baseEffect = GlobalEffectCatalogue[effect.name];
-  switch (baseEffect.key) {
-    case "heal":
-      return applyHealEffectToMonster(effect, monster);
-    case "hurt":
-      return applyHurtEffectToMonster(effect, monster);
-    case "defense":
-      break;
-    case "protection":
-      break;
-    case "attack":
-      break;
-    case "damage":
-      break;
+  if (baseEffect.key !== "hurt") {
+    return 0;
   }
-  return monster;
+  const { power } = effect;
+  return Math.min(power, monster.hp);
 }
 
-export function applyEffectsToMonster(monster: IGameMonster): IGameMonster {
-  const { effects } = monster;
-  if (!effects) {
-    // nothing to apply
-    return monster;
-  }
-  let updatedMonster: IGameMonster = {
-    ...monster,
+export function udpateEffectTimeout(effect: IGameEffect) {
+  const updatedEffect: IGameEffect = {
+    ...effect,
   };
-  const updatedEffects: IGameEffect[] = [];
-  for (const effect of effects) {
-    updatedMonster = applyEffectToMonster(effect, updatedMonster);
-    const updatedEffect: IGameEffect = {
-      ...effect,
-    };
-    if (updatedEffect.timeout) {
-      updatedEffect.timeout -= 1;
-    }
-    if (
-      typeof updatedEffect.timeout === "undefined" ||
-      updatedEffect.timeout > 0
-    ) {
-      updatedEffects.push(updatedEffect);
-    }
+  if (updatedEffect.timeout) {
+    updatedEffect.timeout -= 1;
   }
-  if (updatedEffects.length > 0) {
-    updatedMonster.effects = updatedEffects;
+  if (
+    typeof updatedEffect.timeout === "undefined" ||
+    updatedEffect.timeout > 0
+  ) {
+    return updatedEffect;
   }
-  return updatedMonster;
+  return undefined;
 }

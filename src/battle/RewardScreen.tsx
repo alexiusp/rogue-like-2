@@ -19,7 +19,7 @@ import {
   $encounterMoneyReward,
   $encounterXpReward,
   itemDropped,
-} from "./state";
+} from "./rewardState";
 
 export default function RewardScreen() {
   const money = useUnit($encounterMoneyReward);

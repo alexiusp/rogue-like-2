@@ -1,13 +1,5 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
 import {
-  getCharacterAttack,
-  getCharacterDamage,
-  getCharacterDefense,
-  getCharacterGuildLevel,
-  getCharacterProtection,
-  rollCharacterFleeChance,
-} from "../character/models";
-import {
   $character,
   $characterIsDead,
   $characterState,
@@ -15,13 +7,7 @@ import {
   characterHpChanged,
   characterResurrected,
 } from "../character/state";
-import { ICharacterState, TCharacterCombinedState } from "../character/types";
 import { createDelayEffect } from "../common/delay";
-import { RandomBag } from "../common/random";
-import {
-  getMapTileByCoordinates,
-  getTileIndexByCoordinates,
-} from "../dungeon/model";
 import {
   $currentLevel,
   $currentMapTile,
@@ -31,198 +17,101 @@ import {
   moveCharacter,
   startMonsterBattle,
 } from "../dungeon/state";
+import { EEncounterType } from "../dungeon/types";
 import {
-  EEncounterType,
-  IMapCoordinates,
-  IMonsterEncounter,
-  IMonsterMapTile,
-  TDungeonLevelMap,
-} from "../dungeon/types";
-import { getMinLevelGuildForSpell } from "../guilds/models";
-import { TGameItem, itemsAreSame } from "../items/models";
-import { applyEffectsToMonster } from "../magic/effects/models";
-import {
-  createEffectForASpell,
   isSpellCombat,
   isTargetedOnSelfSpell,
   isTargetedSpell,
 } from "../magic/models";
 import { characterCastsASpell } from "../magic/state";
 import { IGameSpell } from "../magic/types";
-import { messageAdded } from "../messages/state";
-import {
-  EAggroMode,
-  IGameMonster,
-  areAllMonstersDead,
-  generateMonstersItemsReward,
-  generateMonstersMoneyReward,
-  generateMonstersXpReward,
-  getMonsterAttack,
-  getMonsterDV,
-  getMonsterDamage,
-  getMonsterPV,
-} from "../monsters/model";
+import { EAggroMode, areAllMonstersDead } from "../monsters/model";
 import { forward } from "../navigation";
-import { rollAttack, rollDamage } from "./model";
-import { IEncounterReward, TBattleRound, THitResult } from "./types";
+import {
+  characterAttacksMonsterWithSpellFx,
+  characterAttacksSingleMonsterFx,
+  characterFledFx,
+  characterFleeDetectionFx,
+  monsterAttackCharacterFx,
+  spellEffectsAppliedToMonstersFx,
+} from "./battleEffects";
+import {
+  shouldCharacterBeAttackedByMonster,
+  toggleMonstersAggro,
+  updateDungeonStateWithResultsOfAnAttack,
+} from "./model";
+import { TBattleRound, TCharacterHitResult, TMonstersHitResult } from "./types";
 
+/**
+ * Battle flow:
+ * 1. startMonsterBattle fired which triggers startCharacterRound
+ * 1.1. battle round set to "character"
+ * 2. during character round we wait for character action which are:
+ * - monsterAttacked event - physical attack on a single monster
+ * - monsterAttackedBySpell event
+ * - ... more to come
+ * 2.1. in case of a physical attack an effect is called which calculates
+ * chances and damage to do to a particular monster. result is saved to
+ * state to display on UI and saved to dungeon state.
+ * 2.2. in case of a magical attack (combat spell directed on monster)
+ * an effect is called to calculate and apply effects to monsters.
+ * 2.3. after any of attacks an effect is called to trigger aggro
+ * 3. after physical damage is applied an effect is called to determine
+ * if all monsters are dead and end the battle
+ * 4. after physical damage is applied an effect is called to calculate
+ * and apply damage from effects
+ * 5. after all magical damage is applied an effect is called to determine
+ * if all monsters are dead and end the battle (same as pt. 3)
+ * 6. if there are alive monsters toggle transition to monsters round
+ * 7. speecial case - "defend" mode
+ * 8. special case "flee" mode
+ * 9. monsters round
+ * 9.1. monsters special attacks handling - to be implemented
+ * 10. when monsters round ended check if character has fled
+ * 11. when monsters round ended check if character is dead and waits for resurrect
+ * 12. if battle continues - switch back to character round and start from p.2
+ */
+
+// event that triggers character round
 const startCharacterRound = createEvent();
 startCharacterRound.watch(() => console.info("startCharacterRound"));
+// event that triggers transition delay from character to monsters round
+const characterToMonsterTransition = createEvent();
+characterToMonsterTransition.watch(() =>
+  console.info("characterToMonsterTransition"),
+);
+// event that triggers monsters round
+const startMonstersRound = createEvent();
+// trigger transition to character when all monsters attacked
+const monsterToCharacterTransition = createEvent();
+monsterToCharacterTransition.watch(() =>
+  console.info("monsterToCharacterTransition"),
+);
+
+// battle round defines where we are in the flow
+export const $battleRound = createStore<TBattleRound>("character");
+$battleRound.reset(startCharacterRound);
+$battleRound.watch((s) => console.info("battle round:", s));
+// switch round stage after attack is done
+$battleRound.on(characterToMonsterTransition, () => "character-to-monster");
+// switch to battle round when transition done
+$battleRound.on(startMonstersRound, () => "monster");
+// switch round stage after attack is done
+$battleRound.on(monsterToCharacterTransition, () => "monster-to-character");
+
+// trigger character round as soon as battle is started
+// TODO: in future we might check for "initiative" to decide who starts first
 sample({
   clock: startMonsterBattle,
   target: startCharacterRound,
 });
 
-export const $battleRound = createStore<TBattleRound>("character");
-$battleRound.reset(startCharacterRound);
-//$battleRound.on(startCharacterRound, () => 'character');
-$battleRound.watch((s) => console.info("battle round:", s));
-
-export const $monstersHitResult = createStore<THitResult | null>(null);
-$monstersHitResult.reset(startMonsterBattle);
-$monstersHitResult.reset(startCharacterRound);
-$monstersHitResult.watch((hitResult) =>
-  console.info("monsters hitResult:", hitResult),
-);
-
-export const $characterHitResult = createStore<THitResult | null>(null);
-$characterHitResult.reset(startMonsterBattle);
-$characterHitResult.reset(startCharacterRound);
-$characterHitResult.watch((hitResult) =>
-  console.info("character hitResult:", hitResult),
-);
-
-type TMonsterAttackedParams = {
-  mapTile: IMonsterMapTile;
-  monsterCursor: number;
-  character: TCharacterCombinedState;
-};
-// calculate results of an character attacking a single monster
-export const characterAttacksMonsterFx = createEffect<
-  TMonsterAttackedParams,
-  IGameMonster[],
-  IGameMonster[]
->(
-  ({ mapTile, monsterCursor, character }) =>
-    new Promise((resolve, reject) => {
-      // all monsters must aggro
-      const monsters = mapTile.encounter.monsters.map((m) => ({
-        ...m,
-        aggro: EAggroMode.Angry,
-      }));
-      // select attacked monster
-      const monster = monsters[monsterCursor];
-      const attack = getCharacterAttack(character);
-      const defense = getMonsterDV(monster);
-      const attackRoll = rollAttack(attack, defense);
-      console.log("attackRoll:", attackRoll);
-      if (!attackRoll) {
-        messageAdded(`You missed ${monster.monster}`);
-        reject(monsters);
-        return;
-      }
-      const damage = getCharacterDamage(character);
-      const protection = getMonsterPV(monster);
-      const damageDone = rollDamage(damage, protection);
-      console.log("damageDone", damageDone);
-      monster.hp = Math.max(monster.hp - damageDone, 0);
-      monsters[monsterCursor] = monster;
-      messageAdded(`You hit ${monster.monster} for ${damageDone}`);
-      resolve(monsters);
-    }),
-);
-
-// apply spells effects to monsters before switching to the monsters turn
-const spellEffectsAppliedToMonstersFx = createEffect<
-  IGameMonster[],
-  IGameMonster[],
-  IGameMonster[]
->(
-  (monsters) =>
-    new Promise((resolve) => {
-      const updatedMonsters: IGameMonster[] = monsters.map((monster) =>
-        applyEffectsToMonster(monster),
-      );
-      resolve(updatedMonsters);
-      return;
-    }),
-);
-
-// event to fire from UI
-export const monsterAttacked = createEvent<number>();
-// collect data from stores to calculate an attack
-sample({
-  clock: monsterAttacked,
-  source: { tile: $currentMapTile, character: $characterState },
-  target: characterAttacksMonsterFx,
-  fn: ({ tile, character }, index) => {
-    const mapTile = tile as IMonsterMapTile;
-    const params: TMonsterAttackedParams = {
-      mapTile,
-      character,
-      monsterCursor: index,
-    };
-    return params;
-  },
-});
-
-const characterToMonsterTransition = createEvent();
-characterToMonsterTransition.watch(() =>
-  console.info("characterToMonsterTransition"),
-);
-// apply spell effects if not all monsters are dead after characters attack
-sample({
-  clock: characterAttacksMonsterFx.finally,
-  filter: (clock) => {
-    const result = clock.status === "done" ? clock.result : clock.error;
-    return !areAllMonstersDead(result);
-  },
-  fn(clock) {
-    const result = clock.status === "done" ? clock.result : clock.error;
-    return result;
-  },
-  target: spellEffectsAppliedToMonstersFx,
-});
-// switch round stage after attack is done
-$battleRound.on(characterToMonsterTransition, () => "character-to-monster");
-// set animation state to result of an attack
-$monstersHitResult.on(characterAttacksMonsterFx.done, () => "hit");
-$monstersHitResult.on(characterAttacksMonsterFx.fail, () => "miss");
-
-// update dungeon state with results of an attack
-sample({
-  clock: characterAttacksMonsterFx.finally,
-  source: { state: $dungeonState, level: $currentLevel },
-  target: $dungeonState,
-  fn: (source, clock) => {
-    const params = clock.params;
-    const result = clock.status === "done" ? clock.result : clock.error;
-    const { state, level } = source;
-    const updatedMonsters = [...result];
-    const levelMap = [...state[level]];
-    const updatedMapTile = { ...params.mapTile };
-    const tileIndex = getTileIndexByCoordinates(
-      { x: updatedMapTile.x, y: updatedMapTile.y },
-      levelMap,
-    );
-    updatedMapTile.encounter = {
-      ...updatedMapTile.encounter,
-      monsters: updatedMonsters,
-    };
-    levelMap[tileIndex] = updatedMapTile;
-    const updatedState = [...state];
-    updatedState.splice(level, 1, levelMap);
-    return updatedState;
-  },
-});
-
-const BATTLE_ROUND_DELAY_MS = 1000;
+// transition delay effects
+const BATTLE_ROUND_DELAY_MS = 800;
 const delay = createDelayEffect(BATTLE_ROUND_DELAY_MS);
 
 const characterToMonsterTransitionFx = createEffect(delay);
-// reset hit result when transition done
-$monstersHitResult.reset(characterToMonsterTransitionFx.done);
-$characterHitResult.reset(characterToMonsterTransitionFx.done);
+const monsterToCharacterTransitionFx = createEffect(delay);
 
 // trigger character to monster transition effect when round triggered
 sample({
@@ -230,462 +119,97 @@ sample({
   target: characterToMonsterTransitionFx,
 });
 
-const startMonstersRound = createEvent();
 // trigger monsters round when transition done
 sample({
   clock: characterToMonsterTransitionFx.done,
   target: startMonstersRound,
 });
-// switch to battle round when transition done
-$battleRound.on(startMonstersRound, () => "monster");
 
+// trigger character to monster transition effect when round triggered
+sample({
+  clock: monsterToCharacterTransition,
+  target: monsterToCharacterTransitionFx,
+});
+
+// some state mapping for convenience
+export const $monsters = $encounter.map((encounter) =>
+  encounter !== null && encounter.type === EEncounterType.Monster
+    ? encounter.monsters
+    : null,
+);
 // length of monsters array of current encounter
-const $monstersLength = createStore<number>(0);
+const $monstersLength = $monsters.map((monsters) =>
+  monsters ? monsters.length : 0,
+);
 $monstersLength.watch((length) => console.info("$monstersLength:", length));
-export const $monstersCursor = createStore<number | null>(null);
-$monstersCursor.watch((cursor) => console.info("$monstersCursor:", cursor));
-$monstersCursor.reset(startCharacterRound);
 
-// defend mode - increase (double) defense for the next round
-// in future we can consider to keep defense boost for several rounds
-// to make it more useful for current single-character mode
-export const characterDefends = createEvent();
-const $isDefending = createStore(false);
-$isDefending.on(characterDefends, () => true);
-$isDefending.reset(startCharacterRound);
-
-// flee mode - monsters are making a round
-// and at end we roll if character can exit the battle
-export const characterTriesToFlee = createEvent();
-const $isFleeing = createStore(false);
-$isFleeing.on(characterTriesToFlee, () => true);
-$isFleeing.reset(startCharacterRound);
-
-// start monsters round right after defend mode is set
-sample({
-  clock: characterDefends,
-  target: startMonstersRound,
-});
-
-// start monsters round right after flee mode is set
-sample({
-  clock: characterTriesToFlee,
-  target: startMonstersRound,
-});
-
-// calculate monsters length
-sample({
-  clock: startMonsterBattle,
-  source: $encounter,
-  target: $monstersLength,
-  filter: (encounter) => encounter?.type === EEncounterType.Monster,
-  fn: (encounter) => {
-    return (encounter as IMonsterEncounter).monsters.length;
-  },
-});
-
-// set cursor to the first alive monster when round starts
-sample({
-  clock: startMonstersRound,
-  source: $encounter,
-  target: $monstersCursor,
-  fn: (encounter) => {
-    if (!encounter || encounter.type !== EEncounterType.Monster) {
-      throw Error("Wrong encounter");
-    }
-    let cursor = 0;
-    while (encounter.monsters[cursor].hp === 0) {
-      cursor += 1;
-    }
-    return cursor;
-  },
-});
-
-// event to fire when monster attacks character
-// parameter - monster index in the monsters list of an encounter
-const characterAttackedByMonster = createEvent<number | null>();
-characterAttackedByMonster.watch((cursor) =>
-  console.info("characterAttackedByMonster:", cursor),
+// result of monsters health change
+export const $monstersHitResult = createStore<TMonstersHitResult>([]);
+$monstersHitResult.reset(startMonstersRound);
+$monstersHitResult.reset(startCharacterRound);
+$monstersHitResult.watch((hitResult) =>
+  console.info("monsters hitResult:", hitResult),
 );
 
-sample({
-  clock: $monstersCursor,
-  source: $monstersCursor,
-  filter(src) {
-    return src !== null;
-  },
-  target: characterAttackedByMonster,
-});
-
-type TCharacterAttackedParams = {
-  monster: IGameMonster;
-  character: TCharacterCombinedState;
-  isDefending: boolean;
-};
-export const monsterAttackCharacterFx = createEffect<
-  TCharacterAttackedParams,
-  number
->(
-  (params) =>
-    new Promise((resolve, reject) => {
-      const { character, monster, isDefending } = params;
-      const attack = getMonsterAttack(monster);
-      const defense = getCharacterDefense(character, isDefending);
-      const attackRoll = rollAttack(attack, defense);
-      console.log("attack roll:", attackRoll);
-      if (!attackRoll) {
-        reject();
-        return;
-      }
-      const damage = getMonsterDamage(monster);
-      const protection = getCharacterProtection(character);
-      let damageDone = rollDamage(damage, protection);
-      damageDone = Math.min(damageDone, character.hp);
-      console.log("damageDone", damageDone);
-      resolve(damageDone);
-    }),
+// result of character health change
+export const $characterHitResult = createStore<TCharacterHitResult>(null);
+$characterHitResult.reset(startMonstersRound);
+$characterHitResult.reset(startCharacterRound);
+$characterHitResult.watch((hitResult) =>
+  console.info("character hitResult:", hitResult),
 );
 
-// trigger monster attack calculation
+// Step 2. - character attacks monster(-s)
+// event to fire from UI
+export const monsterAttacked = createEvent<number>();
+// Step 2.1
+// collect data from stores to calculate an attack
 sample({
-  clock: characterAttackedByMonster,
-  source: {
-    character: $characterState,
-    encounter: $encounter,
-    isDefending: $isDefending,
-  },
-  target: monsterAttackCharacterFx,
-  filter: (src, clock) => {
-    console.log("characterAttackedByMonster monster attack start check", clock);
-    if (clock === null) {
-      return false;
+  clock: monsterAttacked,
+  source: { monsters: $monsters, character: $characterState },
+  target: characterAttacksSingleMonsterFx,
+  fn: ({ monsters, character }, index) => {
+    if (!monsters) {
+      throw new Error("monsters are not defined");
     }
-    const monster = (src.encounter as IMonsterEncounter).monsters[clock];
-    // skip monsters not angry or dead
-    if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
-      console.log(
-        "characterAttackedByMonster dead or not angry - skip",
-        EAggroMode[monster.aggro],
-        monster.hp,
-      );
-      return false;
-    }
-    console.log("characterAttackedByMonster monster attack start check", true);
-    return true;
-  },
-  fn(src, clock) {
-    const monster = (src.encounter as IMonsterEncounter).monsters[clock!];
-    const character = src.character;
-    const isDefending = src.isDefending;
-    return {
+    const params = {
+      monsters,
       character,
-      monster,
-      isDefending,
+      monsterCursor: index,
     };
-  },
-});
-
-// pause between different monster attacks
-export const monsterAttackTransitionFx = createEffect(delay);
-
-// trigger delay transition when monster was skipped
-sample({
-  clock: characterAttackedByMonster,
-  source: { character: $character, encounter: $encounter },
-  target: monsterAttackTransitionFx,
-  filter: (src, clock) => {
-    console.log("characterAttackedByMonster monster skip check", clock);
-    if (clock === null) {
-      return false;
-    }
-    const monster = (src.encounter as IMonsterEncounter).monsters[clock];
-    // skipped monsters not angry or dead should trigger immediate transition
-    if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
-      console.log(
-        "characterAttackedByMonster monster dead or not angry - trigger transition to next",
-        monster,
-        clock,
-      );
-      return true;
-    }
-    console.log("characterAttackedByMonster monster skip check", false);
-    return false;
+    return params;
   },
 });
 
 // set animation state to result of an attack
-$characterHitResult.on(monsterAttackCharacterFx.done, () => "hit");
-$characterHitResult.on(monsterAttackCharacterFx.fail, () => "miss");
-
-// update character state after successfull attack
 sample({
-  clock: monsterAttackCharacterFx.doneData,
-  target: characterHpChanged,
-  fn(damageDone) {
-    // hp must be reduced
-    return -damageDone;
-  },
+  clock: characterAttacksSingleMonsterFx.doneData,
+  target: $monstersHitResult,
 });
 
-// monster attack completed - start transition to next monster
+// update dungeon state with results of an attack
 sample({
-  clock: monsterAttackCharacterFx.finally,
-  target: monsterAttackTransitionFx,
-});
-
-// switch to next monster if any
-sample({
-  clock: monsterAttackTransitionFx.done,
-  target: $monstersCursor,
+  clock: characterAttacksSingleMonsterFx.finally,
   source: {
-    index: $monstersCursor,
-    length: $monstersLength,
-    characterIsDead: $characterIsDead,
-    encounter: $encounter,
+    state: $dungeonState,
+    level: $currentLevel,
+    tile: $currentMapTile,
+    monsters: $monsters,
   },
-  fn: (src) => {
-    const { index, length, characterIsDead, encounter } = src;
-    // check if round ended
-    const check = index !== null && index < length - 1 && !characterIsDead;
-    if (!check) {
-      console.log("round ended");
-      // set cursor to null if last alive monster
-      return null;
-    }
-    const monsters = (encounter as IMonsterEncounter).monsters;
-    let cursor = null;
-    // find next alive and angry monster
-    for (let i = index + 1; i < monsters.length; i++) {
-      const monster = monsters[i];
-      if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
-        continue;
-      }
-      cursor = i;
-      break;
-    }
-    // if no alive monsters left set cursor to null
-    return cursor;
-  },
+  target: $dungeonState,
+  fn: ({ level, monsters, state, tile }, clock) =>
+    updateDungeonStateWithResultsOfAnAttack(
+      level,
+      tile,
+      state,
+      monsters,
+      clock.status === "done" ? clock.result : clock.error,
+    ),
 });
 
-// reset hit result animation
-$characterHitResult.reset(monsterAttackTransitionFx.done);
-
-// trigger transition to character when all monsters attacked
-const monsterToCharacterTransition = createEvent();
-monsterToCharacterTransition.watch(() =>
-  console.info("monsterToCharacterTransition"),
-);
-
-sample({
-  clock: monsterAttackTransitionFx.finally,
-  target: monsterToCharacterTransition,
-  source: { index: $monstersCursor, length: $monstersLength },
-  filter: (src) => {
-    const { index } = src;
-    // if cursor is reset to null - monster phase is finished
-    const monstersAttackFinished = index === null;
-    console.log("monstersAttackFinished", monstersAttackFinished);
-    return monstersAttackFinished;
-  },
-});
-// switch round stage after attack is done
-$battleRound.on(monsterToCharacterTransition, () => "monster-to-character");
-
-type TFleeDetectionParams = {
-  character: TCharacterCombinedState;
-  isFleeing: boolean;
-};
-const monsterToCharacterTransitionFx = createEffect<
-  TFleeDetectionParams,
-  void,
-  void
->(
-  ({ character, isFleeing }) =>
-    new Promise((resolve, reject) => {
-      if (!isFleeing) {
-        // if not fleeing then just continue as usual
-        resolve();
-      }
-      // check if character managed to flee
-      // if succeed we should reject the promise to prevent switching to character round
-      const check = rollCharacterFleeChance(character);
-      if (check) {
-        reject();
-        return;
-      }
-      resolve();
-      return;
-    }),
-);
-
-// trigger monster to character transition effect when round triggered
-sample({
-  clock: monsterToCharacterTransition,
-  source: {
-    character: $characterState,
-    isFleeing: $isFleeing,
-    stats: $characterStats,
-  },
-  target: monsterToCharacterTransitionFx,
-});
-
-// start new character round when transition successfull
-sample({
-  clock: monsterToCharacterTransitionFx.done,
-  target: startCharacterRound,
-});
-
-type TFleeProcessingParams = {
-  dungeon: TDungeonLevelMap;
-};
-export const characterFledFx = createEffect<
-  TFleeProcessingParams,
-  IMapCoordinates,
-  void
->(
-  ({ dungeon }) =>
-    new Promise((resolve) => {
-      // we need to find a tile on the map around the character
-      // where s/he can flee - it must be open
-      const {
-        character: { x, y },
-        map,
-        height,
-        width,
-      } = dungeon;
-      const possibleCoordinates: IMapCoordinates[] = [];
-      if (x > 0) {
-        const leftTile = getMapTileByCoordinates({ x: x - 1, y }, map);
-        if (leftTile.open) {
-          possibleCoordinates.push({ x: x - 1, y });
-        }
-      }
-      if (y > 0) {
-        const topTile = getMapTileByCoordinates({ x, y: y - 1 }, map);
-        if (topTile.open) {
-          possibleCoordinates.push({ x, y: y - 1 });
-        }
-      }
-      if (x < width - 1) {
-        const rightTile = getMapTileByCoordinates({ x: x + 1, y }, map);
-        if (rightTile.open) {
-          possibleCoordinates.push({ x: x + 1, y });
-        }
-      }
-      if (y < height - 1) {
-        const bottomTile = getMapTileByCoordinates({ x, y: y + 1 }, map);
-        if (bottomTile.open) {
-          possibleCoordinates.push({ x, y: y + 1 });
-        }
-      }
-      // choose one of possible coordinates randomly
-      const randomBag = new RandomBag(possibleCoordinates);
-      const fleeCoordinates = randomBag.getRandomItem();
-      resolve(fleeCoordinates);
-    }),
-);
-
-// find appropriate cell and redirect to dungeon when transition failed
-sample({
-  clock: monsterToCharacterTransitionFx.fail,
-  source: { dungeon: $dungeonLevelMap },
-  target: characterFledFx,
-});
-
-sample({
-  clock: characterFledFx.doneData,
-  target: moveCharacter,
-});
-
-sample({
-  clock: characterFledFx.finally,
-  target: forward,
-  fn: () => "dungeon",
-});
-
-export const battleEnded = createEvent<IGameMonster[]>();
-
-// detect end of the battle after character round
-sample({
-  clock: characterAttacksMonsterFx.finally,
-  filter: (clock) => {
-    const result = clock.status === "done" ? clock.result : clock.error;
-    return areAllMonstersDead(result);
-  },
-  fn(clock) {
-    const result = clock.status === "done" ? clock.result : clock.error;
-    return result;
-  },
-  target: battleEnded,
-});
-
-// redirect to reward screen when battle ended. TODO: add a delay before redirecting
-// so that player can see proper hit animation
-const battleEndedDelayFx = createEffect(delay);
-sample({ clock: battleEnded, target: battleEndedDelayFx });
-sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
-
-export const $encounterMoneyReward = createStore(0);
-export const $encounterItemsReward = createStore<TGameItem[]>([]);
-export const $encounterXpReward = createStore(0);
-
-//const encounterEndedWithReward = createEvent<IEncounterReward>();
-const rewardCalculationFx = createEffect<
-  { character: TCharacterCombinedState; monsters: IGameMonster[] },
-  IEncounterReward
->(({ character, monsters }) => {
-  const money = generateMonstersMoneyReward(monsters);
-  const xp = generateMonstersXpReward(monsters);
-  const items = generateMonstersItemsReward(monsters, character);
-  const pluralSuffix = items.length > 1 ? "s" : "";
-  messageAdded(
-    `You've got ${money} gold, ${xp} experience and ${items.length} item${pluralSuffix} as a reward for this victory!`,
-  );
-  const reward: IEncounterReward = {
-    money,
-    xp,
-    items,
-  };
-  return reward;
-});
-
-sample({
-  clock: battleEnded,
-  source: $characterState,
-  target: rewardCalculationFx,
-  fn: (character, monsters) => ({ character, monsters }),
-});
-
-$encounterMoneyReward.on(
-  rewardCalculationFx.doneData,
-  (_, reward) => reward.money,
-);
-$encounterItemsReward.on(
-  rewardCalculationFx.doneData,
-  (_, reward) => reward.items,
-);
-$encounterXpReward.on(rewardCalculationFx.doneData, (_, reward) => reward.xp);
-
-export const itemDropped = createEvent<TGameItem>();
-$encounterItemsReward.on(itemDropped, (items, item) => {
-  const index = items.findIndex(itemsAreSame(item));
-  if (index < 0) {
-    throw new Error("Item to drop not found in the loot!");
-  }
-  const udpatedItems = [...items];
-  udpatedItems.splice(index, 1);
-  return udpatedItems;
-});
-
-export const waitForRescueTeam = createEvent();
-sample({
-  clock: waitForRescueTeam,
-  source: $currentLevel,
-  target: characterResurrected,
-});
-
+// Step 2.2. spells
 export const $spellSelected = createStore<IGameSpell | null>(null);
+const spellsApplicationDelayFx = createEffect(delay);
 $spellSelected.watch((spell) =>
   console.log("spell selected for casting", spell),
 );
@@ -712,7 +236,7 @@ sample({
 sample({
   clock: characterCastsASpell,
   source: $encounter,
-  target: startMonstersRound,
+  target: spellsApplicationDelayFx,
   filter(encounter, spell) {
     // ignore if not in an encounter
     if (encounter === null) {
@@ -727,105 +251,33 @@ sample({
   },
 });
 
-// TODO: target=all handling
-
-// TODO: targeted spell handling - create a separate event and fire it from UI
+// Step 2.2. - character attacks monster with spell
+// TODO: target=all and number handling
 // need to create a spell for testing first
+// event parameter - monster index in the list of current monsters
 export const monsterAttackedBySpell = createEvent<number>();
-
-// calculate results of an character attacking a single monster with spell
-type TMonsterAttackedWithSpellParams = {
-  mapTile: IMonsterMapTile;
-  monsterCursor: number;
-  character: ICharacterState;
-  spell: IGameSpell;
-};
-type TMonsterAttackedWithSpellResult = {
-  character: ICharacterState;
-  monsters: Array<IGameMonster>;
-};
-export const characterAttacksMonsterWithSpellFx = createEffect<
-  TMonsterAttackedWithSpellParams,
-  TMonsterAttackedWithSpellResult,
-  TMonsterAttackedWithSpellResult
->(
-  ({ mapTile, monsterCursor, character, spell }) =>
-    new Promise((resolve, reject) => {
-      // get spell effect and mana cost
-      console.log("characterAttacksMonsterWithSpellFx start", spell.name);
-      let castingLevel = spell.level;
-      // if fixed level from item, then no casting cost should be applied
-      let manaCost = 0;
-      if (typeof castingLevel === "undefined") {
-        const { guild, level, spellCost } = getMinLevelGuildForSpell(
-          spell.name,
-          character.guilds,
-        );
-        const currentGuildLevel = getCharacterGuildLevel(guild, character);
-        castingLevel = currentGuildLevel - level;
-        manaCost = spellCost;
-      }
-      if (character.mp - manaCost < 0) {
-        console.warn("Not enough mana!");
-        messageAdded("Not enough mana!");
-        reject({ character, monsters: mapTile.encounter.monsters });
-        return;
-      }
-      const spellEffect = createEffectForASpell(spell.name, castingLevel);
-      if (typeof spellEffect === "undefined") {
-        console.warn("Spell does nothing!");
-        messageAdded("Spell does nothing!");
-        reject({ character, monsters: mapTile.encounter.monsters });
-        return;
-      }
-      console.log(`spell ${spell.name} will cost ${manaCost} mana.`);
-      // update characters mana
-      const updatedCharacter: typeof character = {
-        ...character,
-        mp: character.mp - manaCost,
-      };
-
-      // all monsters must aggro
-      const monsters = mapTile.encounter.monsters.map((m) => ({
-        ...m,
-        aggro: EAggroMode.Angry,
-      }));
-      // select attacked monster
-      const monster = monsters[monsterCursor];
-      // TODO: check for monster resistances
-      const effects = monster.effects ?? [];
-      effects.push(spellEffect);
-      monster.effects = effects;
-      monsters[monsterCursor] = monster;
-      messageAdded(
-        `${monster.monster} received effect ${spellEffect.name} with power of ${spellEffect.power}`,
-      );
-      resolve({ character: updatedCharacter, monsters });
-    }),
-);
-
-// set animation state to result of an attack
-$monstersHitResult.on(characterAttacksMonsterWithSpellFx.done, () => "hit");
 
 // trigger effect when event is dispatched
 sample({
   clock: monsterAttackedBySpell,
   source: {
-    tile: $currentMapTile,
+    monsters: $monsters,
     character: $character,
     spell: $spellSelected,
   },
   target: characterAttacksMonsterWithSpellFx,
-  fn: ({ tile, character, spell }, index) => {
+  fn: ({ monsters, character, spell }, index) => {
     if (!spell) {
       // this error should never happen actually
       throw new Error("Invalid spell!");
     }
-    const mapTile = tile as IMonsterMapTile;
-    const params: TMonsterAttackedWithSpellParams = {
-      mapTile,
-      character,
+    if (!monsters) {
+      throw new Error("Invalid monsters state!");
+    }
+    const params = {
+      monsters,
       monsterCursor: index,
+      character,
       spell,
     };
     return params;
@@ -839,73 +291,352 @@ sample({
   },
 });
 
-// redirect monsters data from effects generation to application
+// redirect monsters data from effects generation to dungeon state
 sample({
   clock: characterAttacksMonsterWithSpellFx.doneData,
-  target: spellEffectsAppliedToMonstersFx,
-  fn({ monsters }) {
-    return [...monsters];
+  source: {
+    state: $dungeonState,
+    level: $currentLevel,
+    tile: $currentMapTile,
   },
+  target: $dungeonState,
+  fn: ({ level, state, tile }, { monsters }) =>
+    updateDungeonStateWithResultsOfAnAttack(level, tile, state, monsters, []),
 });
 
 // apply mana reduction to the character
 sample({
   clock: characterAttacksMonsterWithSpellFx.doneData,
+  source: $character,
   target: $character,
-  fn({ character }) {
-    return { ...character };
+  fn(character, { manaCost }) {
+    return { ...character, mp: character.mp - manaCost };
   },
 });
 
-// stop rounds rotation when all monsters are dead
+// Step 2.3
+// in case of attack from character (fighting or spell)
+// trigger aggro for all monsters and update dungeon state
 sample({
-  clock: spellEffectsAppliedToMonstersFx.doneData,
-  filter: (monsters) => {
-    return !areAllMonstersDead(monsters);
-  },
-  target: characterToMonsterTransition,
+  clock: [monsterAttacked, monsterAttackedBySpell],
+  source: { state: $dungeonState, level: $currentLevel, tile: $currentMapTile },
+  target: $dungeonState,
+  fn: toggleMonstersAggro,
 });
 
-// end battle if spell killed the last monster
+// Step 3 - detect end of battle
+// in case of all monsters are dead after fighting
+export const battleEnded = createEvent();
+// redirect to reward screen when battle ended.
+const battleEndedDelayFx = createEffect(delay);
+sample({ clock: battleEnded, target: battleEndedDelayFx });
+sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
+
+// do some delay to let state be updated
 sample({
-  clock: spellEffectsAppliedToMonstersFx.doneData,
+  clock: characterAttacksSingleMonsterFx.finally,
+  target: spellsApplicationDelayFx,
+});
+
+sample({
+  clock: spellsApplicationDelayFx.finally,
+  source: $monsters,
   filter: (monsters) => {
+    if (!monsters) {
+      return false;
+    }
     return areAllMonstersDead(monsters);
   },
   target: battleEnded,
 });
 
-// update dungeon state with results of an attack
+// Step 4. trigger spells effects application to monsters
+// if not all monsters are dead
+sample({
+  clock: spellsApplicationDelayFx.finally,
+  source: $monsters,
+  filter: (monsters) => {
+    if (!monsters) {
+      return false;
+    }
+    return !areAllMonstersDead(monsters);
+  },
+  target: spellEffectsAppliedToMonstersFx,
+});
+
+// show damage done on UI
 sample({
   clock: spellEffectsAppliedToMonstersFx.doneData,
-  source: {
-    state: $dungeonState,
-    level: $currentLevel,
-    mapTile: $currentMapTile,
-  },
-  target: $dungeonState,
-  fn: (source, monsters) => {
-    const { state, level, mapTile } = source;
-    const updatedMonsters = [...monsters];
-    const levelMap = [...state[level]];
-    const updatedMapTile = { ...mapTile } as IMonsterMapTile;
-    const tileIndex = getTileIndexByCoordinates(
-      { x: updatedMapTile.x, y: updatedMapTile.y },
-      levelMap,
-    );
-    updatedMapTile.encounter = {
-      ...updatedMapTile.encounter,
-      monsters: updatedMonsters,
-    };
-    levelMap[tileIndex] = updatedMapTile;
-    const updatedState = [...state];
-    updatedState.splice(level, 1, levelMap);
-    return updatedState;
+  target: $monstersHitResult,
+  fn({ hitResults }) {
+    return hitResults;
   },
 });
 
-export const $monsters = $encounter.map((encounter) =>
-  encounter !== null && encounter.type === EEncounterType.Monster
-    ? encounter.monsters
-    : null,
+// update dungeon state with results of effects application
+sample({
+  clock: spellEffectsAppliedToMonstersFx.doneData,
+  source: { state: $dungeonState, level: $currentLevel, tile: $currentMapTile },
+  target: $dungeonState,
+  fn: ({ level, state, tile }, { hitResults, monsters }) =>
+    updateDungeonStateWithResultsOfAnAttack(
+      level,
+      tile,
+      state,
+      monsters,
+      hitResults,
+    ),
+});
+
+// Step 5.
+// detect end of the battle after spells effects application
+sample({
+  clock: spellEffectsAppliedToMonstersFx.finally,
+  source: $monsters,
+  filter: (monsters) => {
+    if (!monsters) {
+      return false;
+    }
+    return areAllMonstersDead(monsters);
+  },
+  target: battleEnded,
+});
+
+// Step 6. if battle not ended - start transition of the battle round to monsters
+sample({
+  clock: spellEffectsAppliedToMonstersFx.finally,
+  source: $monsters,
+  filter: (monsters) => {
+    if (!monsters) {
+      return false;
+    }
+    return !areAllMonstersDead(monsters);
+  },
+  target: characterToMonsterTransition,
+});
+
+// Step 7.
+// defend mode - increase (double) defense for the next round
+// in future we can consider to keep defense boost for several rounds
+// to make it more useful for current single-character mode
+export const characterDefends = createEvent();
+const $isDefending = createStore(false);
+$isDefending.on(characterDefends, () => true);
+$isDefending.reset(startCharacterRound);
+
+// start monsters round right after defend mode is set
+sample({
+  clock: characterDefends,
+  target: startMonstersRound,
+});
+
+// Step 8.
+// flee mode - monsters are making a round
+// and at end we roll if character can exit the battle
+export const characterTriesToFlee = createEvent();
+const $isFleeing = createStore(false);
+$isFleeing.on(characterTriesToFlee, () => true);
+$isFleeing.reset(startCharacterRound);
+
+// start monsters round right after flee mode is set
+sample({
+  clock: characterTriesToFlee,
+  target: startMonstersRound,
+});
+
+// Step 9. monsters round
+
+// cursor to switch between monsters when its monsters round
+export const $monstersCursor = createStore<number | null>(null);
+$monstersCursor.watch((cursor) => console.info("$monstersCursor:", cursor));
+$monstersCursor.reset(startCharacterRound);
+
+// set cursor to the first alive monster when round starts
+sample({
+  clock: startMonstersRound,
+  source: $monsters,
+  target: $monstersCursor,
+  fn: (monsters) => {
+    if (!monsters) {
+      throw Error("Wrong encounter");
+    }
+    let cursor = 0;
+    while (monsters[cursor].hp === 0) {
+      cursor += 1;
+    }
+    return cursor;
+  },
+});
+
+// event to fire when monster attacks character
+// parameter - monster index in the monsters list of an encounter
+const characterAttackedByMonster = createEvent<number | null>();
+characterAttackedByMonster.watch((cursor) =>
+  console.info("characterAttackedByMonster:", cursor),
 );
+
+// toggle even for each new value of the cursor
+sample({
+  clock: $monstersCursor,
+  filter(cursor) {
+    return cursor !== null;
+  },
+  target: characterAttackedByMonster,
+});
+
+// trigger monster attack calculation
+sample({
+  clock: characterAttackedByMonster,
+  source: {
+    character: $characterState,
+    monsters: $monsters,
+    isDefending: $isDefending,
+  },
+  target: monsterAttackCharacterFx,
+  filter: ({ monsters }, clock) =>
+    shouldCharacterBeAttackedByMonster(clock, monsters),
+  fn({ character, isDefending, monsters }, clock) {
+    if (!monsters) {
+      throw new Error("invalid monsters state");
+    }
+    const monster = monsters[clock!];
+    return {
+      character,
+      monster,
+      isDefending,
+    };
+  },
+});
+
+// set animation state to result of an attack
+$characterHitResult.on(monsterAttackCharacterFx.doneData, (damage) => damage);
+$characterHitResult.on(monsterAttackCharacterFx.fail, () => null);
+
+// pause between different monster attacks
+export const monsterAttackTransitionFx = createEffect(delay);
+
+// trigger delay transition when monster was skipped
+sample({
+  clock: characterAttackedByMonster,
+  source: { character: $character, monsters: $monsters },
+  target: monsterAttackTransitionFx,
+  filter: ({ monsters }, cursor) => {
+    console.log("characterAttackedByMonster monster skip check", cursor);
+    if (cursor === null) {
+      return false;
+    }
+    if (!monsters) {
+      return false;
+    }
+    return !shouldCharacterBeAttackedByMonster(cursor, monsters);
+  },
+});
+
+// update character state after successfull attack
+sample({
+  clock: monsterAttackCharacterFx.doneData,
+  target: characterHpChanged,
+});
+
+// monster attack completed - start transition to next monster
+sample({
+  clock: monsterAttackCharacterFx.finally,
+  target: monsterAttackTransitionFx,
+});
+
+// switch to next monster if any
+sample({
+  clock: monsterAttackTransitionFx.done,
+  target: $monstersCursor,
+  source: {
+    index: $monstersCursor,
+    length: $monstersLength,
+    characterIsDead: $characterIsDead,
+    monsters: $monsters,
+  },
+  fn: ({ index, length, characterIsDead, monsters }) => {
+    if (!monsters) {
+      throw new Error("invalid monsters state");
+    }
+    // check if round ended
+    const check = index !== null && index < length - 1 && !characterIsDead;
+    if (!check) {
+      console.log("round ended");
+      // set cursor to null if last alive monster
+      return null;
+    }
+    let cursor = null;
+    // find next alive and angry monster
+    for (let i = index + 1; i < monsters.length; i++) {
+      const monster = monsters[i];
+      if (monster.aggro !== EAggroMode.Angry || monster.hp === 0) {
+        continue;
+      }
+      cursor = i;
+      break;
+    }
+    // if no alive monsters left set cursor to null
+    return cursor;
+  },
+});
+
+// reset hit result animation
+$characterHitResult.reset(monsterAttackTransitionFx.done);
+
+sample({
+  clock: monsterAttackTransitionFx.finally,
+  target: monsterToCharacterTransition,
+  source: { index: $monstersCursor, length: $monstersLength },
+  filter: (src) => {
+    const { index } = src;
+    // if cursor is reset to null - monster phase is finished
+    const monstersAttackFinished = index === null;
+    console.log("monstersAttackFinished", monstersAttackFinished);
+    return monstersAttackFinished;
+  },
+});
+
+// Step 10. detect if character managed to flee when monsters round is finished
+
+// trigger monster to character transition effect when round triggered
+sample({
+  clock: monsterToCharacterTransitionFx.finally,
+  source: {
+    character: $characterState,
+    isFleeing: $isFleeing,
+    stats: $characterStats,
+  },
+  target: characterFleeDetectionFx,
+});
+
+// start new character round when transition successfull
+sample({
+  clock: characterFleeDetectionFx.done,
+  target: startCharacterRound,
+});
+
+// find appropriate cell and redirect to dungeon when transition failed
+sample({
+  clock: characterFleeDetectionFx.fail,
+  source: { dungeon: $dungeonLevelMap },
+  target: characterFledFx,
+});
+
+sample({
+  clock: characterFledFx.doneData,
+  target: moveCharacter,
+});
+
+sample({
+  clock: characterFledFx.finally,
+  target: forward,
+  fn: () => "dungeon",
+});
+
+// Step 11. wait for resurrect
+export const waitForRescueTeam = createEvent();
+sample({
+  clock: waitForRescueTeam,
+  source: $currentLevel,
+  target: characterResurrected,
+});

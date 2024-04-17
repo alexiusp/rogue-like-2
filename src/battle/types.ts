@@ -6,7 +6,8 @@ export type TBattleRound =
   | "monster"
   | "monster-to-character";
 
-export type THitResult = "hit" | "miss";
+export type TCharacterHitResult = number | null;
+export type TMonstersHitResult = Array<number | null>;
 
 export interface IEncounterReward {
   money: number;
