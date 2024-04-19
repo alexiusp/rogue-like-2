@@ -73,14 +73,20 @@ type TToggleMonstersAggroParams = {
   level: number;
   tile: TMapTile;
   state: TDungeonState;
+  monsters: IGameMonster[] | null;
 };
 export function toggleMonstersAggro({
   level,
   tile,
   state,
+  monsters,
 }: TToggleMonstersAggroParams): TDungeonState {
+  console.log("toggleMonstersAggro");
+  if (!monsters) {
+    throw new Error("wrong monsters state");
+  }
   const mapTile = tile as IMonsterMapTile;
-  const monsters = mapTile.encounter.monsters.map((m) => ({
+  const updatedMonsters = monsters.map((m) => ({
     ...m,
     aggro: EAggroMode.Angry,
   }));
@@ -93,7 +99,7 @@ export function toggleMonstersAggro({
   );
   updatedMapTile.encounter = {
     ...updatedMapTile.encounter,
-    monsters,
+    monsters: updatedMonsters,
   };
   levelMap[tileIndex] = updatedMapTile;
   const updatedState = [...state];

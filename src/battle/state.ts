@@ -25,7 +25,11 @@ import {
 } from "../magic/models";
 import { characterCastsASpell } from "../magic/state";
 import { IGameSpell } from "../magic/types";
-import { EAggroMode, areAllMonstersDead } from "../monsters/model";
+import {
+  EAggroMode,
+  IGameMonster,
+  areAllMonstersDead,
+} from "../monsters/model";
 import { forward } from "../navigation";
 import {
   characterAttacksMonsterWithSpellFx,
@@ -298,10 +302,29 @@ sample({
     state: $dungeonState,
     level: $currentLevel,
     tile: $currentMapTile,
+    monsters: $monsters,
   },
   target: $dungeonState,
-  fn: ({ level, state, tile }, { monsters }) =>
-    updateDungeonStateWithResultsOfAnAttack(level, tile, state, monsters, []),
+  fn: ({ level, state, tile, monsters }, { monsters: updatedMonsters }) => {
+    if (!monsters) {
+      throw new Error("invalid monsters state");
+    }
+    // this merging is needed to avoid overriding aggro monsters with monsters with effects
+    const mergedMonsters = monsters.map((monster, index) => {
+      const updatedMonster: IGameMonster = {
+        ...monster,
+        effects: updatedMonsters[index].effects,
+      };
+      return updatedMonster;
+    });
+    return updateDungeonStateWithResultsOfAnAttack(
+      level,
+      tile,
+      state,
+      mergedMonsters,
+      [],
+    );
+  },
 });
 
 // apply mana reduction to the character
@@ -319,7 +342,12 @@ sample({
 // trigger aggro for all monsters and update dungeon state
 sample({
   clock: [monsterAttacked, monsterAttackedBySpell],
-  source: { state: $dungeonState, level: $currentLevel, tile: $currentMapTile },
+  source: {
+    state: $dungeonState,
+    level: $currentLevel,
+    tile: $currentMapTile,
+    monsters: $monsters,
+  },
   target: $dungeonState,
   fn: toggleMonstersAggro,
 });
@@ -334,7 +362,10 @@ sample({ clock: battleEndedDelayFx.done, target: forward, fn: () => "reward" });
 
 // do some delay to let state be updated
 sample({
-  clock: characterAttacksSingleMonsterFx.finally,
+  clock: [
+    characterAttacksSingleMonsterFx.finally,
+    characterAttacksMonsterWithSpellFx.finally,
+  ],
   target: spellsApplicationDelayFx,
 });
 

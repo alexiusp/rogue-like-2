@@ -70,7 +70,6 @@
 
 # Next tasks (sorted):
 
-- bug: battle freezes on magic use (post-refactoring bug)
 - bug: usable item must be selected differently - currently all items with same name are selected
 - spells/magic
   - items improving characters stats (books, potions etc.)
