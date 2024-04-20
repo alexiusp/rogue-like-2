@@ -5,13 +5,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useUnit } from "effector-react";
-import { $spellSelected } from "../../battle/state";
+import { useState } from "react";
 import ItemIcon from "../../items/ItemIcon";
 import {
   filterUsable,
   filterUsableInBattle,
   filterUsableInDungeon,
-  getUsableItemSpellName,
   itemCanBeUsed,
   itemCanBeUsedInBattle,
   itemCanBeUsedInDungeon,
@@ -27,10 +26,11 @@ export default function UsableItemsList({
   filter = "all",
 }: IUsableItemsListProps) {
   const allItems = useUnit($characterInventory);
-  const selectedBattleSpell = useUnit($spellSelected);
-  const selectedSpell =
-    filter === "battle" && selectedBattleSpell ? selectedBattleSpell.name : "";
-  const handleUseItem = (index: number) => () => characterUsesAnItem(index);
+  const [selectedItem, selectItem] = useState(-1);
+  const handleUseItem = (index: number) => () => {
+    selectItem(index);
+    characterUsesAnItem(index);
+  };
   let checkFn = itemCanBeUsed;
   let filterFn = filterUsable;
   switch (filter) {
@@ -50,7 +50,7 @@ export default function UsableItemsList({
     <ToggleButtonGroup
       size="large"
       className="usable-items-list"
-      value={selectedSpell}
+      value={selectedItem}
     >
       {allItems.map((item, index) => {
         if (!checkFn(item)) {
@@ -60,18 +60,14 @@ export default function UsableItemsList({
           <ToggleButton
             disabled={item.usesLeft === 0}
             size="large"
-            value={getUsableItemSpellName(item)}
+            value={index}
             key={`usable-items-list-${item.item}-${index}`}
             onClick={handleUseItem(index)}
           >
             <Badge
               showZero={true}
               badgeContent={item.usesLeft}
-              color={
-                getUsableItemSpellName(item) === selectedSpell
-                  ? "warning"
-                  : "primary"
-              }
+              color={index === selectedItem ? "warning" : "primary"}
             >
               <ItemIcon item={item.item} />
             </Badge>

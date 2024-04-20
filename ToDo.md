@@ -70,9 +70,8 @@
 
 # Next tasks (sorted):
 
-- bug: usable item must be selected differently - currently all items with same name are selected
 - spells/magic
-  - items improving characters stats (books, potions etc.)
+  - items permanently improving characters stats (books, potions etc.)
   - monster special attacks
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array
 - xp needed to level up must be generated from parameters, not hardcoded as an array
@@ -81,3 +80,4 @@
 - chests: traps
 - falling into a pit handling
 - add water living monster to test how battle on water tile going
+- more monsters and items

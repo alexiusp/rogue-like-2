@@ -1,4 +1,4 @@
-import moneyImg from "../assets/items/coins.png";
+import moneyImg from "../../assets/items/coins.png";
 import "./MoneyLabel.css";
 
 interface IMoneyLabelProps {

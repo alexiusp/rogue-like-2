@@ -7,10 +7,10 @@ import {
   moneyAddedToCharacter,
   xpGainedByCharacter,
 } from "../character/state";
+import MoneyLabel from "../components/MoneyLabel/MoneyLabel";
 import { $chest } from "../dungeon/state";
 import ItemDetailsDialog from "../items/ItemDetailsDialog";
 import ItemIcon from "../items/ItemIcon";
-import MoneyLabel from "../items/MoneyLabel";
 import { TGameItem } from "../items/models";
 import Screen from "../layout/Screen";
 import { forward } from "../navigation";
