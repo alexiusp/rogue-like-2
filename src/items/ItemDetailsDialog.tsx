@@ -25,6 +25,7 @@ import {
   getItemDefense,
   getItemProtection,
   getItemSpellStatusLabel,
+  getItemStatsModLabel,
 } from "./models";
 
 interface IItemDetailsDialogProps {
@@ -58,6 +59,7 @@ export default function ItemDetailsDialog({
   const statsRequired = baseItem.statsRequired;
   const statsModified = baseItem.statsBonuses;
   const isNotRestricted = isNotGuildRestricted(baseItem.guildRequired);
+  const modStatsStatus = getItemStatsModLabel(baseItem);
   const handsStatus = idLevel > 0 ? getHandsStatusLabel(baseItem) : "";
   const spellStatus = idLevel > 1 ? getItemSpellStatusLabel(baseItem) : "";
   const usesStatus =
@@ -169,6 +171,7 @@ export default function ItemDetailsDialog({
             </Table>
           </Grid>
           <Grid xs={6}>
+            <Typography>{modStatsStatus}</Typography>
             <Typography>{handsStatus}</Typography>
             <Typography>{spellStatus}</Typography>
             <Typography>{usesStatus}</Typography>

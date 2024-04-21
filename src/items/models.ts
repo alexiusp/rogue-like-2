@@ -17,7 +17,8 @@ type TItemKind =
   | "belt"
   | "ring"
   | "amulet"
-  | "stone";
+  | "stone"
+  | "book";
 
 type TSlot =
   | "head"
@@ -84,7 +85,9 @@ export interface IUsableBaseItem extends IBaseItem {
   spell: IGameSpell;
 }
 
-export type TBaseItem = IUsableBaseItem | IEquippableBaseItem;
+export interface IStatsBaseItem extends IBaseItem {}
+
+export type TBaseItem = IUsableBaseItem | IEquippableBaseItem | IStatsBaseItem;
 
 export function isBaseItemEquippable(
   item: TBaseItem,
@@ -94,6 +97,10 @@ export function isBaseItemEquippable(
 
 export function isBaseItemUsable(item: TBaseItem): item is IUsableBaseItem {
   return typeof item.spell !== "undefined";
+}
+
+export function isStatsBaseItem(item: TBaseItem): item is IStatsBaseItem {
+  return !isBaseItemEquippable(item) && !isBaseItemUsable(item);
 }
 
 export type IdLevel = 0 | 1 | 2; //0 - unidentified, 1 - partially identified, 2 - fully identified
@@ -115,7 +122,11 @@ export interface IUsableGameItem extends IGameItem {
   usesLeft: number;
 }
 
-export type TGameItem = IEquipmentGameItem | IUsableGameItem;
+export interface IStatsGameItem extends IGameItem {
+  kind: "stats";
+}
+
+export type TGameItem = IEquipmentGameItem | IUsableGameItem | IStatsGameItem;
 
 /** This comparison is used to find identical items - all properties must match */
 export const itemsAreSame =
@@ -219,7 +230,7 @@ export function calculateItemPriceToSell(
   const baseItem = GlobalItemsCatalogue[item.item];
   const idModifier = item.idLevel === 0 ? 0.5 : item.idLevel === 1 ? 0.8 : 1;
   let spellModifier = 1;
-  if (item.kind === "usable" && !isBaseItemEquippable(baseItem)) {
+  if (item.kind === "usable" && isBaseItemUsable(baseItem)) {
     spellModifier = (10 * item.usesLeft) / baseItem.uses;
   }
   if (isBaseItemEquippable(baseItem) && baseItem.spell) {
@@ -324,10 +335,17 @@ export function generateRandomItemByName(
     };
     return item;
   }
-  const item: IUsableGameItem = {
+  if (isBaseItemUsable(baseItem)) {
+    const item: IUsableGameItem = {
+      ...common,
+      kind: "usable",
+      usesLeft: baseItem.uses,
+    };
+    return item;
+  }
+  const item: IStatsGameItem = {
     ...common,
-    kind: "usable",
-    usesLeft: baseItem.uses,
+    kind: "stats",
   };
   return item;
 }
@@ -357,6 +375,13 @@ export function getItemSpellStatusLabel(baseItem: TBaseItem) {
   }
   const level = spell.level ? `level ${spell.level}` : "casters spell level";
   return `Casts spell "${spell.name}" at ${level} ${suffix}`;
+}
+
+export function getItemStatsModLabel(baseItem: TBaseItem) {
+  if (isStatsBaseItem(baseItem)) {
+    return "Modifies Stat(s)";
+  }
+  return "";
 }
 
 export function getItemStatsBonuses(itemName: string) {
@@ -450,12 +475,4 @@ export function itemCanBeUsedInBattle(
 
 export function filterUsableInBattle(items: TGameItem[]) {
   return items.filter(itemCanBeUsedInBattle);
-}
-
-export function getUsableItemSpellName(item: IUsableGameItem) {
-  const baseitem = GlobalItemsCatalogue[item.item];
-  if (!isBaseItemUsable(baseitem)) {
-    return "";
-  }
-  return baseitem.spell.name;
 }

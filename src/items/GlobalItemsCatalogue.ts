@@ -2,11 +2,17 @@ import {
   NoStatsRequired,
   ZeroStats,
   extendStatsRequired,
+  extendZeroStats,
 } from "../common/stats";
 import { createCatalogue } from "../common/utils";
 import { ZeroGuilds } from "../guilds/models";
 import { EGuild } from "../guilds/types";
-import { IEquippableBaseItem, IUsableBaseItem, TBaseItem } from "./models";
+import {
+  IEquippableBaseItem,
+  IStatsBaseItem,
+  IUsableBaseItem,
+  TBaseItem,
+} from "./models";
 
 const BronzeDagger: IEquippableBaseItem = {
   name: "Bronze Dagger",
@@ -227,6 +233,17 @@ const GlowingRock: IUsableBaseItem = {
   uses: 5,
 };
 
+const PotionOfIntelligence: IStatsBaseItem = {
+  name: "Potion of intelligence",
+  level: 1,
+  picture: "potionAcid.png",
+  kind: "potion",
+  aligned: true,
+  statsRequired: ZeroStats,
+  statsBonuses: extendZeroStats({ intelligence: 1 }),
+  guildRequired: ZeroGuilds,
+};
+
 const GlobalItemsCatalogue: Record<string, TBaseItem> = createCatalogue([
   BronzeDagger,
   IronDagger,
@@ -237,6 +254,7 @@ const GlobalItemsCatalogue: Record<string, TBaseItem> = createCatalogue([
   RingOfShield,
   AmuletOfUltravision,
   GlowingRock,
+  PotionOfIntelligence,
 ]);
 export default GlobalItemsCatalogue;
 

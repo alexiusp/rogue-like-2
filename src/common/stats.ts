@@ -47,6 +47,13 @@ export function extendStatsRequired(
   };
 }
 
+export function extendZeroStats(stats: Partial<TStatsValues>): TStatsValues {
+  return {
+    ...ZeroStats,
+    ...stats,
+  };
+}
+
 export function getStatBonus(statValue: number) {
   if (statValue <= 1) {
     return -5;
