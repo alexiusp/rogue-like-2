@@ -58,10 +58,12 @@
 - chests: mimics -> when character tries to open chest its transformed to monster and attacks
 - Runes and rune-words integrated into lore and used for naming of scrolls/artefacts etc.
 - different UI effects for different spells in battle and also in dungeon
+- falling into a pit handling
+- add water living monster to test how battle on water tile going
+- more monsters and items
 
 # Known bugs to fix:
 
-- refactor effects to fire an event on apply so that state manager can handle it
 - save slot label must be updated on guild change (in future also on title change?)
 - some items don't have proper image yet
 - remove effect icon from dead monsters
@@ -72,11 +74,9 @@
 
 - spells/magic
   - monster special attacks
-- spell distribution by guilds must be generated from parameters, not hardcoded as an array
-- xp needed to level up must be generated from parameters, not hardcoded as an array
-- fighting guild skills calculation - crit, backstab etc.
+- rethink leveling mechanics:
+  - spell distribution by guilds must be generated from parameters, not hardcoded as an array
+  - xp needed to level up must be generated from parameters, not hardcoded as an array
+  - fighting guild skills calculation and application - crit, backstab etc.
 - Buffers or hotkeys - panel with quick access to spells/items
 - chests: traps
-- falling into a pit handling
-- add water living monster to test how battle on water tile going
-- more monsters and items
