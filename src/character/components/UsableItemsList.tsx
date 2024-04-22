@@ -11,6 +11,7 @@ import {
   filterUsable,
   filterUsableInBattle,
   filterUsableInDungeon,
+  isItemUsable,
   itemCanBeUsed,
   itemCanBeUsedInBattle,
   itemCanBeUsedInDungeon,
@@ -56,9 +57,11 @@ export default function UsableItemsList({
         if (!checkFn(item)) {
           return null;
         }
+        const disabled = !itemCanBeUsed(item);
+        const badgeContent = isItemUsable(item) ? item.usesLeft : null;
         return (
           <ToggleButton
-            disabled={item.usesLeft === 0}
+            disabled={disabled}
             size="large"
             value={index}
             key={`usable-items-list-${item.item}-${index}`}
@@ -66,7 +69,7 @@ export default function UsableItemsList({
           >
             <Badge
               showZero={true}
-              badgeContent={item.usesLeft}
+              badgeContent={badgeContent}
               color={index === selectedItem ? "warning" : "primary"}
             >
               <ItemIcon item={item.item} />

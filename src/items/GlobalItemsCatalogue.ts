@@ -244,6 +244,17 @@ const PotionOfIntelligence: IStatsBaseItem = {
   guildRequired: ZeroGuilds,
 };
 
+const BookOfIntelligence: IStatsBaseItem = {
+  name: "Tome of learning",
+  level: 1,
+  picture: "bookRedRibbon.png",
+  kind: "book",
+  aligned: true,
+  statsRequired: extendStatsRequired({ intelligence: 10, wisdom: 10 }),
+  statsBonuses: extendZeroStats({ intelligence: 1 }),
+  guildRequired: ZeroGuilds,
+};
+
 const GlobalItemsCatalogue: Record<string, TBaseItem> = createCatalogue([
   BronzeDagger,
   IronDagger,
@@ -255,6 +266,7 @@ const GlobalItemsCatalogue: Record<string, TBaseItem> = createCatalogue([
   AmuletOfUltravision,
   GlowingRock,
   PotionOfIntelligence,
+  BookOfIntelligence,
 ]);
 export default GlobalItemsCatalogue;
 

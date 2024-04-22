@@ -28,6 +28,7 @@ import { IGameMonster } from "../monsters/model";
 import {
   ECharacterRace,
   RaceAgeMap,
+  RaceStatsMap,
   getRaceAttackModifier,
   getRaceDamageModifier,
   getRaceDefenseModifier,
@@ -241,4 +242,58 @@ export function rollCharacterFleeChance(character: TCharacterCombinedState) {
   const thiefSkill = getTotalSkillFromGuilds("thief", character.guilds);
   const rollValue = baseValue + 2 * (dexBonus + thiefSkill) + wisBonus;
   return rollDiceCheck(rollValue, "1D100");
+}
+
+export function modifyStats(
+  baseStats: TStatsValues,
+  statsMod: TStatsValues,
+  race: ECharacterRace,
+): TStatsValues {
+  const strength = Math.max(
+    RaceStatsMap.strength[race][0],
+    Math.min(
+      RaceStatsMap.strength[race][1],
+      baseStats.strength + statsMod.strength,
+    ),
+  );
+  const intelligence = Math.max(
+    RaceStatsMap.intelligence[race][0],
+    Math.min(
+      RaceStatsMap.intelligence[race][1],
+      baseStats.intelligence + statsMod.intelligence,
+    ),
+  );
+  const wisdom = Math.max(
+    RaceStatsMap.wisdom[race][0],
+    Math.min(RaceStatsMap.wisdom[race][1], baseStats.wisdom + statsMod.wisdom),
+  );
+  const endurance = Math.max(
+    RaceStatsMap.endurance[race][0],
+    Math.min(
+      RaceStatsMap.endurance[race][1],
+      baseStats.endurance + statsMod.endurance,
+    ),
+  );
+  const charisma = Math.max(
+    RaceStatsMap.charisma[race][0],
+    Math.min(
+      RaceStatsMap.charisma[race][1],
+      baseStats.charisma + statsMod.charisma,
+    ),
+  );
+  const dexterity = Math.max(
+    RaceStatsMap.dexterity[race][0],
+    Math.min(
+      RaceStatsMap.dexterity[race][1],
+      baseStats.dexterity + statsMod.dexterity,
+    ),
+  );
+  return {
+    strength,
+    intelligence,
+    wisdom,
+    endurance,
+    charisma,
+    dexterity,
+  };
 }

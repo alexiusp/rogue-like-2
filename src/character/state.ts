@@ -31,7 +31,8 @@ import {
   isBaseItemUsable,
   isItemEquipable,
   isItemUsable,
-  itemCanBeUsed,
+  isStatsItem,
+  itemHasUsesLeft,
 } from "../items/models";
 import { IGameSpell } from "../magic/types";
 import { messageAdded } from "../messages/state";
@@ -40,6 +41,7 @@ import {
   createNewCharacter,
   findCharacterGuildIndex,
   getCharacterGuild,
+  modifyStats,
 } from "./models";
 import {
   ECharacterRace,
@@ -774,32 +776,65 @@ export const characterUsesAnItemFx = createEffect<
 // get item and send it to effect to create a spell
 sample({
   clock: characterUsesAnItem,
-  source: { character: $character, items: $characterInventory },
+  source: $characterInventory,
   target: characterUsesAnItemFx,
-  fn({ items }, itemIndex) {
+  fn(items, itemIndex) {
     const item = items[itemIndex];
-    if (!isItemUsable(item) || !itemCanBeUsed(item)) {
+    if (!isItemUsable(item) || !itemHasUsesLeft(item)) {
       throw new Error("unusable item");
     }
     return item;
   },
+  filter(items, itemIndex) {
+    const item = items[itemIndex];
+    return isItemUsable(item) && itemHasUsesLeft(item);
+  },
 });
 
-// reduce item uses
+// get item and update character stats
+sample({
+  clock: characterUsesAnItem,
+  source: {
+    items: $characterInventory,
+    race: $characterRace,
+    stats: $characterStats,
+  },
+  target: $characterStats,
+  fn({ items, race, stats }, itemIndex) {
+    const item = items[itemIndex];
+    if (!isStatsItem(item)) {
+      throw new Error("this item can not be used");
+    }
+    const baseItem = GlobalItemsCatalogue[item.item];
+    const statsMod = baseItem.statsBonuses;
+    const udpatedStats = modifyStats(stats, statsMod, race);
+    return udpatedStats;
+  },
+  filter({ items }, itemIndex) {
+    const item = items[itemIndex];
+    return isStatsItem(item);
+  },
+});
+
+// reduce item uses or remove item if its a stat item
 sample({
   clock: characterUsesAnItem,
   source: $characterInventory,
   target: $characterInventory,
   fn(inventory, itemIndex) {
     const item = inventory[itemIndex];
-    if (!isItemUsable(item) || !itemCanBeUsed(item)) {
+    const updatedItems = [...inventory];
+    if (isStatsItem(item)) {
+      updatedItems.splice(itemIndex, 1);
+      return updatedItems;
+    }
+    if (!isItemUsable(item) || !itemHasUsesLeft(item)) {
       throw new Error("unusable item");
     }
     const updatedItem: IUsableGameItem = {
       ...item,
       usesLeft: item.usesLeft - 1,
     };
-    const updatedItems = [...inventory];
     updatedItems[itemIndex] = updatedItem;
     return updatedItems;
   },

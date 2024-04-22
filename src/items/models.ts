@@ -425,11 +425,22 @@ export function isItemEquipable(item: TGameItem): item is IEquipmentGameItem {
   return item.kind === "equipable";
 }
 
-export function itemCanBeUsed(item: TGameItem): item is IUsableGameItem {
+export function isStatsItem(item: TGameItem): item is IStatsGameItem {
+  return item.kind === "stats";
+}
+
+export function itemHasUsesLeft(item: TGameItem): item is IUsableGameItem {
   if (!isItemUsable(item)) {
     return false;
   }
   return item.usesLeft > 0;
+}
+
+export function itemCanBeUsed(item: TGameItem) {
+  if (isItemEquipable(item)) {
+    return false;
+  }
+  return isStatsItem(item) || itemHasUsesLeft(item);
 }
 
 export function filterUsable(items: TGameItem[]) {
@@ -438,12 +449,13 @@ export function filterUsable(items: TGameItem[]) {
       usableItems.push(item);
     }
     return usableItems;
-  }, [] as IUsableGameItem[]);
+  }, [] as TGameItem[]);
 }
 
-export function itemCanBeUsedInDungeon(
-  item: TGameItem,
-): item is IUsableGameItem {
+export function itemCanBeUsedInDungeon(item: TGameItem) {
+  if (isStatsItem(item)) {
+    return true;
+  }
   if (!isItemUsable(item)) {
     return false;
   }
@@ -459,9 +471,7 @@ export function filterUsableInDungeon(items: TGameItem[]) {
   return items.filter(itemCanBeUsedInDungeon);
 }
 
-export function itemCanBeUsedInBattle(
-  item: TGameItem,
-): item is IUsableGameItem {
+export function itemCanBeUsedInBattle(item: TGameItem) {
   if (!isItemUsable(item)) {
     return false;
   }

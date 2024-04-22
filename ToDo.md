@@ -71,7 +71,6 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - items permanently improving characters stats (books, potions etc.)
   - monster special attacks
 - spell distribution by guilds must be generated from parameters, not hardcoded as an array
 - xp needed to level up must be generated from parameters, not hardcoded as an array
