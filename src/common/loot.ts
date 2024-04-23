@@ -1,32 +1,35 @@
-import { getNullBag } from "./random";
+import {
+  BronzeDagger,
+  HealingPotion,
+  IronDagger,
+  WoodenShield,
+  getItemsListForLevel,
+} from "../items/GlobalItemsCatalogue";
+import { getNullBag, padWithNulls } from "./random";
 
-const BaseLevel1ItemLoot: (string | null)[] = [
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Bronze Dagger",
-  "Wooden Shield",
-  "Wooden Shield",
-  "Leather Boots",
-  "Leather Belt",
-  "Healing Potion",
-  "Healing Potion",
-  ...getNullBag(30),
-];
+const BaseLevel1ItemLoot: (string | null)[] = padWithNulls(
+  [
+    ...getItemsListForLevel(1),
+    BronzeDagger.name,
+    BronzeDagger.name,
+    BronzeDagger.name,
+    WoodenShield.name,
+    HealingPotion.name,
+  ],
+  40,
+);
 
-const BaseLevel2ItemLoot: (string | null)[] = [
-  "Bronze Dagger",
-  "Iron Dagger",
-  "Iron Dagger",
-  "Iron Dagger",
-  "Wooden Shield",
-  "Leather Boots",
-  "Leather Belt",
-  "Healing Potion",
-  "Healing Potion",
-  "Healing Potion",
-  ...getNullBag(30),
-];
+const BaseLevel2ItemLoot: (string | null)[] = padWithNulls(
+  [
+    ...getItemsListForLevel(1),
+    ...getItemsListForLevel(2),
+    IronDagger.name,
+    IronDagger.name,
+    HealingPotion.name,
+    HealingPotion.name,
+  ],
+  50,
+);
 
 export const ItemLootByLevel = [[], BaseLevel1ItemLoot, BaseLevel2ItemLoot];
 

@@ -14,7 +14,7 @@ import {
   TBaseItem,
 } from "./models";
 
-const BronzeDagger: IEquippableBaseItem = {
+export const BronzeDagger: IEquippableBaseItem = {
   name: "Bronze Dagger",
   level: 1,
   picture: "bronze_dagger.png",
@@ -40,7 +40,7 @@ const BronzeDagger: IEquippableBaseItem = {
   swings: 1,
 };
 
-const IronDagger: IEquippableBaseItem = {
+export const IronDagger: IEquippableBaseItem = {
   name: "Iron Dagger",
   level: 2,
   picture: "iron_dagger.png",
@@ -70,7 +70,7 @@ const IronDagger: IEquippableBaseItem = {
   swings: 1,
 };
 
-const WoodenShield: IEquippableBaseItem = {
+export const WoodenShield: IEquippableBaseItem = {
   name: "Wooden Shield",
   level: 1,
   picture: "wooden_shield.png",
@@ -98,7 +98,7 @@ const WoodenShield: IEquippableBaseItem = {
   hands: 1,
 };
 
-const LeatherBoots: IEquippableBaseItem = {
+export const LeatherBoots: IEquippableBaseItem = {
   name: "Leather Boots",
   level: 1,
   picture: "leather_boots.png",
@@ -122,7 +122,7 @@ const LeatherBoots: IEquippableBaseItem = {
   hands: 0,
 };
 
-const LeatherBelt: IEquippableBaseItem = {
+export const LeatherBelt: IEquippableBaseItem = {
   name: "Leather Belt",
   level: 1,
   picture: "leather_belt.png",
@@ -139,7 +139,7 @@ const LeatherBelt: IEquippableBaseItem = {
   hands: 0,
 };
 
-const HealingPotion: IUsableBaseItem = {
+export const HealingPotion: IUsableBaseItem = {
   name: "Healing Potion",
   level: 1,
   picture: "potionRed.png",
@@ -152,7 +152,7 @@ const HealingPotion: IUsableBaseItem = {
   uses: 5,
 };
 
-const RingOfShield: IEquippableBaseItem = {
+export const RingOfShield: IEquippableBaseItem = {
   name: "Ring of Shield",
   level: 3,
   picture: "",
@@ -179,7 +179,7 @@ const RingOfShield: IEquippableBaseItem = {
   spell: { name: "shield", level: 10 },
 };
 
-const AmuletOfUltravision: IEquippableBaseItem = {
+export const AmuletOfUltravision: IEquippableBaseItem = {
   name: "Amulet of Ultravision",
   level: 2,
   picture: "",
@@ -201,7 +201,7 @@ const AmuletOfUltravision: IEquippableBaseItem = {
   spell: { name: "see invisible", level: 0 },
 };
 
-const GlowingRock: IUsableBaseItem = {
+export const GlowingRock: IUsableBaseItem = {
   name: "Glowing Rock",
   level: 2,
   picture: "glowing-rock.png",
@@ -233,7 +233,7 @@ const GlowingRock: IUsableBaseItem = {
   uses: 5,
 };
 
-const PotionOfIntelligence: IStatsBaseItem = {
+export const PotionOfIntelligence: IStatsBaseItem = {
   name: "Potion of intelligence",
   level: 1,
   picture: "potionAcid.png",
@@ -244,7 +244,7 @@ const PotionOfIntelligence: IStatsBaseItem = {
   guildRequired: ZeroGuilds,
 };
 
-const BookOfIntelligence: IStatsBaseItem = {
+export const BookOfIntelligence: IStatsBaseItem = {
   name: "Tome of learning",
   level: 1,
   picture: "bookRedRibbon.png",

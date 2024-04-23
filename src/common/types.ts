@@ -26,3 +26,9 @@ export type TNatureElement =
   | "electric"
   | "mind"
   | "astral";
+
+// resistances against "nature elements" in percentage ratio
+export interface IResistance {
+  element: TNatureElement;
+  ratio: number;
+}

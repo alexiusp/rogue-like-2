@@ -73,7 +73,7 @@
 # Next tasks (sorted):
 
 - spells/magic
-  - monster special attacks
+  - monster special attacks and resistances
 - rethink leveling mechanics:
   - spell distribution by guilds must be generated from parameters, not hardcoded as an array
   - xp needed to level up must be generated from parameters, not hardcoded as an array

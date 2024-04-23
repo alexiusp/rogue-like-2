@@ -60,8 +60,8 @@ import { IBaseMonster } from "./model";
  *  - Fire Wyrm
  */
 
-const GiantRat: IBaseMonster = {
-  name: "Giant Rat",
+const LargeRat: IBaseMonster = {
+  name: "Large Rat",
   picture: "giant-rat.png",
   type: "animal",
   alignment: EAlignment.Neutral,
@@ -77,6 +77,7 @@ const GiantRat: IBaseMonster = {
   baseHp: 15,
   baseMp: 0,
   specials: [],
+  resistances: [],
   items: [...ItemLootByLevel[1]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water or sand
@@ -107,6 +108,7 @@ const GiantSpider: IBaseMonster = {
   baseHp: 18,
   baseMp: 0,
   specials: [],
+  resistances: [],
   items: [...ItemLootByLevel[2]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water or sand
@@ -137,6 +139,7 @@ const PoisonousSnake: IBaseMonster = {
   baseHp: 8,
   baseMp: 0,
   specials: [],
+  resistances: [],
   items: [...ItemLootByLevel[2]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water
@@ -152,7 +155,7 @@ const PoisonousSnake: IBaseMonster = {
 };
 
 const GlobalMonsterCatalogue: Record<string, IBaseMonster> = createCatalogue([
-  GiantRat,
+  LargeRat,
   GiantSpider,
   PoisonousSnake,
 ]);

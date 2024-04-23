@@ -9,6 +9,12 @@ export function getNullBag(amount: number): Array<null> {
   return new Array(amount).fill(null);
 }
 
+export function padWithNulls<T>(items: T[], amount: number): TRandomBag<T> {
+  const presentLength = items.length;
+  const restNulls = getNullBag(amount - presentLength);
+  return [...items, ...restNulls];
+}
+
 export function getNumberBag(amount: number, filler: number): Array<number> {
   return new Array(amount).fill(filler);
 }

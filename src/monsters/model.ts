@@ -9,6 +9,7 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import { IResistance } from "../common/types";
 import { ETerrain, ETerrainEffect } from "../dungeon/types";
 import { TGameItem, generateRandomItemByName } from "../items/models";
 import { IGameEffect } from "../magic/effects/types";
@@ -16,6 +17,22 @@ import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 
 // type of monster will be used for charming spells
 type TMonsterType = "animal" | "insect" | "reptile" | "humanoid" | "undead";
+
+type TMonsterAttack =
+  | "poison"
+  | "disease"
+  | "stone"
+  | "age"
+  | "paralysis"
+  | "electrocute"
+  | "drain"
+  | "fire"
+  | "cold"
+  | "acid"
+  | "crit"
+  | "backstab"
+  | "destroy"
+  | "steal";
 
 // base monster info stored in the catalogue and common for all monsters
 // of the same name
@@ -41,7 +58,8 @@ export interface IBaseMonster {
   baseMp: number;
   // possible special abilities (not yet implemented)
   // attacks, resistances, spells etc.
-  specials: Array<string>;
+  specials: Array<TMonsterAttack>;
+  resistances: Array<IResistance>;
   // random bag of possible additional loot (names to calculate from)
   items: TRandomBag<string>;
   // random bag of possible money loot
