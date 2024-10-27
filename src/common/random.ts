@@ -45,6 +45,11 @@ export class RandomBag<T> {
   }
 }
 
+export function getOneFromRandomBag<T>(initialItems: Array<T>): T {
+  const bag = new RandomBag(initialItems);
+  return bag.getRandomItem();
+}
+
 type TDiceSides = 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 20 | 100;
 type TDiceAmount = number;
 type TDiceBonus = number;
@@ -57,10 +62,16 @@ export function rollDice(dice: TDiceSides) {
   return getRandomInt(dice, 1);
 }
 
-export function rollDices(diceToRoll: TDiceString) {
-  const parts = /(?<amount>\d*)D(?<dice>\d*)(?:\+(?<bonus>\d+))?/gi.exec(
-    diceToRoll,
-  );
+const DiceRegexp = /(?<amount>\d*)D(?<dice>\d*)(?:\+(?<bonus>\d+))?/gi;
+
+type TDiceObject = {
+  amount: TDiceAmount;
+  sides: TDiceSides;
+  bonus: TDiceBonus;
+};
+
+function convertDiceToObject(dice: TDiceString): TDiceObject {
+  const parts = DiceRegexp.exec(dice);
   if (parts === null) {
     throw Error("wrong dice pattern!");
   }
@@ -68,12 +79,28 @@ export function rollDices(diceToRoll: TDiceString) {
   const amount = Number(groups["amount"] ?? "1");
   const sides = Number(groups["dice"] ?? "6") as TDiceSides;
   const bonus = Number(groups["bonus"] ?? "0");
-  let result = bonus;
-  for (let index = 0; index < amount; index++) {
-    const roll = rollDice(sides);
+  return {
+    amount,
+    sides,
+    bonus,
+  };
+}
+
+export function rollDices(diceToRoll: TDiceString) {
+  const diceObj = convertDiceToObject(diceToRoll);
+  let result = diceObj.bonus;
+  for (let index = 0; index < diceObj.amount; index++) {
+    const roll = rollDice(diceObj.sides);
     result += roll;
   }
   return result;
+}
+
+// return maximum possible value from dice roll
+// to calculate possible "crit" value
+function getCritDiceRoll(diceToRoll: TDiceString) {
+  const diceObj = convertDiceToObject(diceToRoll);
+  return diceObj.amount * diceObj.sides + diceObj.bonus;
 }
 
 /**
@@ -88,6 +115,6 @@ export function rollDices(diceToRoll: TDiceString) {
  */
 export function rollDiceCheck(value: number, dice: TDiceString) {
   const roll = rollDices(dice);
-  const result = roll > value;
+  const result = roll > value || roll === getCritDiceRoll(dice);
   return result;
 }

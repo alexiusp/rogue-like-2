@@ -49,6 +49,7 @@ import {
   RaceFreePointsMap,
   RaceStatsMap,
 } from "./races";
+import { $characterResistances } from "./resistances";
 import {
   EGender,
   IBaseCharacterInfo,
@@ -845,12 +846,14 @@ export const $characterState = combine(
   $character,
   $characterStats,
   $characterInventory,
-  (base, ch, stats, inv) => {
+  $characterResistances,
+  (base, ch, stats, inv, res) => {
     const combinedState: TCharacterCombinedState = {
       ...base,
       ...ch,
       stats,
       items: inv,
+      resistances: res,
     };
     return combinedState;
   },

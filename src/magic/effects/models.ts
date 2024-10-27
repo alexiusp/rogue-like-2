@@ -1,7 +1,7 @@
 import { ICharacterState } from "../../character/types";
 import { IGameMonster } from "../../monsters/model";
 import GlobalEffectCatalogue from "./GlobalEffectCatalogue";
-import { IGameEffect } from "./types";
+import { IGameEffect, TEffectKey } from "./types";
 
 function applyHealEffectToCharacter(
   effect: IGameEffect,
@@ -75,4 +75,16 @@ export function udpateEffectTimeout(effect: IGameEffect) {
     return updatedEffect;
   }
   return undefined;
+}
+
+export function filterEffectsByKey(effects: IGameEffect[], key: TEffectKey) {
+  return effects.filter((effect) => {
+    const baseEffect = GlobalEffectCatalogue[effect.name];
+    return key === baseEffect.key;
+  });
+}
+
+export function getEffectNature(effect: IGameEffect) {
+  const baseEffect = GlobalEffectCatalogue[effect.name];
+  return baseEffect.nature;
 }

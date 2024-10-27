@@ -18,7 +18,7 @@ import GlobalMonsterCatalogue from "./GlobalMonsterCatalogue";
 // type of monster will be used for charming spells
 type TMonsterType = "animal" | "insect" | "reptile" | "humanoid" | "undead";
 
-type TMonsterAttack =
+export type TMonsterAttack =
   | "poison"
   | "disease"
   | "stone"
@@ -56,7 +56,7 @@ export interface IBaseMonster {
   // base values to calculate monster hp and mp
   baseHp: number;
   baseMp: number;
-  // possible special abilities (not yet implemented)
+  // possible special abilities
   // attacks, resistances, spells etc.
   specials: Array<TMonsterAttack>;
   resistances: Array<IResistance>;

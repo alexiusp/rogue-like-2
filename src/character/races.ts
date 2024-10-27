@@ -1,4 +1,5 @@
 import { TStatNames } from "../common/stats";
+import { IResistance } from "../common/types";
 
 export enum ECharacterRace {
   Human,
@@ -55,6 +56,15 @@ export const RaceAgeMap: {
 } = {
   [ECharacterRace.Human]: [18, 80],
   [ECharacterRace.Elf]: [100, 900],
+};
+
+export const RaceResistancesMap: Record<ECharacterRace, IResistance[]> = {
+  [ECharacterRace.Human]: [],
+  [ECharacterRace.Elf]: [
+    { element: "mind", ratio: 0.5 },
+    { element: "life", ratio: 0.8 },
+    { element: "astral", ratio: 0.8 },
+  ],
 };
 
 export function getRaceHealthModifier(race: ECharacterRace) {
@@ -125,4 +135,8 @@ export function getRaceProtectionModifier(race: ECharacterRace) {
       modifier = 1;
   }
   return modifier;
+}
+
+export function getRaceResistances(race: ECharacterRace) {
+  return [...RaceResistancesMap[race]];
 }

@@ -3,11 +3,17 @@ import {
   getCharacterDamage,
   getCharacterDefense,
   getCharacterProtection,
+  hasResistanceAgainst,
 } from "../character/models";
 import { TCharacterCombinedState } from "../character/types";
-import { getRandomInt, rollDiceCheck } from "../common/random";
+import {
+  getOneFromRandomBag,
+  getRandomInt,
+  rollDiceCheck,
+} from "../common/random";
 import { getTileIndexByCoordinates } from "../dungeon/model";
 import { IMonsterMapTile, TDungeonState, TMapTile } from "../dungeon/types";
+import GlobalMonsterCatalogue from "../monsters/GlobalMonsterCatalogue";
 import {
   EAggroMode,
   IGameMonster,
@@ -172,4 +178,74 @@ export function shouldCharacterBeAttackedByMonster(
   }
   console.log("shouldCharacterBeAttackedByMonster check", true);
   return true;
+}
+
+export function getMonsterSpecialAttack(
+  monster: IGameMonster,
+  character: TCharacterCombinedState,
+  isDefending: boolean,
+) {
+  const { level, specials } = GlobalMonsterCatalogue[monster.monster];
+  const { resistances, stats } = character;
+  // loop through attack - and return all with successfull check
+  const specialAttacks = specials.filter((special) => {
+    const baseRoll = 10; // 50%
+    const defBonus = isDefending ? 0.05 : 0;
+    // check for successfull roll
+    switch (special) {
+      case "poison": {
+        const resistance = hasResistanceAgainst("earth", resistances);
+        const rollThreshold = Math.min(
+          19,
+          Math.floor(baseRoll + 10 * (resistance + defBonus)),
+        );
+        return rollDiceCheck(rollThreshold, "1D20");
+      }
+      case "disease": {
+        const resistance = hasResistanceAgainst("air", resistances);
+        const rollThreshold = Math.min(
+          19,
+          Math.floor(baseRoll + 10 * (resistance + defBonus)),
+        );
+        return rollDiceCheck(rollThreshold, "1D20");
+      }
+      case "stone": {
+        const resistance = hasResistanceAgainst("stone", resistances);
+        const resRollThreshold = Math.min(
+          19,
+          Math.floor(baseRoll + 10 * (resistance + defBonus)),
+        );
+        const resRoll = rollDiceCheck(resRollThreshold, "1D20");
+        if (resRoll) {
+          const attackRollThreshold = Math.max(
+            1,
+            Math.min(19, Math.floor(20 + level - stats.endurance)),
+          );
+          return rollDiceCheck(attackRollThreshold, "1D20");
+        }
+        return false;
+      }
+      case "age": {
+        // TODO: implement aging attack with endurance resistance
+        return false;
+      }
+      case "paralysis":
+      case "electrocute":
+      case "drain":
+      case "fire":
+      case "cold":
+      case "acid":
+      case "crit":
+      case "backstab":
+      case "destroy":
+      case "steal":
+      default:
+        return false;
+    }
+  });
+  // select one of successfull or null if no special attacks were rolled
+  if (!specialAttacks.length) {
+    return null;
+  }
+  return getOneFromRandomBag(specialAttacks);
 }

@@ -76,8 +76,8 @@ const LargeRat: IBaseMonster = {
   },
   baseHp: 15,
   baseMp: 0,
-  specials: [],
-  resistances: [],
+  specials: ["disease"],
+  resistances: [{ element: "air", ratio: 0.5 }],
   items: [...ItemLootByLevel[1]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water or sand
@@ -107,8 +107,11 @@ const GiantSpider: IBaseMonster = {
   },
   baseHp: 18,
   baseMp: 0,
-  specials: [],
-  resistances: [],
+  specials: ["poison"],
+  resistances: [
+    { element: "earth", ratio: 1 },
+    { element: "mind", ratio: 1 },
+  ],
   items: [...ItemLootByLevel[2]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water or sand
@@ -138,8 +141,8 @@ const PoisonousSnake: IBaseMonster = {
   },
   baseHp: 8,
   baseMp: 0,
-  specials: [],
-  resistances: [],
+  specials: ["poison"],
+  resistances: [{ element: "earth", ratio: 0.5 }],
   items: [...ItemLootByLevel[2]],
   money: [...MoneyLootByLevel[2]],
   // this monster can not live in water

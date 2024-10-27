@@ -7,6 +7,7 @@ import {
   getStatsDefenseModifier,
   getStatsProtectionModifier,
 } from "../common/stats";
+import { IResistance, TNatureElement } from "../common/types";
 import {
   getGuildsAttackModifier,
   getGuildsDamageModifier,
@@ -296,4 +297,12 @@ export function modifyStats(
     charisma,
     dexterity,
   };
+}
+
+export function hasResistanceAgainst(
+  nature: TNatureElement,
+  resistances: IResistance[],
+) {
+  const resistance = resistances.find((res) => res.element === nature);
+  return resistance ? resistance.ratio : 0;
 }

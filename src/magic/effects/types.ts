@@ -16,7 +16,8 @@ export type TEffectKey =
   | "defense" // increase characters defense
   | "protection" // increase characters protection
   | "attack" // increase characters attack
-  | "damage"; // increase characters damage
+  | "damage" // increase characters damage
+  | "resistance"; // increase resistance
 
 // base definition of the effect
 export interface IBaseEffect {

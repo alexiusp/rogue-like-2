@@ -1,5 +1,6 @@
 import { EAlignment } from "../common/alignment";
 import { TStatsValues } from "../common/stats";
+import { IResistance } from "../common/types";
 import { EGuild, IGuildMembership } from "../guilds/types";
 import { TGameItem } from "../items/models";
 import { ECharacterRace } from "./races";
@@ -44,4 +45,4 @@ export type TCharacterInventory = Array<TGameItem>;
 export type TCharacterCombinedState = IBaseCharacterInfo &
   ICharacterState & { stats: TStatsValues } & {
     items: TCharacterInventory;
-  };
+  } & { resistances: IResistance[] };

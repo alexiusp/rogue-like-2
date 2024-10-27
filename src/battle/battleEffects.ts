@@ -16,8 +16,9 @@ import { IGameEffect } from "../magic/effects/types";
 import { createEffectForASpell } from "../magic/models";
 import { IGameSpell } from "../magic/types";
 import { messageAdded } from "../messages/state";
-import { IGameMonster } from "../monsters/model";
+import { IGameMonster, TMonsterAttack } from "../monsters/model";
 import {
+  getMonsterSpecialAttack,
   rollAttackCharacterVsMonster,
   rollAttackMonsterVsCharacter,
   rollDamageCharacterVsMonster,
@@ -165,6 +166,33 @@ export const spellEffectsAppliedToMonstersFx = createEffect<
     }),
 );
 
+type TMonsterSpecialRollParams = {
+  monster: IGameMonster;
+  character: TCharacterCombinedState;
+  isDefending: boolean;
+};
+
+// detect if monster will do a special attack or not
+export const rollMonsterSpecialEffect = createEffect<
+  TMonsterSpecialRollParams,
+  TMonsterAttack
+>(
+  ({ character, monster, isDefending }) =>
+    new Promise((resolve, reject) => {
+      // roll for special attacks of the monster
+      const specialAttack = getMonsterSpecialAttack(
+        monster,
+        character,
+        isDefending,
+      );
+      if (specialAttack === null) {
+        reject();
+        return;
+      }
+      resolve(specialAttack);
+    }),
+);
+
 type TCharacterAttackedParams = {
   monster: IGameMonster;
   character: TCharacterCombinedState;
@@ -187,6 +215,8 @@ export const monsterAttackCharacterFx = createEffect<
         reject();
         return;
       }
+      // 1. special attack check
+      // 2. normal attack check
       const damageDone = rollDamageMonsterVsCharacter(character, monster);
       console.log("damageDone", damageDone);
       resolve(-damageDone);

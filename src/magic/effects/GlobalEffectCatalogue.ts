@@ -57,6 +57,13 @@ const DiseaseEffect: IBaseEffect = {
   nature: "air",
 };
 
+const ResistPoisonEffect: IBaseEffect = {
+  name: "resist-earth",
+  picture: "poison.svg",
+  key: "resistance",
+  nature: "earth",
+};
+
 const GlobalEffectCatalogue: Record<string, IBaseEffect> = createCatalogue([
   HealEffect,
   PoisonEffect,
@@ -66,5 +73,6 @@ const GlobalEffectCatalogue: Record<string, IBaseEffect> = createCatalogue([
   BurningEffect,
   ShockEffect,
   DiseaseEffect,
+  ResistPoisonEffect,
 ]);
 export default GlobalEffectCatalogue;
